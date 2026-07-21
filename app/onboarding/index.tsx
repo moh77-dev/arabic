@@ -144,7 +144,7 @@ export default function Onboarding() {
           />
         )}
         {step === 'goals' && (
-          <ScreenContainer scroll edges={[]}>
+          <ScreenContainer scroll edges={[]} gradient>
             <StepHeader title="Why are you learning Arabic?" subtitle="Pick everything that applies." />
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 24 }}>
               {GOALS.map((g) => (
@@ -160,7 +160,7 @@ export default function Onboarding() {
           </ScreenContainer>
         )}
         {step === 'dialect' && (
-          <ScreenContainer scroll edges={[]}>
+          <ScreenContainer scroll edges={[]} gradient>
             <StepHeader title="Which dialect calls to you?" subtitle="You can always learn more dialects later." />
             <View style={{ gap: 10, marginTop: 24 }}>
               {DIALECT_LIST.map((d) => (
@@ -189,7 +189,7 @@ export default function Onboarding() {
           </ScreenContainer>
         )}
         {step === 'difficulty' && (
-          <ScreenContainer scroll edges={[]}>
+          <ScreenContainer scroll edges={[]} gradient>
             <StepHeader title="Set your daily study goal" />
             <View style={{ gap: 10, marginTop: 24 }}>
               {DIFFICULTIES.map((d) => (
@@ -212,7 +212,7 @@ export default function Onboarding() {
           </ScreenContainer>
         )}
         {step === 'reminder' && (
-          <ScreenContainer scroll edges={[]}>
+          <ScreenContainer scroll edges={[]} gradient>
             <StepHeader title="When should we remind you?" subtitle="A daily nudge keeps your streak alive." />
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 24 }}>
               {REMINDER_TIMES.map((t) => (
@@ -222,7 +222,7 @@ export default function Onboarding() {
           </ScreenContainer>
         )}
         {step === 'confidence' && (
-          <ScreenContainer scroll edges={[]}>
+          <ScreenContainer scroll edges={[]} gradient>
             <StepHeader title="How confident do you feel speaking?" />
             <View style={{ gap: 10, marginTop: 24 }}>
               {CONFIDENCE.map((c) => (
@@ -291,7 +291,7 @@ function ChoiceStep({
   const theme = useTheme();
   const normalized = options.map((o) => (typeof o === 'string' ? { id: o, label: o } : o));
   return (
-    <ScreenContainer scroll edges={[]}>
+    <ScreenContainer scroll edges={[]} gradient>
       <StepHeader title={title} />
       <View style={{ gap: 10, marginTop: 24 }}>
         {normalized.map((o) => (

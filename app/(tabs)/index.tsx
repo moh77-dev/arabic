@@ -1,9 +1,11 @@
+import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import React, { useMemo } from 'react';
 import { Text, View } from 'react-native';
 import { AnimatedPressable } from '@/components/ui/AnimatedPressable';
 import { Avatar } from '@/components/ui/Avatar';
 import { Card } from '@/components/ui/Card';
+import { DialectSwitcher } from '@/components/ui/DialectSwitcher';
 import { GemCounter } from '@/components/ui/GemCounter';
 import { HeatmapCalendar } from '@/components/ui/HeatmapCalendar';
 import { ProgressRing } from '@/components/ui/ProgressRing';
@@ -58,7 +60,7 @@ export default function Home() {
   const weeklyProgress = Math.min(1, gami.weeklyXp / gami.weeklyGoalXp);
 
   return (
-    <ScreenContainer>
+    <ScreenContainer gradient>
       {/* Header */}
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
         <AnimatedPressable onPress={() => router.push('/(tabs)/profile')} withHaptic={false}>
@@ -70,32 +72,42 @@ export default function Home() {
         </View>
       </View>
 
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 20 }}>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 22 }}>
         <View>
-          <Text style={{ color: theme.textSecondary, fontSize: 13 }}>Welcome back to</Text>
-          <Text style={{ color: theme.textPrimary, fontSize: 24, fontWeight: '900' }}>
+          <Text style={{ color: theme.textSecondary, fontSize: 13, letterSpacing: 0.2 }}>Currently learning</Text>
+          <Text style={{ color: theme.textPrimary, fontSize: 26, fontWeight: '900', letterSpacing: -0.3 }}>
             {DIALECTS[activeDialect].name}
           </Text>
         </View>
         <StreakFlame streak={gami.currentStreak} size="lg" />
       </View>
 
+      <View style={{ marginTop: 14 }}>
+        <DialectSwitcher />
+      </View>
+
       <View style={{ marginTop: 20 }}>
         <XPBar xpIntoLevel={xpIntoLevel} xpForNextLevel={xpForNextLevel} level={level} />
       </View>
 
-      {/* Today's lesson */}
-      <Card style={{ marginTop: 20 }}>
-        <Text style={{ color: theme.textSecondary, fontSize: 12, fontWeight: '700' }}>TODAY'S LESSON</Text>
-        {nextLesson ? (
-          <AnimatedPressable onPress={() => router.push(`/lesson/${nextLesson.id}`)} style={{ marginTop: 10 }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 14 }}>
+      {/* Today's lesson — signature gradient hero */}
+      <AnimatedPressable
+        onPress={() => nextLesson && router.push(`/lesson/${nextLesson.id}`)}
+        disabled={!nextLesson}
+        style={{ marginTop: 20, borderRadius: 26, overflow: 'hidden' }}
+      >
+        <LinearGradient colors={[theme.primary, '#0b6e3d']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ padding: 20 }}>
+          <Text style={{ color: 'rgba(255,255,255,0.8)', fontSize: 12, fontWeight: '800', letterSpacing: 0.6 }}>
+            TODAY'S LESSON
+          </Text>
+          {nextLesson ? (
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 14, marginTop: 12 }}>
               <View
                 style={{
-                  width: 56,
-                  height: 56,
-                  borderRadius: 16,
-                  backgroundColor: theme.primary,
+                  width: 54,
+                  height: 54,
+                  borderRadius: 18,
+                  backgroundColor: 'rgba(255,255,255,0.18)',
                   alignItems: 'center',
                   justifyContent: 'center',
                 }}
@@ -103,32 +115,34 @@ export default function Home() {
                 <Text style={{ fontSize: 26 }}>📗</Text>
               </View>
               <View style={{ flex: 1 }}>
-                <Text style={{ color: theme.textPrimary, fontWeight: '800', fontSize: 17 }}>{nextLesson.title}</Text>
-                <Text style={{ color: theme.textSecondary, fontSize: 13 }}>
+                <Text style={{ color: '#fff', fontWeight: '800', fontSize: 18 }}>{nextLesson.title}</Text>
+                <Text style={{ color: 'rgba(255,255,255,0.75)', fontSize: 13, marginTop: 2 }}>
                   {nextLesson.estimatedMinutes} min · {nextLesson.xpReward} XP
                 </Text>
               </View>
-              <Text style={{ fontSize: 20 }}>▶️</Text>
+              <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.22)', alignItems: 'center', justifyContent: 'center' }}>
+                <Text style={{ fontSize: 16, color: '#fff' }}>▶</Text>
+              </View>
             </View>
-          </AnimatedPressable>
-        ) : (
-          <Text style={{ color: theme.textPrimary, marginTop: 8 }}>
-            You've completed every lesson in this track! 🎉 Try another dialect.
-          </Text>
-        )}
-      </Card>
+          ) : (
+            <Text style={{ color: '#fff', marginTop: 10, fontWeight: '600' }}>
+              You've completed every lesson in this track! 🎉 Add another dialect above.
+            </Text>
+          )}
+        </LinearGradient>
+      </AnimatedPressable>
 
       {/* Quick access: AI conversations & stories */}
       <View style={{ flexDirection: 'row', gap: 12, marginTop: 16 }}>
         <AnimatedPressable onPress={() => router.push('/conversation')} style={{ flex: 1 }}>
-          <Card>
+          <Card glass>
             <Text style={{ fontSize: 24 }}>💬</Text>
             <Text style={{ color: theme.textPrimary, fontWeight: '800', marginTop: 6 }}>Talk to a character</Text>
             <Text style={{ color: theme.textSecondary, fontSize: 12 }}>AI conversation practice</Text>
           </Card>
         </AnimatedPressable>
         <AnimatedPressable onPress={() => router.push('/story')} style={{ flex: 1 }}>
-          <Card>
+          <Card glass>
             <Text style={{ fontSize: 24 }}>📖</Text>
             <Text style={{ color: theme.textPrimary, fontWeight: '800', marginTop: 6 }}>Interactive stories</Text>
             <Text style={{ color: theme.textSecondary, fontSize: 12 }}>Choose your own path</Text>
@@ -138,7 +152,7 @@ export default function Home() {
 
       {/* Weekly goal + quests */}
       <View style={{ flexDirection: 'row', gap: 12, marginTop: 16 }}>
-        <Card style={{ flex: 1, alignItems: 'center' }}>
+        <Card glass style={{ flex: 1, alignItems: 'center' }}>
           <ProgressRing progress={weeklyProgress} size={72} color={theme.accentDiamond}>
             <Text style={{ fontWeight: '900', color: theme.textPrimary }}>{Math.round(weeklyProgress * 100)}%</Text>
           </ProgressRing>
@@ -147,8 +161,8 @@ export default function Home() {
             {gami.weeklyXp}/{gami.weeklyGoalXp} XP
           </Text>
         </Card>
-        <Card style={{ flex: 1.4 }}>
-          <Text style={{ color: theme.textSecondary, fontSize: 12, fontWeight: '700' }}>DAILY QUESTS</Text>
+        <Card glass style={{ flex: 1.4 }}>
+          <Text style={{ color: theme.textSecondary, fontSize: 12, fontWeight: '700', letterSpacing: 0.4 }}>DAILY QUESTS</Text>
           <View style={{ gap: 8, marginTop: 8 }}>
             {DAILY_QUESTS.slice(0, 2).map((q) => {
               const progressValue =
@@ -177,12 +191,12 @@ export default function Home() {
 
       {/* Recommended lessons */}
       {recommendedLessons.length > 0 && (
-        <View style={{ marginTop: 24 }}>
+        <View style={{ marginTop: 26 }}>
           <SectionTitle title="Recommended for you" />
           <View style={{ gap: 10, marginTop: 10 }}>
             {recommendedLessons.map((lesson) => (
               <AnimatedPressable key={lesson.id} onPress={() => router.push(`/lesson/${lesson.id}`)}>
-                <Card>
+                <Card glass>
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
                     <Text style={{ fontSize: 24 }}>📘</Text>
                     <View style={{ flex: 1 }}>
@@ -201,11 +215,14 @@ export default function Home() {
 
       {/* Recently learned words */}
       {recentWords.length > 0 && (
-        <View style={{ marginTop: 24 }}>
+        <View style={{ marginTop: 26 }}>
           <SectionTitle title="Recently learned words" />
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 10 }}>
             {recentWords.map((w) => (
-              <View key={w.id} style={{ backgroundColor: theme.surfaceElevated, borderWidth: 1, borderColor: theme.border, borderRadius: 12, padding: 10, minWidth: '31%' }}>
+              <View
+                key={w.id}
+                style={{ backgroundColor: theme.glassTint, borderWidth: 1, borderColor: theme.glassBorder, borderRadius: 14, padding: 10, minWidth: '31%' }}
+              >
                 <Text style={{ color: theme.textPrimary, fontWeight: '800' }}>{w.arabic}</Text>
                 <Text style={{ color: theme.textSecondary, fontSize: 11 }}>{w.english}</Text>
               </View>
@@ -215,7 +232,7 @@ export default function Home() {
       )}
 
       {/* Achievements preview */}
-      <View style={{ marginTop: 24 }}>
+      <View style={{ marginTop: 26 }}>
         <SectionTitle title="Achievements" action="See all" onAction={() => router.push('/(tabs)/profile')} />
         <View style={{ flexDirection: 'row', gap: 10, marginTop: 10 }}>
           {ACHIEVEMENTS.slice(0, 4).map((a) => {
@@ -226,10 +243,10 @@ export default function Home() {
                 style={{
                   width: 64,
                   height: 64,
-                  borderRadius: 16,
-                  backgroundColor: unlocked ? `${theme.accentGold}22` : theme.surfaceElevated,
+                  borderRadius: 18,
+                  backgroundColor: unlocked ? `${theme.accentGold}22` : theme.glassTint,
                   borderWidth: 1,
-                  borderColor: unlocked ? theme.accentGold : theme.border,
+                  borderColor: unlocked ? theme.accentGold : theme.glassBorder,
                   alignItems: 'center',
                   justifyContent: 'center',
                   opacity: unlocked ? 1 : 0.4,
@@ -243,17 +260,17 @@ export default function Home() {
       </View>
 
       {/* Calendar heatmap */}
-      <View style={{ marginTop: 24 }}>
+      <View style={{ marginTop: 26 }}>
         <SectionTitle title="Your study streak" />
-        <Card style={{ marginTop: 10 }}>
+        <Card glass style={{ marginTop: 10 }}>
           <HeatmapCalendar data={gami.studyHeatmap} />
         </Card>
       </View>
 
       {/* Leaderboard preview */}
-      <View style={{ marginTop: 24, marginBottom: 12 }}>
+      <View style={{ marginTop: 26, marginBottom: 12 }}>
         <SectionTitle title="Leaderboard" action="View all" onAction={() => router.push('/(tabs)/leaderboard')} />
-        <Card style={{ marginTop: 10 }}>
+        <Card glass style={{ marginTop: 10 }}>
           {leaderboard.length === 0 ? (
             <Text style={{ color: theme.textSecondary }}>
               Add friends to see how you rank against them this week.
@@ -278,7 +295,7 @@ function SectionTitle({ title, action, onAction }: { title: string; action?: str
   const theme = useTheme();
   return (
     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-      <Text style={{ color: theme.textPrimary, fontSize: 18, fontWeight: '800' }}>{title}</Text>
+      <Text style={{ color: theme.textPrimary, fontSize: 18, fontWeight: '800', letterSpacing: -0.2 }}>{title}</Text>
       {action ? (
         <AnimatedPressable onPress={onAction ?? (() => {})} withHaptic={false}>
           <Text style={{ color: theme.primary, fontWeight: '700', fontSize: 13 }}>{action}</Text>

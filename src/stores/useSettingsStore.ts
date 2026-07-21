@@ -12,7 +12,10 @@ interface SettingsState {
   hapticsEnabled: boolean;
   notificationsEnabled: boolean;
   reminderTime: string;
+  /** The dialect currently shown on Home/Learn. Always a member of `enrolledDialects`. */
   activeDialect: DialectId;
+  /** Every dialect the learner has started — lets them keep several going in parallel and switch. */
+  enrolledDialects: DialectId[];
   offlineDownloadedLessonIds: string[];
   setThemePreference: (t: SettingsState['themePreference']) => void;
   setReduceMotion: (v: boolean) => void;
@@ -22,14 +25,17 @@ interface SettingsState {
   toggleHaptics: () => void;
   toggleNotifications: () => void;
   setReminderTime: (t: string) => void;
+  /** Switches the focused dialect, enrolling it first if it isn't already being learned. */
   setActiveDialect: (d: DialectId) => void;
+  enrollDialect: (d: DialectId) => void;
+  unenrollDialect: (d: DialectId) => void;
   markLessonDownloaded: (id: string) => void;
   removeDownloadedLesson: (id: string) => void;
 }
 
 export const useSettingsStore = create<SettingsState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       themePreference: 'system',
       reduceMotion: false,
       largeText: false,
@@ -39,6 +45,7 @@ export const useSettingsStore = create<SettingsState>()(
       notificationsEnabled: true,
       reminderTime: '19:00',
       activeDialect: 'algerian_eloued',
+      enrolledDialects: ['algerian_eloued'],
       offlineDownloadedLessonIds: [],
       setThemePreference: (themePreference) => set({ themePreference }),
       setReduceMotion: (reduceMotion) => set({ reduceMotion }),
@@ -48,7 +55,21 @@ export const useSettingsStore = create<SettingsState>()(
       toggleHaptics: () => set((s) => ({ hapticsEnabled: !s.hapticsEnabled })),
       toggleNotifications: () => set((s) => ({ notificationsEnabled: !s.notificationsEnabled })),
       setReminderTime: (reminderTime) => set({ reminderTime }),
-      setActiveDialect: (activeDialect) => set({ activeDialect }),
+      setActiveDialect: (activeDialect) => {
+        get().enrollDialect(activeDialect);
+        set({ activeDialect });
+      },
+      enrollDialect: (d) =>
+        set((s) => (s.enrolledDialects.includes(d) ? s : { enrolledDialects: [...s.enrolledDialects, d] })),
+      unenrollDialect: (d) =>
+        set((s) => {
+          const enrolledDialects = s.enrolledDialects.filter((x) => x !== d);
+          const nextEnrolled = enrolledDialects.length > 0 ? enrolledDialects : ['algerian_eloued' as DialectId];
+          return {
+            enrolledDialects: nextEnrolled,
+            activeDialect: s.activeDialect === d ? nextEnrolled[0] : s.activeDialect,
+          };
+        }),
       markLessonDownloaded: (id) =>
         set((s) => ({ offlineDownloadedLessonIds: Array.from(new Set([...s.offlineDownloadedLessonIds, id])) })),
       removeDownloadedLesson: (id) =>

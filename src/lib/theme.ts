@@ -31,11 +31,16 @@ export interface Theme {
   accentGold: string;
   accentDiamond: string;
   danger: string;
+  /** Soft color washes rendered behind glass panels so blur has something to refract. */
+  backdropGradient: readonly [string, string, string];
+  glassTint: string;
+  glassBorder: string;
+  glassHighlight: string;
 }
 
 export const lightTheme: Theme = {
   mode: 'light',
-  background: '#ffffff',
+  background: '#f7f8fb',
   surface: palette.ink[50],
   surfaceElevated: '#ffffff',
   border: '#e4e6eb',
@@ -46,6 +51,10 @@ export const lightTheme: Theme = {
   accentGold: palette.gold[500],
   accentDiamond: palette.diamond[500],
   danger: palette.danger,
+  backdropGradient: ['#e8fbf1', '#eef4ff', '#fdf3e7'],
+  glassTint: 'rgba(255,255,255,0.55)',
+  glassBorder: 'rgba(255,255,255,0.65)',
+  glassHighlight: 'rgba(255,255,255,0.9)',
 };
 
 export const darkTheme: Theme = {
@@ -61,6 +70,10 @@ export const darkTheme: Theme = {
   accentGold: palette.gold[500],
   accentDiamond: palette.diamond[500],
   danger: '#ff6b62',
+  backdropGradient: ['#07150f', '#0a0c11', '#150f18'],
+  glassTint: 'rgba(28,32,41,0.55)',
+  glassBorder: 'rgba(255,255,255,0.10)',
+  glassHighlight: 'rgba(255,255,255,0.06)',
 };
 
 export const spacing = { xs: 4, sm: 8, md: 12, lg: 16, xl: 24, xxl: 32 };

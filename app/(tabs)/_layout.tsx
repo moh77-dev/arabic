@@ -1,6 +1,7 @@
+import { BlurView } from 'expo-blur';
 import { Tabs } from 'expo-router';
 import React from 'react';
-import { Text } from 'react-native';
+import { Platform, Text } from 'react-native';
 import { useTheme } from '@/lib/ThemeProvider';
 
 const ICONS: Record<string, string> = {
@@ -19,10 +20,36 @@ export default function TabsLayout() {
         headerShown: false,
         tabBarActiveTintColor: theme.primary,
         tabBarInactiveTintColor: theme.textSecondary,
-        tabBarStyle: { backgroundColor: theme.surfaceElevated, borderTopColor: theme.border, height: 84, paddingTop: 8 },
-        tabBarLabelStyle: { fontWeight: '700', fontSize: 11 },
+        tabBarShowLabel: true,
+        // Floating "liquid glass" pill: absolutely positioned with margin on all sides so the
+        // blurred background shows real content behind it, rounded like an iOS 26 glass surface.
+        tabBarStyle: {
+          position: 'absolute',
+          left: 16,
+          right: 16,
+          bottom: 16,
+          height: 68,
+          borderRadius: 28,
+          borderTopWidth: 0,
+          backgroundColor: Platform.OS === 'android' ? theme.glassTint : 'transparent',
+          overflow: 'hidden',
+          elevation: 0,
+          shadowColor: '#0a0f1a',
+          shadowOpacity: 0.12,
+          shadowRadius: 20,
+          shadowOffset: { width: 0, height: 10 },
+        },
+        tabBarBackground: () => (
+          <BlurView
+            intensity={theme.mode === 'dark' ? 50 : 70}
+            tint={theme.mode === 'dark' ? 'dark' : 'light'}
+            style={{ flex: 1, borderRadius: 28, borderWidth: 1, borderColor: theme.glassBorder }}
+          />
+        ),
+        tabBarItemStyle: { paddingTop: 6 },
+        tabBarLabelStyle: { fontWeight: '700', fontSize: 10 },
         tabBarIcon: ({ focused }) => (
-          <Text style={{ fontSize: 22, opacity: focused ? 1 : 0.5 }}>{ICONS[route.name]}</Text>
+          <Text style={{ fontSize: 20, opacity: focused ? 1 : 0.5 }}>{ICONS[route.name]}</Text>
         ),
       })}
     >

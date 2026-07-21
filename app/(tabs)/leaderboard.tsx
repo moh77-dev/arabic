@@ -30,7 +30,7 @@ export default function Leaderboard() {
   const [tab, setTab] = useState<'league' | 'friends'>('league');
 
   return (
-    <ScreenContainer>
+    <ScreenContainer gradient>
       <Text style={{ fontSize: 26, fontWeight: '900', color: theme.textPrimary }}>Leaderboard</Text>
 
       <View style={{ flexDirection: 'row', gap: 10, marginTop: 16 }}>
@@ -40,7 +40,7 @@ export default function Leaderboard() {
 
       {tab === 'league' && (
         <View style={{ marginTop: 20 }}>
-          <Card style={{ alignItems: 'center', paddingVertical: 24 }}>
+          <Card glass style={{ alignItems: 'center', paddingVertical: 24 }}>
             <Text style={{ fontSize: 56 }}>{LEAGUE_EMOJI[gami.league]}</Text>
             <Text style={{ color: theme.textPrimary, fontWeight: '900', fontSize: 22, marginTop: 8, textTransform: 'capitalize' }}>
               {gami.league} League
@@ -70,7 +70,7 @@ export default function Leaderboard() {
             ))}
           </View>
 
-          <Card style={{ marginTop: 16 }}>
+          <Card glass style={{ marginTop: 16 }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
               <Text style={{ fontWeight: '900', color: theme.textSecondary, width: 24 }}>1</Text>
               <Avatar id={gami.activeAvatar} size={36} ring />
@@ -88,7 +88,7 @@ export default function Leaderboard() {
       {tab === 'friends' && (
         <View style={{ marginTop: 20 }}>
           {friends.length === 0 ? (
-            <Card>
+            <Card glass>
               <Text style={{ color: theme.textPrimary, fontWeight: '700' }}>No friends yet</Text>
               <Text style={{ color: theme.textSecondary, marginTop: 6 }}>
                 Invite friends from Profile → Invite Friends to race for XP and compare streaks.
@@ -98,7 +98,7 @@ export default function Leaderboard() {
             <View style={{ gap: 8 }}>
               {friends.map((f) => (
                 <AnimatedPressable key={f.userId} withHaptic={false}>
-                  <Card>
+                  <Card glass>
                     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
                       <Avatar id={f.avatar} size={36} />
                       <Text style={{ flex: 1, color: theme.textPrimary, fontWeight: '700' }}>{f.displayName}</Text>

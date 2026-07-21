@@ -1,10 +1,11 @@
 import { router } from 'expo-router';
-import React, { useMemo, useState } from 'react';
-import { ScrollView, Text, View } from 'react-native';
+import React, { useMemo } from 'react';
+import { Text, View } from 'react-native';
 import { AnimatedPressable } from '@/components/ui/AnimatedPressable';
+import { DialectSwitcher } from '@/components/ui/DialectSwitcher';
 import { ProgressRing } from '@/components/ui/ProgressRing';
 import { ScreenContainer } from '@/components/ui/ScreenContainer';
-import { DIALECT_LIST, DIALECTS } from '@/content/dialectMeta';
+import { DIALECTS } from '@/content/dialectMeta';
 import { getUnitsForDialect, LESSONS_BY_ID } from '@/content/lessonPaths';
 import { useTheme } from '@/lib/ThemeProvider';
 import { useLessonStore } from '@/stores/useLessonStore';
@@ -13,52 +14,28 @@ import { useSettingsStore } from '@/stores/useSettingsStore';
 export default function Learn() {
   const theme = useTheme();
   const activeDialect = useSettingsStore((s) => s.activeDialect);
-  const setActiveDialect = useSettingsStore((s) => s.setActiveDialect);
   const completedLessonIds = useLessonStore((s) => s.completedLessonIds);
-  const [showPicker, setShowPicker] = useState(false);
 
   const units = useMemo(() => getUnitsForDialect(activeDialect), [activeDialect]);
 
   return (
-    <ScreenContainer>
-      <AnimatedPressable onPress={() => setShowPicker((v) => !v)} withHaptic={false}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-          <Text style={{ fontSize: 28 }}>{DIALECTS[activeDialect].flag}</Text>
-          <View style={{ flex: 1 }}>
-            <Text style={{ color: theme.textPrimary, fontSize: 22, fontWeight: '900' }}>{DIALECTS[activeDialect].name}</Text>
-            <Text style={{ color: theme.textSecondary, fontSize: 13 }}>Tap to switch dialect</Text>
-          </View>
-          <Text style={{ color: theme.primary, fontSize: 18 }}>{showPicker ? '▲' : '▼'}</Text>
+    <ScreenContainer gradient>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+        <Text style={{ fontSize: 28 }}>{DIALECTS[activeDialect].flag}</Text>
+        <View style={{ flex: 1 }}>
+          <Text style={{ color: theme.textPrimary, fontSize: 24, fontWeight: '900', letterSpacing: -0.3 }}>
+            {DIALECTS[activeDialect].name}
+          </Text>
+          <Text style={{ color: theme.textSecondary, fontSize: 13 }}>Your learning path</Text>
         </View>
-      </AnimatedPressable>
+      </View>
 
-      {showPicker && (
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: 14 }}>
-          <View style={{ flexDirection: 'row', gap: 8 }}>
-            {DIALECT_LIST.map((d) => (
-              <AnimatedPressable
-                key={d.id}
-                onPress={() => {
-                  setActiveDialect(d.id);
-                  setShowPicker(false);
-                }}
-                style={{
-                  paddingHorizontal: 14,
-                  paddingVertical: 10,
-                  borderRadius: 14,
-                  borderWidth: 2,
-                  borderColor: activeDialect === d.id ? theme.primary : theme.border,
-                  backgroundColor: activeDialect === d.id ? `${theme.primary}15` : theme.surfaceElevated,
-                }}
-              >
-                <Text style={{ color: theme.textPrimary, fontWeight: '700' }}>
-                  {d.flag} {d.name}
-                </Text>
-              </AnimatedPressable>
-            ))}
-          </View>
-        </ScrollView>
-      )}
+      <View style={{ marginTop: 16 }}>
+        <DialectSwitcher />
+      </View>
+      <Text style={{ color: theme.textSecondary, fontSize: 11, marginTop: 6 }}>
+        Tip: hold a dialect chip to remove it from your list.
+      </Text>
 
       <View style={{ marginTop: 24, gap: 20 }}>
         {units.map((unit) => {
@@ -69,8 +46,13 @@ export default function Learn() {
               <View
                 style={{
                   padding: 16,
-                  borderRadius: 20,
+                  borderRadius: 22,
                   backgroundColor: unit.colorFrom,
+                  shadowColor: unit.colorFrom,
+                  shadowOpacity: 0.35,
+                  shadowRadius: 14,
+                  shadowOffset: { width: 0, height: 8 },
+                  elevation: 4,
                 }}
               >
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
@@ -103,10 +85,10 @@ export default function Learn() {
                         alignItems: 'center',
                         gap: 12,
                         padding: 12,
-                        borderRadius: 14,
-                        backgroundColor: theme.surfaceElevated,
+                        borderRadius: 16,
+                        backgroundColor: theme.glassTint,
                         borderWidth: 1,
-                        borderColor: theme.border,
+                        borderColor: theme.glassBorder,
                         opacity: isLocked ? 0.4 : 1,
                       }}
                     >

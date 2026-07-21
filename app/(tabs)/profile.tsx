@@ -35,7 +35,7 @@ export default function Profile() {
   };
 
   return (
-    <ScreenContainer>
+    <ScreenContainer gradient>
       <View style={{ alignItems: 'center', marginTop: 12 }}>
         <Avatar id={gami.activeAvatar} size={88} ring />
         <Text style={{ color: theme.textPrimary, fontSize: 22, fontWeight: '900', marginTop: 12 }}>{displayName ?? 'Learner'}</Text>
@@ -64,7 +64,7 @@ export default function Profile() {
       <View style={{ marginTop: 28, gap: 10 }}>
         {MENU.map((item) => (
           <AnimatedPressable key={item.href} onPress={() => router.push(item.href as any)}>
-            <Card>
+            <Card glass>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
                 <Text style={{ fontSize: 22 }}>{item.icon}</Text>
                 <Text style={{ flex: 1, color: theme.textPrimary, fontWeight: '700' }}>{item.label}</Text>

@@ -19,13 +19,13 @@ export default function Practice() {
   const totalWordsTracked = Object.keys(srsCards).length;
 
   return (
-    <ScreenContainer>
+    <ScreenContainer gradient>
       <Text style={{ fontSize: 26, fontWeight: '900', color: theme.textPrimary }}>Practice</Text>
       <Text style={{ color: theme.textSecondary, marginTop: 4 }}>
         Spaced repetition keeps your vocabulary from fading.
       </Text>
 
-      <Card style={{ marginTop: 20 }}>
+      <Card glass style={{ marginTop: 20 }}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
           <Stat label="Words tracked" value={totalWordsTracked} />
           <Stat label="Due today" value={dueWordIds.length} />
@@ -49,7 +49,7 @@ export default function Practice() {
       </View>
 
       {totalWordsTracked === 0 && (
-        <Card style={{ marginTop: 20 }}>
+        <Card glass style={{ marginTop: 20 }}>
           <Text style={{ color: theme.textSecondary, textAlign: 'center' }}>
             Complete a few lessons first — words you learn show up here for spaced-repetition review.
           </Text>

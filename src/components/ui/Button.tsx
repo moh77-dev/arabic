@@ -47,6 +47,7 @@ export function Button({
 
   const height = size === 'lg' ? 56 : 46;
   const isDisabled = disabled || loading;
+  const hasShadow = (variant === 'primary' || variant === 'gold' || variant === 'danger') && !isDisabled;
 
   return (
     <AnimatedPressable
@@ -56,7 +57,7 @@ export function Button({
       accessibilityState={{ disabled: isDisabled }}
       style={{
         height,
-        borderRadius: 18,
+        borderRadius: 20,
         backgroundColor: bg,
         alignItems: 'center',
         justifyContent: 'center',
@@ -67,6 +68,15 @@ export function Button({
         borderColor: theme.border,
         alignSelf: fullWidth ? 'stretch' : 'flex-start',
         paddingHorizontal: 24,
+        ...(hasShadow
+          ? {
+              shadowColor: bg,
+              shadowOpacity: 0.35,
+              shadowRadius: 14,
+              shadowOffset: { width: 0, height: 6 },
+              elevation: 4,
+            }
+          : null),
       }}
     >
       {loading ? (
