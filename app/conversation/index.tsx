@@ -17,11 +17,11 @@ import type { DialectId } from '@/types';
 // A warm El Oued tutor stand-in until a dedicated "Salah" character/voice is authored.
 const TUTOR_CHARACTER_ID = 'char_grandmother';
 
-const CAPABILITIES: { icon: IconName; tint: (t: ReturnType<typeof useTheme>) => string; title: string; subtitle: string }[] = [
-  { icon: 'edit', tint: (t) => t.primary, title: 'Fix my Arabic', subtitle: 'Correct a phrase and explain why' },
-  { icon: 'grammar', tint: (t) => t.accentGold, title: 'Explain the grammar', subtitle: 'Rules, in plain language' },
-  { icon: 'lesson', tint: () => '#0ea5e9', title: 'Make me a quick lesson', subtitle: 'Built around what you need' },
-  { icon: 'speak', tint: (t) => t.primary, title: 'Say it for me', subtitle: 'Hear it in your dialect' },
+const CAPABILITIES: { icon: IconName; tint: (t: ReturnType<typeof useTheme>) => string; title: string; subtitle: string; route: string }[] = [
+  { icon: 'edit', tint: (t) => t.primary, title: 'Fix my Arabic', subtitle: 'Correct a phrase and explain why', route: 'tutor' },
+  { icon: 'grammar', tint: (t) => t.accentGold, title: 'Explain the grammar', subtitle: 'Rules, in plain language', route: 'tutor' },
+  { icon: 'lesson', tint: () => '#0ea5e9', title: 'Make me a quick lesson', subtitle: 'A week built around your goal', route: '/plan' },
+  { icon: 'speak', tint: (t) => t.primary, title: 'Say it for me', subtitle: 'Translate & hear it in your dialect', route: '/translator' },
 ];
 
 export default function AskSalah() {
@@ -128,7 +128,7 @@ export default function AskSalah() {
             {CAPABILITIES.map((c) => (
               <AnimatedPressable
                 key={c.title}
-                onPress={openTutor}
+                onPress={() => (c.route === 'tutor' ? openTutor() : router.push(c.route as never))}
                 style={{ flexDirection: 'row', alignItems: 'center', gap: 14, backgroundColor: theme.surfaceElevated, borderRadius: 18, borderWidth: 1, borderColor: theme.border, padding: 14 }}
               >
                 <View style={{ width: 44, height: 44, borderRadius: 13, backgroundColor: `${c.tint(theme)}1f`, alignItems: 'center', justifyContent: 'center' }}>

@@ -30,6 +30,10 @@ function RootStack() {
         <Stack.Screen name="story/index" />
         <Stack.Screen name="story/[id]" options={{ presentation: 'fullScreenModal', animation: 'slide_from_bottom' }} />
         <Stack.Screen name="review" options={{ presentation: 'fullScreenModal', animation: 'slide_from_bottom' }} />
+        <Stack.Screen name="challenge" options={{ presentation: 'fullScreenModal', animation: 'slide_from_bottom' }} />
+        <Stack.Screen name="drill" options={{ presentation: 'fullScreenModal', animation: 'slide_from_bottom' }} />
+        <Stack.Screen name="translator" options={{ presentation: 'card', animation: 'slide_from_right' }} />
+        <Stack.Screen name="plan" options={{ presentation: 'card', animation: 'slide_from_right' }} />
         <Stack.Screen name="paywall" options={{ presentation: 'modal' }} />
         <Stack.Screen name="achievements" options={{ presentation: 'modal' }} />
         <Stack.Screen name="season-pass" options={{ presentation: 'modal' }} />

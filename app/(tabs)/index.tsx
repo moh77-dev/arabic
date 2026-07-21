@@ -164,13 +164,41 @@ export default function Home() {
             </View>
           </View>
 
-          {/* Interactive stories */}
+          {/* Keep exploring */}
           <View style={{ marginTop: 24 }}>
             <MonoLabel color={theme.textSecondary}>KEEP EXPLORING</MonoLabel>
             <View style={{ gap: 10, marginTop: 12 }}>
               <ActionRow
-                icon="souk"
+                icon="goal"
+                tint={theme.primary}
+                title="Your plan"
+                subtitle="This week's path, made for your goal"
+                onPress={() => router.push('/plan')}
+              />
+              <ActionRow
+                icon="trophy"
+                tint={theme.accentGold}
+                title="Dialect Challenge"
+                subtitle="Guess where each phrase is from"
+                onPress={() => router.push('/challenge')}
+              />
+              <ActionRow
+                icon="translate"
+                tint="#0ea5e9"
+                title="Translator"
+                subtitle="English to your dialect, with audio"
+                onPress={() => router.push('/translator')}
+              />
+              <ActionRow
+                icon="play"
                 tint="#7c3aed"
+                title="Watch & speak"
+                subtitle="Listen to a native speaker, then say it back"
+                onPress={() => router.push('/drill')}
+              />
+              <ActionRow
+                icon="souk"
+                tint="#e6890a"
                 title="Interactive stories"
                 subtitle="Branching scenes — order food, take a taxi, meet family"
                 onPress={() => router.push('/story')}
