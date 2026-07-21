@@ -62,6 +62,9 @@ export function generateExercisesForWords(words: VocabWord[], dialectVocabPool: 
           ...base,
           type,
           prompt: 'Listen and choose the correct translation.',
+          // No recorded native audio exists yet — the listening exercise speaks this via
+          // on-device TTS (see src/lib/speech.ts) rather than a silent, non-functional prompt.
+          promptArabic: word.arabic,
           audioUrl: word.audioUrl,
           options: seededShuffle([word.english, ...distractorsFor(word, dialectVocabPool, 3)], i + 13),
           correctAnswer: word.english,

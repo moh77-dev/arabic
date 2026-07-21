@@ -1,6 +1,6 @@
 import { Stack } from 'expo-router';
 import React from 'react';
-import { Alert, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import { AnimatedPressable } from '@/components/ui/AnimatedPressable';
 import { AVATAR_EMOJI } from '@/components/ui/Avatar';
 import { Card } from '@/components/ui/Card';
@@ -9,6 +9,7 @@ import { ScreenContainer } from '@/components/ui/ScreenContainer';
 import { useTheme } from '@/lib/ThemeProvider';
 import { streakFreezeCost } from '@/lib/gamificationMath';
 import { haptic } from '@/lib/haptics';
+import { notify } from '@/lib/platformAlert';
 import { useGamificationStore } from '@/stores/useGamificationStore';
 
 const AVATAR_SHOP: { id: string; cost: number; currency: 'coins' | 'diamonds' }[] = [
@@ -28,9 +29,9 @@ export default function Shop() {
     const ok = gami.buyStreakFreeze();
     if (ok) {
       haptic.success();
-      Alert.alert('Streak freeze purchased!', "You're now protected if you miss a day.");
+      notify('Streak freeze purchased!', "You're now protected if you miss a day.");
     } else {
-      Alert.alert('Not enough coins', `A streak freeze costs ${streakFreezeCost()} coins.`);
+      notify('Not enough coins', `A streak freeze costs ${streakFreezeCost()} coins.`);
     }
   };
 
@@ -45,7 +46,7 @@ export default function Shop() {
       gami.setActiveAvatar(id);
       haptic.success();
     } else {
-      Alert.alert('Not enough currency', `You need ${cost} ${currency} to unlock this avatar.`);
+      notify('Not enough currency', `You need ${cost} ${currency} to unlock this avatar.`);
     }
   };
 

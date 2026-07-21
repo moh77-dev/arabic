@@ -1,12 +1,13 @@
 import { router } from 'expo-router';
 import React, { useState } from 'react';
-import { Alert, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ExerciseRenderer } from './ExerciseRenderer';
 import { LessonResults } from './LessonResults';
 import { AnimatedPressable } from '@/components/ui/AnimatedPressable';
 import { useTheme } from '@/lib/ThemeProvider';
 import { lessonXpReward, coinsForLesson } from '@/lib/gamificationMath';
+import { confirmAsync } from '@/lib/platformAlert';
 import { useGamificationStore } from '@/stores/useGamificationStore';
 import { useLessonStore } from '@/stores/useLessonStore';
 import type { Lesson, SRSGrade } from '@/types';
@@ -33,11 +34,15 @@ export function LessonRunner({ lesson }: { lesson: Lesson }) {
   const total = lesson.exercises.length;
   const progress = answeredCount / total;
 
-  const handleExit = () => {
-    Alert.alert('Leave lesson?', "Your progress in this lesson won't be saved.", [
-      { text: 'Keep learning', style: 'cancel' },
-      { text: 'Leave', style: 'destructive', onPress: () => router.back() },
-    ]);
+  const handleExit = async () => {
+    const shouldLeave = await confirmAsync({
+      title: 'Leave lesson?',
+      message: "Your progress in this lesson won't be saved.",
+      confirmLabel: 'Leave',
+      cancelLabel: 'Keep learning',
+      destructive: true,
+    });
+    if (shouldLeave) router.back();
   };
 
   const advance = (wasCorrect: boolean) => {

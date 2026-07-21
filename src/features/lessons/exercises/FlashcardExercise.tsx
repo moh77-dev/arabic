@@ -4,6 +4,7 @@ import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-na
 import { AnimatedPressable } from '@/components/ui/AnimatedPressable';
 import { Button } from '@/components/ui/Button';
 import { useTheme } from '@/lib/ThemeProvider';
+import { speakArabic } from '@/lib/speech';
 import type { Exercise, SRSGrade } from '@/types';
 
 interface Props {
@@ -48,7 +49,12 @@ export function FlashcardExercise({ exercise, onGraded }: Props) {
         </View>
       </AnimatedPressable>
 
-      <Text style={{ color: theme.textSecondary, marginTop: 12, fontSize: 12 }}>Tap card to flip</Text>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 12 }}>
+        <Text style={{ color: theme.textSecondary, fontSize: 12 }}>Tap card to flip</Text>
+        <AnimatedPressable onPress={() => speakArabic(exercise.promptArabic)} withHaptic={false}>
+          <Text style={{ fontSize: 18 }}>🔊</Text>
+        </AnimatedPressable>
+      </View>
 
       {flipped && (
         <View style={{ flexDirection: 'row', gap: 8, marginTop: 20, width: '100%' }}>

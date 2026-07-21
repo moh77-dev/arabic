@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/Button';
 import { useTheme } from '@/lib/ThemeProvider';
 import { ai } from '@/lib/ai/client';
 import { haptic } from '@/lib/haptics';
+import { speakArabic } from '@/lib/speech';
 import type { Exercise, PronunciationResult } from '@/types';
 
 interface Props {
@@ -72,10 +73,18 @@ export function SpeakingExercise({ exercise, onAnswered }: Props) {
   return (
     <View style={{ alignItems: 'center' }}>
       {exercise.promptArabic && (
-        <Text style={{ fontSize: 34, textAlign: 'center', color: theme.textPrimary, marginBottom: 8, fontWeight: '700' }}>
-          {exercise.promptArabic}
-        </Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, marginBottom: 4 }}>
+          <Text style={{ fontSize: 34, textAlign: 'center', color: theme.textPrimary, fontWeight: '700' }}>
+            {exercise.promptArabic}
+          </Text>
+          <AnimatedPressable onPress={() => speakArabic(exercise.promptArabic)} withHaptic={false}>
+            <Text style={{ fontSize: 22 }}>🔊</Text>
+          </AnimatedPressable>
+        </View>
       )}
+      <Text style={{ fontSize: 13, color: theme.textSecondary, marginBottom: 8, textAlign: 'center' }}>
+        Tap 🔊 to hear it, then record yourself saying it.
+      </Text>
       <Text style={{ fontSize: 18, color: theme.textPrimary, marginBottom: 24, textAlign: 'center' }}>{exercise.prompt}</Text>
 
       {(state === 'idle' || state === 'recording') && (

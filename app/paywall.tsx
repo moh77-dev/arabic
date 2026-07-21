@@ -1,11 +1,12 @@
 import { router, Stack } from 'expo-router';
 import React, { useState } from 'react';
-import { Alert, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import { AnimatedPressable } from '@/components/ui/AnimatedPressable';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { ScreenContainer } from '@/components/ui/ScreenContainer';
 import { useTheme } from '@/lib/ThemeProvider';
+import { notify } from '@/lib/platformAlert';
 import { purchasePackage, restorePurchases, tierFromCustomerInfo } from '@/lib/purchases';
 import { useUserStore } from '@/stores/useUserStore';
 
@@ -36,11 +37,11 @@ export default function Paywall() {
       if (info) {
         const tier = tierFromCustomerInfo(info);
         setSubscription(tier, null);
-        Alert.alert('Welcome to Premium!', 'Unlimited AI, every dialect unlocked. Enjoy!');
+        notify('Welcome to Premium!', 'Unlimited AI, every dialect unlocked. Enjoy!');
         router.back();
       }
     } catch {
-      Alert.alert('Purchases unavailable', 'RevenueCat is not configured in this build yet. See .env.example.');
+      notify('Purchases unavailable', 'RevenueCat is not configured in this build yet. See .env.example.');
     } finally {
       setLoading(false);
     }
@@ -52,10 +53,10 @@ export default function Paywall() {
       const info = await restorePurchases();
       if (info) {
         setSubscription(tierFromCustomerInfo(info), null);
-        Alert.alert('Restored', 'Your purchases have been restored.');
+        notify('Restored', 'Your purchases have been restored.');
       }
     } catch {
-      Alert.alert('Nothing to restore', 'No RevenueCat purchases were found for this account.');
+      notify('Nothing to restore', 'No RevenueCat purchases were found for this account.');
     } finally {
       setLoading(false);
     }
