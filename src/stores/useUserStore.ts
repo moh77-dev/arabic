@@ -12,8 +12,11 @@ interface UserState {
   onboardingProfile: Partial<OnboardingProfile>;
   subscriptionTier: SubscriptionTier;
   subscriptionExpiresAt: string | null;
+  /** True when the user tapped "Try without an account" instead of signing in via Supabase. */
+  isGuest: boolean;
   setSession: (opts: { userId: string; email: string | null }) => void;
   clearSession: () => void;
+  continueAsGuest: () => void;
   setDisplayName: (name: string) => void;
   setAvatarUrl: (url: string) => void;
   updateOnboardingProfile: (patch: Partial<OnboardingProfile>) => void;
@@ -32,7 +35,8 @@ export const useUserStore = create<UserState>()(
       onboardingProfile: {},
       subscriptionTier: 'free',
       subscriptionExpiresAt: null,
-      setSession: ({ userId, email }) => set({ userId, email }),
+      isGuest: false,
+      setSession: ({ userId, email }) => set({ userId, email, isGuest: false }),
       clearSession: () =>
         set({
           userId: null,
@@ -41,7 +45,10 @@ export const useUserStore = create<UserState>()(
           avatarUrl: null,
           subscriptionTier: 'free',
           subscriptionExpiresAt: null,
+          isGuest: false,
         }),
+      continueAsGuest: () =>
+        set({ userId: 'guest-local', email: null, displayName: 'Guest', isGuest: true }),
       setDisplayName: (displayName) => set({ displayName }),
       setAvatarUrl: (avatarUrl) => set({ avatarUrl }),
       updateOnboardingProfile: (patch) =>

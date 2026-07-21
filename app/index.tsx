@@ -8,6 +8,7 @@ import { useUserStore } from '@/stores/useUserStore';
 export default function Index() {
   const { session, isLoading } = useAuth();
   const onboardingComplete = useUserStore((s) => s.onboardingComplete);
+  const isGuest = useUserStore((s) => s.isGuest);
   const theme = useTheme();
 
   if (isLoading) {
@@ -19,6 +20,6 @@ export default function Index() {
   }
 
   if (!onboardingComplete) return <Redirect href="/onboarding" />;
-  if (!session) return <Redirect href="/(auth)/sign-in" />;
+  if (!session && !isGuest) return <Redirect href="/(auth)/sign-in" />;
   return <Redirect href="/(tabs)" />;
 }

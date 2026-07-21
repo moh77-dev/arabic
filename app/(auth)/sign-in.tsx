@@ -2,11 +2,13 @@ import { Link, router } from 'expo-router';
 import React, { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Text, View } from 'react-native';
+import { AnimatedPressable } from '@/components/ui/AnimatedPressable';
 import { Button } from '@/components/ui/Button';
 import { ScreenContainer } from '@/components/ui/ScreenContainer';
 import { TextField } from '@/components/ui/TextField';
 import { useTheme } from '@/lib/ThemeProvider';
 import { supabase } from '@/lib/supabase';
+import { useUserStore } from '@/stores/useUserStore';
 
 interface FormData {
   email: string;
@@ -18,6 +20,12 @@ export default function SignIn() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const { control, handleSubmit } = useForm<FormData>({ defaultValues: { email: '', password: '' } });
+  const continueAsGuest = useUserStore((s) => s.continueAsGuest);
+
+  const tryAsGuest = () => {
+    continueAsGuest();
+    router.replace('/(tabs)');
+  };
 
   const onSubmit = async (data: FormData) => {
     setError(null);
@@ -69,6 +77,12 @@ export default function SignIn() {
             <Text style={{ color: theme.primary, fontWeight: '700' }}>Create an account</Text>
           </Link>
         </View>
+
+        <AnimatedPressable onPress={tryAsGuest} withHaptic={false} style={{ marginTop: 4 }}>
+          <Text style={{ color: theme.textSecondary, textAlign: 'center', textDecorationLine: 'underline' }}>
+            Try without an account
+          </Text>
+        </AnimatedPressable>
       </View>
     </ScreenContainer>
   );
