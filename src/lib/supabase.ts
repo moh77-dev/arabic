@@ -3,13 +3,31 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from '@/types/database';
 
-const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL as string;
-const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY as string;
+const rawUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
+const rawKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  // Fail loudly in dev rather than silently hitting `undefined.supabase.co`.
+// createClient() calls `new URL(supabaseUrl)` internally and throws synchronously if it's
+// missing or malformed — which would take down the entire app at module-load time (a blank
+// screen with no chance to render even an error boundary). Validate defensively and fall back
+// to a syntactically-valid placeholder so the app always finishes loading; Supabase calls will
+// simply fail at request time instead, which every call site already handles.
+function isValidUrl(value: string | undefined): value is string {
+  if (!value) return false;
+  try {
+    new URL(value);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+const supabaseUrl = isValidUrl(rawUrl) ? rawUrl : 'https://placeholder.supabase.co';
+const supabaseAnonKey = rawKey && rawKey.length > 0 ? rawKey : 'placeholder-anon-key';
+
+if (supabaseUrl === 'https://placeholder.supabase.co' || supabaseAnonKey === 'placeholder-anon-key') {
+  // Fail loudly in dev rather than silently hitting a fake project.
   console.warn(
-    '[lahja] Missing EXPO_PUBLIC_SUPABASE_URL / EXPO_PUBLIC_SUPABASE_ANON_KEY. Copy .env.example to .env.',
+    '[lahja] Missing or invalid EXPO_PUBLIC_SUPABASE_URL / EXPO_PUBLIC_SUPABASE_ANON_KEY — using a placeholder so the app can still load. Copy .env.example to .env (or set them in your host\'s environment variables) and redeploy.',
   );
 }
 
