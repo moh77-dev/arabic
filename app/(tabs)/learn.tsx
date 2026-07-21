@@ -1,10 +1,13 @@
+import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import React, { useMemo } from 'react';
 import { Text, View } from 'react-native';
 import { AnimatedPressable } from '@/components/ui/AnimatedPressable';
 import { DialectSwitcher } from '@/components/ui/DialectSwitcher';
+import { LandmarkSilhouette } from '@/components/ui/LandmarkSilhouette';
 import { ProgressRing } from '@/components/ui/ProgressRing';
 import { ScreenContainer } from '@/components/ui/ScreenContainer';
+import { getBackdrop } from '@/content/dialectBackdrops';
 import { DIALECTS } from '@/content/dialectMeta';
 import { getUnitsForDialect, LESSONS_BY_ID } from '@/content/lessonPaths';
 import { useTheme } from '@/lib/ThemeProvider';
@@ -17,27 +20,38 @@ export default function Learn() {
   const completedLessonIds = useLessonStore((s) => s.completedLessonIds);
 
   const units = useMemo(() => getUnitsForDialect(activeDialect), [activeDialect]);
+  const backdrop = getBackdrop(activeDialect);
 
   return (
-    <ScreenContainer gradient>
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-        <Text style={{ fontSize: 28 }}>{DIALECTS[activeDialect].flag}</Text>
-        <View style={{ flex: 1 }}>
-          <Text style={{ color: theme.textPrimary, fontSize: 24, fontWeight: '900', letterSpacing: -0.3 }}>
-            {DIALECTS[activeDialect].name}
-          </Text>
-          <Text style={{ color: theme.textSecondary, fontSize: 13 }}>Your learning path</Text>
-        </View>
+    <ScreenContainer gradient style={{ padding: 0 }}>
+      {/* Dialect-tinted banner with the region's landmark */}
+      <View style={{ borderRadius: 0, overflow: 'hidden' }}>
+        <LinearGradient colors={backdrop.heroGradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
+          <View style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: 90 }}>
+            <LandmarkSilhouette kind={backdrop.silhouette} color="#ffffff" opacity={0.14} height={90} />
+          </View>
+          <View style={{ paddingHorizontal: 20, paddingTop: 54, paddingBottom: 20 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+              <Text style={{ fontSize: 28 }}>{DIALECTS[activeDialect].flag}</Text>
+              <View style={{ flex: 1 }}>
+                <Text style={{ color: '#fff', fontSize: 24, fontWeight: '900', letterSpacing: -0.3 }}>
+                  {DIALECTS[activeDialect].name}
+                </Text>
+                <Text style={{ color: 'rgba(255,255,255,0.75)', fontSize: 13 }}>Your learning path</Text>
+              </View>
+            </View>
+          </View>
+        </LinearGradient>
       </View>
 
-      <View style={{ marginTop: 16 }}>
+      <View style={{ paddingHorizontal: 20, paddingTop: 16 }}>
         <DialectSwitcher />
+        <Text style={{ color: theme.textSecondary, fontSize: 11, marginTop: 6 }}>
+          Tip: hold a dialect chip to remove it from your list.
+        </Text>
       </View>
-      <Text style={{ color: theme.textSecondary, fontSize: 11, marginTop: 6 }}>
-        Tip: hold a dialect chip to remove it from your list.
-      </Text>
 
-      <View style={{ marginTop: 24, gap: 20 }}>
+      <View style={{ marginTop: 24, gap: 20, paddingHorizontal: 20 }}>
         {units.map((unit) => {
           const total = unit.lessonIds.length;
           const done = unit.lessonIds.filter((id) => completedLessonIds.includes(id)).length;
