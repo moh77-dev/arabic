@@ -1,0 +1,39 @@
+project_id = "lahja"
+
+[api]
+enabled = true
+port = 54321
+
+[db]
+port = 54322
+
+[studio]
+enabled = true
+port = 54323
+
+[auth]
+enabled = true
+site_url = "lahja://"
+additional_redirect_urls = ["lahja://"]
+jwt_expiry = 3600
+enable_signup = true
+
+[functions]
+[functions.ai-tutor]
+verify_jwt = true
+[functions.generate-lesson]
+verify_jwt = true
+[functions.generate-vocabulary]
+verify_jwt = true
+[functions.grammar-correction]
+verify_jwt = true
+[functions.transcribe-speech]
+verify_jwt = true
+[functions.text-to-speech]
+verify_jwt = true
+[functions.pronunciation-analysis]
+verify_jwt = true
+[functions.score-conversation]
+verify_jwt = true
+[functions.character-chat]
+verify_jwt = true

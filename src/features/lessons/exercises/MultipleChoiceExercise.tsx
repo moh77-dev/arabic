@@ -1,0 +1,72 @@
+import React, { useState } from 'react';
+import { Text, View } from 'react-native';
+import Animated, { useAnimatedStyle, useSharedValue, withSequence, withTiming } from 'react-native-reanimated';
+import { AnimatedPressable } from '@/components/ui/AnimatedPressable';
+import { useTheme } from '@/lib/ThemeProvider';
+import { haptic } from '@/lib/haptics';
+import type { Exercise } from '@/types';
+
+interface Props {
+  exercise: Exercise;
+  onAnswered: (correct: boolean) => void;
+}
+
+export function MultipleChoiceExercise({ exercise, onAnswered }: Props) {
+  const theme = useTheme();
+  const [selected, setSelected] = useState<string | null>(null);
+  const [revealed, setRevealed] = useState(false);
+  const shake = useSharedValue(0);
+
+  const shakeStyle = useAnimatedStyle(() => ({ transform: [{ translateX: shake.value }] }));
+
+  const handleSelect = (option: string) => {
+    if (revealed) return;
+    setSelected(option);
+    setRevealed(true);
+    const isCorrect = option === exercise.correctAnswer;
+    if (isCorrect) {
+      haptic.success();
+    } else {
+      haptic.error();
+      shake.value = withSequence(withTiming(-8, { duration: 50 }), withTiming(8, { duration: 50 }), withTiming(0, { duration: 50 }));
+    }
+    setTimeout(() => onAnswered(isCorrect), 700);
+  };
+
+  return (
+    <View>
+      {exercise.promptArabic && (
+        <Text style={{ fontSize: 34, textAlign: 'center', color: theme.textPrimary, marginBottom: 8, fontWeight: '700' }}>
+          {exercise.promptArabic}
+        </Text>
+      )}
+      <Text style={{ fontSize: 18, color: theme.textPrimary, marginBottom: 20, textAlign: 'center' }}>{exercise.prompt}</Text>
+      <View style={{ gap: 10 }}>
+        {exercise.options?.map((option) => {
+          const isSelected = selected === option;
+          const isCorrectOption = option === exercise.correctAnswer;
+          let bg = theme.surfaceElevated;
+          let border = theme.border;
+          if (revealed && isCorrectOption) {
+            bg = `${theme.primary}22`;
+            border = theme.primary;
+          } else if (revealed && isSelected && !isCorrectOption) {
+            bg = `${theme.danger}22`;
+            border = theme.danger;
+          }
+          return (
+            <Animated.View key={option} style={isSelected ? shakeStyle : undefined}>
+              <AnimatedPressable
+                onPress={() => handleSelect(option)}
+                disabled={revealed}
+                style={{ padding: 16, borderRadius: 14, borderWidth: 2, borderColor: border, backgroundColor: bg }}
+              >
+                <Text style={{ color: theme.textPrimary, fontWeight: '600', fontSize: 16 }}>{option}</Text>
+              </AnimatedPressable>
+            </Animated.View>
+          );
+        })}
+      </View>
+    </View>
+  );
+}

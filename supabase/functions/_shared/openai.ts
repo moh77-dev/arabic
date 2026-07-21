@@ -1,0 +1,83 @@
+const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
+const OPENAI_BASE_URL = 'https://api.openai.com/v1';
+
+if (!OPENAI_API_KEY) {
+  console.warn('[lahja-functions] OPENAI_API_KEY is not set — AI calls will fail until it is configured with `supabase secrets set`.');
+}
+
+async function openaiFetch(path: string, body: unknown) {
+  const res = await fetch(`${OPENAI_BASE_URL}${path}`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${OPENAI_API_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`OpenAI ${path} failed (${res.status}): ${text}`);
+  }
+  return res.json();
+}
+
+/** Chat completion returning raw text (used for grammar explanations, tutor chat, character chat). */
+export async function chatComplete(opts: {
+  system: string;
+  messages: { role: 'user' | 'assistant'; content: string }[];
+  temperature?: number;
+  jsonMode?: boolean;
+}): Promise<string> {
+  const data = await openaiFetch('/chat/completions', {
+    model: 'gpt-5.5',
+    temperature: opts.temperature ?? 0.7,
+    response_format: opts.jsonMode ? { type: 'json_object' } : undefined,
+    messages: [{ role: 'system', content: opts.system }, ...opts.messages],
+  });
+  return data.choices[0].message.content as string;
+}
+
+/** Structured JSON generation helper — asks the model to respond as strict JSON and parses it. */
+export async function chatCompleteJSON<T>(opts: { system: string; user: string; temperature?: number }): Promise<T> {
+  const text = await chatComplete({
+    system: `${opts.system}\n\nRespond with ONLY valid JSON, no markdown fences, no commentary.`,
+    messages: [{ role: 'user', content: opts.user }],
+    temperature: opts.temperature,
+    jsonMode: true,
+  });
+  return JSON.parse(text) as T;
+}
+
+/** Whisper speech-to-text transcription from a base64-encoded audio blob. */
+export async function transcribeAudio(audioBase64: string, mimeType = 'audio/m4a'): Promise<{ text: string }> {
+  const bytes = Uint8Array.from(atob(audioBase64), (c) => c.charCodeAt(0));
+  const form = new FormData();
+  form.append('file', new Blob([bytes], { type: mimeType }), 'audio.m4a');
+  form.append('model', 'whisper-1');
+
+  const res = await fetch(`${OPENAI_BASE_URL}/audio/transcriptions`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${OPENAI_API_KEY}` },
+    body: form,
+  });
+  if (!res.ok) throw new Error(`Whisper transcription failed (${res.status}): ${await res.text()}`);
+  return res.json();
+}
+
+/** OpenAI TTS — returns raw audio bytes as base64. */
+export async function textToSpeech(text: string, voice = 'alloy'): Promise<string> {
+  const res = await fetch(`${OPENAI_BASE_URL}/audio/speech`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${OPENAI_API_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ model: 'tts-1', voice, input: text, response_format: 'mp3' }),
+  });
+  if (!res.ok) throw new Error(`TTS failed (${res.status}): ${await res.text()}`);
+  const buffer = await res.arrayBuffer();
+  const bytes = new Uint8Array(buffer);
+  let binary = '';
+  for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+  return btoa(binary);
+}
