@@ -1,7 +1,27 @@
 import { DIALECTS } from './dialectMeta';
+import { ELOUED_GRAMMAR_NOTES } from './dialects';
 import { getVocabByDialect, getVocabByCategory } from './dialects';
-import { generateExercisesForWords } from './lessonGenerator';
+import { generateExercisesForWords, type GrammarNote } from './lessonGenerator';
 import type { DialectId, Lesson, Unit, VocabCategory } from '@/types';
+
+/**
+ * Which El Oued grammar note (if any) to teach inside a given category's lesson. Spreads the
+ * three flagship grammar notes across the tracks so learners meet the ق→g shift, ma-...-sh
+ * negation, and ntaε possession in context rather than all at once.
+ */
+const ELOUED_GRAMMAR_BY_CATEGORY: Partial<Record<VocabCategory, string>> = {
+  greetings: 'eloued_gram_qaf',
+  daily_life: 'eloued_gram_negation',
+  family: 'eloued_gram_possession',
+};
+
+function grammarNotesFor(dialectId: DialectId, category: VocabCategory): GrammarNote[] {
+  if (dialectId !== 'algerian_eloued') return [];
+  const noteId = ELOUED_GRAMMAR_BY_CATEGORY[category];
+  if (!noteId) return [];
+  const note = ELOUED_GRAMMAR_NOTES.find((n) => n.id === noteId);
+  return note ? [{ title: note.title, explanation: note.explanation, comparisons: note.comparisons as any }] : [];
+}
 
 const CATEGORY_LABEL: Partial<Record<VocabCategory, { title: string; titleArabic: string; icon: string }>> = {
   greetings: { title: 'Greetings', titleArabic: 'التّحايا', icon: '👋' },
@@ -26,14 +46,14 @@ function buildLessonsForCategories(dialectId: DialectId, categories: VocabCatego
       const words = getVocabByCategory(dialectId, cat);
       if (words.length === 0) return null;
       const label = CATEGORY_LABEL[cat] ?? { title: cat, titleArabic: cat, icon: '📘' };
-      const exercises = generateExercisesForWords(words, dialectVocab);
+      const exercises = generateExercisesForWords(words, dialectVocab, { grammarNotes: grammarNotesFor(dialectId, cat) });
       const lesson: Lesson = {
         id: `${unitId}_${cat}`,
         unitId,
         dialectId,
         title: label.title,
         titleArabic: label.titleArabic,
-        description: `Learn ${words.length} essential ${label.title.toLowerCase()} words and phrases.`,
+        description: `Learn and practice ${words.length} essential ${label.title.toLowerCase()} words and phrases.`,
         category: cat,
         exercises,
         xpReward: exercises.reduce((sum, e) => sum + e.xpReward, 0),

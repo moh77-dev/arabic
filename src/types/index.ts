@@ -43,6 +43,8 @@ export interface OnboardingProfile {
 }
 
 export type ExerciseType =
+  | 'teach'
+  | 'grammar_teach'
   | 'vocabulary'
   | 'listening'
   | 'pronunciation'
@@ -116,7 +118,12 @@ export interface Exercise {
   xpReward: number;
   dialectId: DialectId;
   relatedWordId?: string;
+  /** Payload for a `grammar_teach` card — a short concept explanation with cross-dialect notes. */
+  grammar?: { title: string; explanation: string; comparisons?: Partial<Record<DialectId, string>> };
 }
+
+/** Exercise types that teach rather than test — they don't count toward lesson accuracy or cost hearts. */
+export const TEACHING_EXERCISE_TYPES: ExerciseType[] = ['teach', 'grammar_teach'];
 
 export interface Lesson {
   id: string;

@@ -10,16 +10,18 @@ import { lessonXpReward, coinsForLesson } from '@/lib/gamificationMath';
 import { confirmAsync } from '@/lib/platformAlert';
 import { useGamificationStore } from '@/stores/useGamificationStore';
 import { useLessonStore } from '@/stores/useLessonStore';
-import type { Lesson, SRSGrade } from '@/types';
+import { TEACHING_EXERCISE_TYPES, type Lesson, type SRSGrade } from '@/types';
 
 const START_LIVES = 5;
+
+/** Teaching cards (new word / grammar) are read, not answered — they never cost hearts or count toward accuracy. */
+const isTeaching = (type: Lesson['exercises'][number]['type']) => TEACHING_EXERCISE_TYPES.includes(type);
 
 export function LessonRunner({ lesson }: { lesson: Lesson }) {
   const theme = useTheme();
   const [index, setIndex] = useState(0);
   const [lives, setLives] = useState(START_LIVES);
   const [correctCount, setCorrectCount] = useState(0);
-  const [answeredCount, setAnsweredCount] = useState(0);
   const [finished, setFinished] = useState(false);
   const [failedOut, setFailedOut] = useState(false);
 
@@ -32,7 +34,9 @@ export function LessonRunner({ lesson }: { lesson: Lesson }) {
 
   const exercise = lesson.exercises[index];
   const total = lesson.exercises.length;
-  const progress = answeredCount / total;
+  // Accuracy is measured only over graded exercises, so teaching cards don't dilute the score.
+  const gradedTotal = lesson.exercises.filter((e) => !isTeaching(e.type)).length || 1;
+  const progress = index / total;
 
   const handleExit = async () => {
     const shouldLeave = await confirmAsync({
@@ -45,10 +49,22 @@ export function LessonRunner({ lesson }: { lesson: Lesson }) {
     if (shouldLeave) router.back();
   };
 
+  const goNext = (newCorrect: number) => {
+    if (index + 1 >= total) {
+      completeLesson(newCorrect / gradedTotal);
+    } else {
+      setIndex((i) => i + 1);
+    }
+  };
+
   const advance = (wasCorrect: boolean) => {
-    const newAnswered = answeredCount + 1;
+    // Teaching cards are informational: just move on, no scoring, no hearts.
+    if (isTeaching(exercise.type)) {
+      goNext(correctCount);
+      return;
+    }
+
     const newCorrect = wasCorrect ? correctCount + 1 : correctCount;
-    setAnsweredCount(newAnswered);
     setCorrectCount(newCorrect);
 
     if (exercise.relatedWordId) {
@@ -69,11 +85,7 @@ export function LessonRunner({ lesson }: { lesson: Lesson }) {
       }
     }
 
-    if (index + 1 >= total) {
-      completeLesson(newCorrect / total);
-    } else {
-      setIndex((i) => i + 1);
-    }
+    goNext(newCorrect);
   };
 
   const handleFlashcardGraded = (grade: SRSGrade) => {
@@ -110,7 +122,7 @@ export function LessonRunner({ lesson }: { lesson: Lesson }) {
         </SafeAreaView>
       );
     }
-    const accuracy = correctCount / total;
+    const accuracy = correctCount / gradedTotal;
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
         <LessonResults

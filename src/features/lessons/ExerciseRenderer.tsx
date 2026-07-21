@@ -1,8 +1,10 @@
 import React from 'react';
 import { FlashcardExercise } from './exercises/FlashcardExercise';
+import { GrammarTeachExercise } from './exercises/GrammarTeachExercise';
 import { MultipleChoiceExercise } from './exercises/MultipleChoiceExercise';
 import { SpeakingExercise } from './exercises/SpeakingExercise';
 import { SpeedRoundExercise } from './exercises/SpeedRoundExercise';
+import { TeachExercise } from './exercises/TeachExercise';
 import { TypedAnswerExercise } from './exercises/TypedAnswerExercise';
 import { WordOrderExercise } from './exercises/WordOrderExercise';
 import type { Exercise, SRSGrade } from '@/types';
@@ -16,6 +18,10 @@ interface Props {
 /** Dispatches each exercise to the component that knows how to render/grade its type. */
 export function ExerciseRenderer({ exercise, onAnswered, onFlashcardGraded }: Props) {
   switch (exercise.type) {
+    case 'teach':
+      return <TeachExercise exercise={exercise} onDone={() => onAnswered(true)} />;
+    case 'grammar_teach':
+      return <GrammarTeachExercise exercise={exercise} onDone={() => onAnswered(true)} />;
     case 'vocabulary':
     case 'listening':
     case 'matching':
