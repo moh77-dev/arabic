@@ -1,15 +1,16 @@
 import { BlurView } from 'expo-blur';
 import { Tabs } from 'expo-router';
 import React from 'react';
-import { Platform, Text } from 'react-native';
+import { Platform } from 'react-native';
+import { Icon, type IconName } from '@/components/ui/Icon';
 import { useTheme } from '@/lib/ThemeProvider';
 
-const ICONS: Record<string, string> = {
-  index: '🏠',
-  learn: '📚',
-  practice: '🔁',
-  leaderboard: '🏆',
-  profile: '👤',
+const TAB_ICONS: Record<string, IconName> = {
+  index: 'home',
+  learn: 'learn',
+  streak: 'streak',
+  profile: 'profile',
+  settings: 'settings',
 };
 
 export default function TabsLayout() {
@@ -20,44 +21,41 @@ export default function TabsLayout() {
         headerShown: false,
         tabBarActiveTintColor: theme.primary,
         tabBarInactiveTintColor: theme.textSecondary,
-        tabBarShowLabel: true,
-        // Floating "liquid glass" pill: absolutely positioned with margin on all sides so the
-        // blurred background shows real content behind it, rounded like an iOS 26 glass surface.
         tabBarStyle: {
           position: 'absolute',
           left: 16,
           right: 16,
           bottom: 16,
-          height: 68,
-          borderRadius: 28,
+          height: 66,
+          borderRadius: 26,
           borderTopWidth: 0,
           backgroundColor: Platform.OS === 'android' ? theme.glassTint : 'transparent',
           overflow: 'hidden',
           elevation: 0,
-          shadowColor: '#0a0f1a',
-          shadowOpacity: 0.12,
-          shadowRadius: 20,
-          shadowOffset: { width: 0, height: 10 },
+          shadowColor: '#0f172a',
+          shadowOpacity: 0.16,
+          shadowRadius: 22,
+          shadowOffset: { width: 0, height: 12 },
         },
         tabBarBackground: () => (
           <BlurView
             intensity={theme.mode === 'dark' ? 50 : 70}
             tint={theme.mode === 'dark' ? 'dark' : 'light'}
-            style={{ flex: 1, borderRadius: 28, borderWidth: 1, borderColor: theme.glassBorder }}
+            style={{ flex: 1, borderRadius: 26, borderWidth: 1, borderColor: theme.glassBorder }}
           />
         ),
-        tabBarItemStyle: { paddingTop: 6 },
-        tabBarLabelStyle: { fontWeight: '700', fontSize: 10 },
-        tabBarIcon: ({ focused }) => (
-          <Text style={{ fontSize: 20, opacity: focused ? 1 : 0.5 }}>{ICONS[route.name]}</Text>
+        tabBarItemStyle: { paddingTop: 8 },
+        tabBarLabelStyle: { fontWeight: '800', fontSize: 9, letterSpacing: 0.2 },
+        tabBarIcon: ({ focused, color }) => (
+          <Icon name={TAB_ICONS[route.name] ?? 'home'} size={22} color={focused ? theme.primary : color} />
         ),
       })}
     >
       <Tabs.Screen name="index" options={{ title: 'Home' }} />
       <Tabs.Screen name="learn" options={{ title: 'Learn' }} />
-      <Tabs.Screen name="practice" options={{ title: 'Practice' }} />
-      <Tabs.Screen name="leaderboard" options={{ title: 'Ranks' }} />
+      <Tabs.Screen name="streak" options={{ title: 'Streak' }} />
       <Tabs.Screen name="profile" options={{ title: 'Profile' }} />
+      <Tabs.Screen name="settings" options={{ title: 'Settings' }} />
     </Tabs>
   );
 }

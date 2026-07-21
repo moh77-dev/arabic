@@ -13,7 +13,7 @@ import type { LandmarkKind } from './dialectBackdrops';
  *   cairo: require('../../assets/images/landmarks/cairo.jpg'),
  */
 export const LANDMARK_IMAGES: Partial<Record<LandmarkKind, ImageSourcePropType>> = {
-  // martyrs_memorial: require('../../assets/images/landmarks/martyrs_memorial.jpg'),
+  martyrs_memorial: require('../../assets/images/landmarks/martyrs_memorial.jpg'),
   // domes: require('../../assets/images/landmarks/domes.jpg'),
   // minaret: require('../../assets/images/landmarks/minaret.jpg'),
   // koutoubia: require('../../assets/images/landmarks/koutoubia.jpg'),

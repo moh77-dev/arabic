@@ -34,7 +34,6 @@ function RootStack() {
         <Stack.Screen name="achievements" options={{ presentation: 'modal' }} />
         <Stack.Screen name="season-pass" options={{ presentation: 'modal' }} />
         <Stack.Screen name="shop" options={{ presentation: 'modal' }} />
-        <Stack.Screen name="settings" options={{ presentation: 'modal' }} />
       </Stack>
     </>
   );
