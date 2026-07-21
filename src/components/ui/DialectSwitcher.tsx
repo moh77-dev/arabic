@@ -18,13 +18,15 @@ export function DialectSwitcher() {
   const unenrollDialect = useSettingsStore((s) => s.unenrollDialect);
   const [pickerOpen, setPickerOpen] = useState(false);
 
-  const available = DIALECT_LIST.filter((d) => !enrolled.includes(d.id));
+  // Guard against ids persisted by an older build that no longer exist in the catalog.
+  const validEnrolled = enrolled.filter((id) => DIALECTS[id]);
+  const available = DIALECT_LIST.filter((d) => !validEnrolled.includes(d.id));
 
   return (
     <View>
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         <View style={{ flexDirection: 'row', gap: 8, paddingRight: 8 }}>
-          {enrolled.map((id) => {
+          {validEnrolled.map((id) => {
             const meta = DIALECTS[id];
             const isActive = id === active;
             return (

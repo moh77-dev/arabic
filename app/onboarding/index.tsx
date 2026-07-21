@@ -10,8 +10,9 @@ import { ScreenContainer } from '@/components/ui/ScreenContainer';
 import { DIALECT_LIST } from '@/content/dialectMeta';
 import { useTheme } from '@/lib/ThemeProvider';
 import { scheduleDailyReminder } from '@/lib/notifications';
+import { useSettingsStore } from '@/stores/useSettingsStore';
 import { useUserStore } from '@/stores/useUserStore';
-import type { DifficultyLevel, LearningGoal, SpeechConfidence } from '@/types';
+import type { DialectId, DifficultyLevel, LearningGoal, SpeechConfidence } from '@/types';
 
 const LANGUAGES = ['English', 'French', 'Spanish', 'German', 'Turkish', 'Urdu', 'Other'];
 const GOALS: { id: LearningGoal; label: string; emoji: string }[] = [
@@ -54,6 +55,7 @@ export default function Onboarding() {
   const theme = useTheme();
   const updateOnboardingProfile = useUserStore((s) => s.updateOnboardingProfile);
   const completeOnboarding = useUserStore((s) => s.completeOnboarding);
+  const setActiveDialect = useSettingsStore((s) => s.setActiveDialect);
 
   const [stepIndex, setStepIndex] = useState(0);
   const step = STEP_ORDER[stepIndex];
@@ -104,6 +106,8 @@ export default function Onboarding() {
         reminderTime,
         speechConfidence: confidence!,
       });
+      // Make the dialect they picked the one they actually start learning.
+      if (dialect) setActiveDialect(dialect as DialectId);
       setStepIndex((i) => i + 1);
       scheduleDailyReminder(...(reminderTime.split(':').map(Number) as [number, number])).catch(() => {});
       setTimeout(() => {

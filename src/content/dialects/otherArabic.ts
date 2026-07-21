@@ -45,6 +45,52 @@ export const LEVANTINE_VOCAB = make('levantine', 'levantine', [
   { arabic: 'قديش؟', transliteration: 'addesh?', ipa: '/ad.deʃ/', english: 'How much?', category: 'market', difficulty: 1 },
 ]);
 
+export const PALESTINIAN_VOCAB = make('palestinian', 'palestinian', [
+  { arabic: 'كيفك؟', transliteration: 'kifak?', ipa: '/ki.fak/', english: 'How are you?', category: 'greetings', difficulty: 1 },
+  { arabic: 'منيح', transliteration: 'mnih', ipa: '/mniːħ/', english: 'Good / fine', category: 'daily_life', difficulty: 1 },
+  { arabic: 'يعطيك العافية', transliteration: 'yaʿtik el-ʿafye', ipa: '/jaʕ.tiːk el.ʕaː.fje/', english: 'Thank you (may God give you strength)', category: 'expressions', difficulty: 1 },
+  { arabic: 'قديش؟', transliteration: 'addesh?', ipa: '/ad.deʃ/', english: 'How much?', category: 'market', difficulty: 1 },
+  { arabic: 'زلمة', transliteration: 'zalameh', ipa: '/za.la.me/', english: 'Man / guy', category: 'slang', difficulty: 2 },
+  { arabic: 'على راسي', transliteration: 'ʿala rasi', ipa: '/ʕa.la raː.si/', english: '“On my head” — with pleasure / gladly', category: 'expressions', difficulty: 2 },
+  { arabic: 'يا زلمة', transliteration: 'ya zalameh', ipa: '/ja za.la.me/', english: 'Hey man! (friendly exclamation)', category: 'slang', difficulty: 1 },
+  { arabic: 'الزعتر', transliteration: 'ez-zaʿtar', ipa: '/ez.zaʕ.tar/', english: 'Zaʿtar (thyme blend, a Palestinian staple)', category: 'food', difficulty: 1 },
+]);
+
+export const LEBANESE_VOCAB = make('lebanese', 'lebanese', [
+  { arabic: 'كيفك؟', transliteration: 'kifak?', ipa: '/ki.fak/', english: 'How are you?', category: 'greetings', difficulty: 1 },
+  { arabic: 'كتير منيح', transliteration: 'ktir mnih', ipa: '/ktiːr mniːħ/', english: 'Very good', category: 'daily_life', difficulty: 1 },
+  { arabic: 'يعطيك', transliteration: 'yaʿtik', ipa: '/jaʕ.tiːk/', english: 'Thanks (short for yaʿtik el-ʿafye)', category: 'expressions', difficulty: 1 },
+  { arabic: 'حبيبي', transliteration: 'habibe', ipa: '/ħa.biː.be/', english: 'My dear (used constantly)', category: 'slang', difficulty: 1 },
+  { arabic: 'يلا', transliteration: 'yalla', ipa: '/jal.la/', english: "Come on / let's go", category: 'daily_life', difficulty: 1 },
+  { arabic: 'كيف الأحوال؟', transliteration: 'kif el-ahwal?', ipa: '/kiːf el.aħ.waːl/', english: 'How are things?', category: 'greetings', difficulty: 1 },
+]);
+
+export const SYRIAN_VOCAB = make('syrian', 'syrian', [
+  { arabic: 'كيفك؟', transliteration: 'kifak?', ipa: '/ki.fak/', english: 'How are you?', category: 'greetings', difficulty: 1 },
+  { arabic: 'منيح', transliteration: 'mnih', ipa: '/mniːħ/', english: 'Good', category: 'daily_life', difficulty: 1 },
+  { arabic: 'تكرم عينك', transliteration: 'tikram ʿaynak', ipa: '/tik.ram ʕaj.nak/', english: '“Honor to your eye” — sure, gladly', category: 'expressions', difficulty: 2 },
+  { arabic: 'شو عم تعمل؟', transliteration: 'shu ʿam taʿmel?', ipa: '/ʃu ʕam taʕ.mel/', english: 'What are you doing?', category: 'daily_life', difficulty: 2 },
+  { arabic: 'كتير', transliteration: 'ktir', ipa: '/ktiːr/', english: 'A lot / very', category: 'daily_life', difficulty: 1 },
+]);
+
+export const JORDANIAN_VOCAB = make('jordanian', 'jordanian', [
+  { arabic: 'كيفك؟', transliteration: 'kifak?', ipa: '/ki.fak/', english: 'How are you?', category: 'greetings', difficulty: 1 },
+  { arabic: 'تمام', transliteration: 'tamam', ipa: '/ta.maːm/', english: 'All good', category: 'daily_life', difficulty: 1 },
+  { arabic: 'يسلمو', transliteration: 'yislamo', ipa: '/jis.la.mo/', english: 'Thank you', category: 'expressions', difficulty: 1 },
+  { arabic: 'زلمة', transliteration: 'zalameh', ipa: '/za.la.me/', english: 'Man / guy', category: 'slang', difficulty: 2 },
+  { arabic: 'يا زلمة', transliteration: 'ya zalameh', ipa: '/ja za.la.me/', english: 'Hey man!', category: 'slang', difficulty: 1 },
+  { arabic: 'المنسف', transliteration: 'el-mansaf', ipa: '/el.man.saf/', english: 'Mansaf — the Jordanian national dish', category: 'food', difficulty: 1 },
+]);
+
+export const LIBYAN_VOCAB = make('libyan', 'libyan', [
+  { arabic: 'شن حالك؟', transliteration: 'shen halek?', ipa: '/ʃen ħaː.lek/', english: 'How are you?', category: 'greetings', difficulty: 1 },
+  { arabic: 'باهي', transliteration: 'bahi', ipa: '/baː.hi/', english: 'Good / okay', category: 'daily_life', difficulty: 1 },
+  { arabic: 'برشة', transliteration: 'barsha', ipa: '/bar.ʃa/', english: 'A lot (shared with Tunisian)', category: 'daily_life', difficulty: 1 },
+  { arabic: 'شنو؟', transliteration: 'shnu?', ipa: '/ʃnu/', english: 'What?', category: 'daily_life', difficulty: 1 },
+  { arabic: 'توا', transliteration: 'tawwa', ipa: '/taw.wa/', english: 'Now', category: 'time', difficulty: 1 },
+  { arabic: 'البازين', transliteration: 'el-bazin', ipa: '/el.baː.ziːn/', english: 'Bazin — a Libyan barley dish', category: 'food', difficulty: 2 },
+]);
+
 export const SAUDI_VOCAB = make('saudi', 'saudi', [
   { arabic: 'كيف حالك؟', transliteration: 'kaif halak?', ipa: '/kajf ħa.lak/', english: 'How are you?', category: 'greetings', difficulty: 1 },
   { arabic: 'زين', transliteration: 'zain', ipa: '/zajn/', english: 'Good', category: 'daily_life', difficulty: 1 },
@@ -77,8 +123,13 @@ export const OTHER_ARABIC_VOCAB: VocabWord[] = [
   ...MSA_VOCAB,
   ...MOROCCAN_VOCAB,
   ...TUNISIAN_VOCAB,
+  ...LIBYAN_VOCAB,
   ...EGYPTIAN_VOCAB,
   ...LEVANTINE_VOCAB,
+  ...PALESTINIAN_VOCAB,
+  ...LEBANESE_VOCAB,
+  ...SYRIAN_VOCAB,
+  ...JORDANIAN_VOCAB,
   ...SAUDI_VOCAB,
   ...GULF_VOCAB,
   ...IRAQI_VOCAB,

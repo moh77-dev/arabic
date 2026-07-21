@@ -40,7 +40,7 @@ export default function Home() {
   const { level, xpIntoLevel, xpForNextLevel } = levelFromTotalXp(gami.totalXp);
   const todayActivity = gami.getTodayActivity();
   const backdrop = getBackdrop(activeDialect);
-  const meta = DIALECTS[activeDialect];
+  const meta = DIALECTS[activeDialect] ?? DIALECTS.msa;
 
   const units = useMemo(() => getUnitsForDialect(activeDialect), [activeDialect]);
   const nextLesson = useMemo(() => {

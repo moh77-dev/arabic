@@ -181,6 +181,60 @@ function renderKind(kind: LandmarkKind, color: string): React.ReactNode {
           </G>
         </>
       );
+    case 'dome_of_rock':
+      // Jerusalem's Dome of the Rock: octagonal base + golden dome, flanked by a wall/minaret.
+      return (
+        <>
+          <Rect x={0} y={112} width={320} height={8} />
+          <Rect x={116} y={72} width={88} height={40} />
+          <Path d="M116,74 Q160,20 204,74 Z" />
+          <Line x1={160} y1={20} x2={160} y2={6} stroke={color} strokeWidth={2} />
+          <Circle cx={160} cy={6} r={3} />
+          <Rect x={60} y={88} width={16} height={24} />
+          <Rect x={246} y={84} width={16} height={28} />
+        </>
+      );
+    case 'cedar':
+      // The cedar of Lebanon: a broad layered evergreen on a low ridge.
+      return (
+        <>
+          <Rect x={0} y={112} width={320} height={8} />
+          <Rect x={154} y={92} width={12} height={20} />
+          <Path d="M110,96 Q160,84 210,96 Q188,90 210,80 Q170,86 160,66 Q150,86 110,80 Q132,90 110,96 Z" />
+          <Path d="M120,84 Q160,72 200,84 Q160,50 160,50 Q160,50 120,84 Z" />
+          <Path d="M134,68 Q160,58 186,68 Q160,38 160,38 Q160,38 134,68 Z" />
+        </>
+      );
+    case 'petra':
+      // Petra's Treasury (Al-Khazneh) façade carved into the rock: columns + pediment + tholos.
+      return (
+        <>
+          <Rect x={0} y={112} width={320} height={8} />
+          <Rect x={120} y={40} width={80} height={72} />
+          <Polygon points="118,40 160,14 202,40" />
+          <Rect x={150} y={22} width={20} height={26} />
+          <Path d="M150,24 Q160,14 170,24 Z" />
+          <G opacity={0.55}>
+            <Rect x={128} y={54} width={7} height={58} />
+            <Rect x={144} y={54} width={7} height={58} />
+            <Rect x={169} y={54} width={7} height={58} />
+            <Rect x={185} y={54} width={7} height={58} />
+          </G>
+        </>
+      );
+    case 'roman_arch':
+      // The Arch of Marcus Aurelius, Tripoli: two piers, an entablature, and a low dome — drawn as
+      // solid parts around an open archway (the gap between the piers reads as the arch).
+      return (
+        <>
+          <Rect x={0} y={112} width={320} height={8} />
+          <Rect x={122} y={54} width={20} height={58} />
+          <Rect x={178} y={54} width={20} height={58} />
+          <Path d="M122,64 Q160,30 198,64 L198,54 Q160,24 122,54 Z" />
+          <Rect x={116} y={40} width={88} height={16} />
+          <Path d="M140,40 Q160,20 180,40 Z" />
+        </>
+      );
     case 'minaret':
     default:
       // Generic grand mosque: central dome flanked by a minaret.

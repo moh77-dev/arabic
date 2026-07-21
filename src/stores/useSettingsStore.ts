@@ -75,6 +75,31 @@ export const useSettingsStore = create<SettingsState>()(
       removeDownloadedLesson: (id) =>
         set((s) => ({ offlineDownloadedLessonIds: s.offlineDownloadedLessonIds.filter((x) => x !== id) })),
     }),
-    { name: 'lahja-settings', storage: createJSONStorage(() => zustandMMKVStorage) },
+    {
+      name: 'lahja-settings',
+      storage: createJSONStorage(() => zustandMMKVStorage),
+      version: 1,
+      // The Oran/Constantine/Annaba/Tlemcen/Kabyle Algerian dialects were retired; anyone who had
+      // one enrolled from an older build gets it remapped to Algiers so nothing dangles.
+      migrate: (persisted: any, _version) => {
+        if (!persisted) return persisted;
+        const RETIRED: Record<string, DialectId> = {
+          algerian_oran: 'algerian_algiers',
+          algerian_constantine: 'algerian_algiers',
+          algerian_annaba: 'algerian_algiers',
+          algerian_tlemcen: 'algerian_algiers',
+          algerian_kabyle: 'algerian_algiers',
+        };
+        const remap = (id: string): DialectId => RETIRED[id] ?? (id as DialectId);
+        const enrolled: DialectId[] = Array.isArray(persisted.enrolledDialects)
+          ? Array.from(new Set(persisted.enrolledDialects.map(remap)))
+          : ['algerian_eloued'];
+        return {
+          ...persisted,
+          activeDialect: remap(persisted.activeDialect ?? 'algerian_eloued'),
+          enrolledDialects: enrolled.length > 0 ? enrolled : ['algerian_eloued'],
+        };
+      },
+    },
   ),
 );
