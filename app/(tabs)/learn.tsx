@@ -10,6 +10,9 @@ import { getBackdrop } from '@/content/dialectBackdrops';
 import { DIALECTS } from '@/content/dialectMeta';
 import { getUnitsForDialect, LESSONS_BY_ID } from '@/content/lessonPaths';
 import { useTheme } from '@/lib/ThemeProvider';
+import { haptic } from '@/lib/haptics';
+import { notify } from '@/lib/platformAlert';
+import { useGamificationStore } from '@/stores/useGamificationStore';
 import { useLessonStore } from '@/stores/useLessonStore';
 import { useSettingsStore } from '@/stores/useSettingsStore';
 
@@ -21,6 +24,8 @@ export default function Learn() {
   const insets = useSafeAreaInsets();
   const activeDialect = useSettingsStore((s) => s.activeDialect);
   const completedLessonIds = useLessonStore((s) => s.completedLessonIds);
+  const claimedUnitRewards = useGamificationStore((s) => s.claimedUnitRewards);
+  const claimUnitReward = useGamificationStore((s) => s.claimUnitReward);
 
   const units = useMemo(() => getUnitsForDialect(activeDialect), [activeDialect]);
   const backdrop = getBackdrop(activeDialect);
@@ -88,7 +93,18 @@ export default function Learn() {
                   })}
 
                   {/* Unit reward chest */}
-                  <RewardNode theme={theme} unlocked={unitComplete} offset={WAVE[step++ % WAVE.length]} />
+                  <RewardNode
+                    theme={theme}
+                    unlocked={unitComplete}
+                    claimed={claimedUnitRewards.includes(unit.id)}
+                    onClaim={() => {
+                      if (claimUnitReward(unit.id)) {
+                        haptic.success();
+                        notify('Chest opened! 🎉', '+50 coins and +3 gems added to your balance.');
+                      }
+                    }}
+                    offset={WAVE[step++ % WAVE.length]}
+                  />
                 </View>
               </View>
             );
@@ -239,10 +255,26 @@ function PathNode({
   );
 }
 
-function RewardNode({ theme, unlocked, offset }: { theme: ReturnType<typeof useTheme>; unlocked: boolean; offset: number }) {
+function RewardNode({
+  theme,
+  unlocked,
+  claimed,
+  onClaim,
+  offset,
+}: {
+  theme: ReturnType<typeof useTheme>;
+  unlocked: boolean;
+  claimed: boolean;
+  onClaim: () => void;
+  offset: number;
+}) {
+  const claimable = unlocked && !claimed;
   return (
     <View style={{ transform: [{ translateX: offset }], alignItems: 'center', marginTop: 4 }}>
-      <View
+      <AnimatedPressable
+        onPress={claimable ? onClaim : undefined}
+        disabled={!claimable}
+        withHaptic={claimable}
         style={{
           width: 66,
           height: 66,
@@ -252,15 +284,18 @@ function RewardNode({ theme, unlocked, offset }: { theme: ReturnType<typeof useT
           alignItems: 'center',
           justifyContent: 'center',
           backgroundColor: unlocked ? '#f0a80e' : theme.mode === 'dark' ? '#2a2f3a' : '#dfe5e2',
-          shadowColor: unlocked ? '#c98a08' : '#00000000',
-          shadowOpacity: unlocked ? 0.5 : 0,
-          shadowRadius: 10,
+          shadowColor: claimable ? '#c98a08' : '#00000000',
+          shadowOpacity: claimable ? 0.6 : 0,
+          shadowRadius: 12,
           shadowOffset: { width: 0, height: 8 },
+          opacity: claimed ? 0.7 : 1,
         }}
       >
-        <Icon name="gift" size={28} color={unlocked ? '#7a5300' : theme.textSecondary} />
-      </View>
-      <Text style={{ color: unlocked ? '#9a7521' : theme.textSecondary, fontWeight: '800', fontSize: 12, marginTop: 8 }}>Unit reward</Text>
+        <Icon name={claimed ? 'check' : 'gift'} size={28} color={unlocked ? '#7a5300' : theme.textSecondary} />
+      </AnimatedPressable>
+      <Text style={{ color: claimable ? '#c98a08' : unlocked ? '#9a7521' : theme.textSecondary, fontWeight: '800', fontSize: 12, marginTop: 8 }}>
+        {claimed ? 'Claimed' : claimable ? 'Tap to claim!' : 'Unit reward'}
+      </Text>
     </View>
   );
 }
