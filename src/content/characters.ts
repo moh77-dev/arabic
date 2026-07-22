@@ -322,9 +322,10 @@ function generateCharactersForDialect(dialectId: DialectId): AIConversationChara
       avatar: t.avatar,
       dialectId,
       personality: t.personality,
-      voiceId: `${dialectId}_generic`,
       difficulty: t.difficulty,
       conversationGoals: t.goals,
+      // Encode gender + a rough age so text-to-speech can pick a distinct voice per character.
+      voiceId: `${dialectId}_${t.gender === 'f' ? 'female' : 'male'}_${t.key === 'grandmother' ? 'elder' : 'adult'}`,
       systemPromptSeed: t.seed(name, meta.name, meta.region),
       isPremium: t.isPremium,
     };
@@ -363,7 +364,7 @@ export function getAnisCharacter(dialectId: DialectId): AIConversationCharacter 
     avatar: '🧑‍🏫',
     dialectId,
     personality: 'Warm, patient AI tutor who explains simply, gives short examples, and keeps you motivated.',
-    voiceId: `${dialectId}_generic`,
+    voiceId: 'anis_male_adult',
     difficulty: 1,
     conversationGoals: ['Ask how to say something', 'Practice a phrase', 'Ask Anis to explain a rule'],
     systemPromptSeed:

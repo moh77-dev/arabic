@@ -59,7 +59,7 @@ export default function ConversationChat() {
   // Speak a reply with the AI voice if a TTS provider is configured, else the free browser voice.
   const voiceReply = (text?: string) => {
     if (!text || text === '...') return;
-    void speakReply(text, () => ai.textToSpeech({ text, dialectId: character!.dialectId }));
+    void speakReply(text, () => ai.textToSpeech({ text, dialectId: character!.dialectId, voiceKey: character!.voiceId }));
   };
 
   const sendText = async (text: string) => {

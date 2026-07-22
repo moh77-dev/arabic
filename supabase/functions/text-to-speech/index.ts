@@ -8,21 +8,58 @@ import { handleOptions, jsonResponse } from '../_shared/cors.ts';
 //   ElevenLabs (free tier):  TTS_PROVIDER=elevenlabs + ELEVENLABS_API_KEY=...  (best Arabic voices)
 //   OpenAI:                  TTS_API_KEY=sk-... (falls back to OPENAI_API_KEY) + optional TTS_MODEL
 //   Other OpenAI-compatible: also set TTS_BASE_URL=https://.../v1
+//
+// MULTIPLE VOICES: the app sends `voiceKey` (a character's voiceId, e.g. "eloued_female_elder").
+// Each gender+age slot resolves to a voice, with per-slot env overrides so you can assign your own:
+//   ELEVENLABS_VOICE_FEMALE_ELDER, ELEVENLABS_VOICE_MALE_YOUNG, ELEVENLABS_VOICE_MALE, ... and
+//   ELEVENLABS_VOICE_ID as a global fallback. Same pattern for OpenAI via OPENAI_VOICE_* if desired.
 const TTS_PROVIDER = (Deno.env.get('TTS_PROVIDER') ?? 'openai').toLowerCase();
 const TTS_API_KEY = Deno.env.get('TTS_API_KEY') ?? Deno.env.get('OPENAI_API_KEY') ?? '';
 const TTS_BASE_URL = Deno.env.get('TTS_BASE_URL') ?? 'https://api.openai.com/v1';
 const TTS_MODEL = Deno.env.get('TTS_MODEL') ?? 'tts-1';
 const ELEVENLABS_API_KEY = Deno.env.get('ELEVENLABS_API_KEY') ?? '';
-// Defaults to "Rachel" (a stock multilingual voice). Override with your own via ELEVENLABS_VOICE_ID.
-const ELEVENLABS_VOICE_ID = Deno.env.get('ELEVENLABS_VOICE_ID') ?? '21m00Tcm4TlvDq8ikWAM';
 const ELEVENLABS_MODEL = Deno.env.get('ELEVENLABS_MODEL') ?? 'eleven_multilingual_v2';
 
-// OpenAI's stock voices aren't dialect-specific, so this is a best-effort mapping for that provider.
-const OPENAI_VOICE_MAP: Record<string, string> = {
-  algerian_eloued: 'onyx',
-  algerian_algiers: 'echo',
-  msa: 'alloy',
+// Classify a character's voiceId into a gender + age bucket.
+function classify(voiceKey?: string): { gender: 'male' | 'female'; age: 'young' | 'adult' | 'elder' } {
+  const k = (voiceKey ?? '').toLowerCase();
+  const gender = k.includes('female') ? 'female' : 'male';
+  const age = k.includes('elder') ? 'elder' : k.includes('young') ? 'young' : 'adult';
+  return { gender, age };
+}
+
+// Built-in ElevenLabs premade voice ids (stable, multilingual) so multiple voices work out of the box.
+const ELEVEN_DEFAULTS: Record<string, string> = {
+  female_young: 'MF3mGyEYCl7XYWbV9V6O', // Elli
+  female_adult: '21m00Tcm4TlvDq8ikWAM', // Rachel
+  female_elder: 'AZnzlk1XvdvUeBnXmlld', // Domi
+  male_young: 'TxGEqnHWrfWFTfGW9XjX', // Josh
+  male_adult: 'ErXwobaYiN019PkySvjV', // Antoni
+  male_elder: 'VR6AewLTigWG4xSOukaG', // Arnold
 };
+
+function elevenVoiceFor(voiceKey?: string): string {
+  const { gender, age } = classify(voiceKey);
+  const G = gender.toUpperCase();
+  const A = age.toUpperCase();
+  return (
+    Deno.env.get(`ELEVENLABS_VOICE_${G}_${A}`) ??
+    Deno.env.get(`ELEVENLABS_VOICE_${G}`) ??
+    Deno.env.get('ELEVENLABS_VOICE_ID') ??
+    ELEVEN_DEFAULTS[`${gender}_${age}`] ??
+    ELEVEN_DEFAULTS.female_adult
+  );
+}
+
+// OpenAI stock voices by gender/age (best-effort; stock voices aren't dialect- or age-specific).
+function openaiVoiceFor(voiceKey?: string, dialectId?: string, explicit?: string): string {
+  if (explicit) return explicit;
+  const { gender, age } = classify(voiceKey);
+  const override = Deno.env.get(`OPENAI_VOICE_${gender.toUpperCase()}_${age.toUpperCase()}`);
+  if (override) return override;
+  if (gender === 'female') return age === 'young' ? 'nova' : age === 'elder' ? 'shimmer' : 'nova';
+  return age === 'young' ? 'fable' : age === 'elder' ? 'onyx' : 'echo';
+}
 
 function toBase64(buffer: ArrayBuffer): string {
   const bytes = new Uint8Array(buffer);
@@ -41,8 +78,8 @@ async function openaiSpeech(text: string, voice: string): Promise<string> {
   return toBase64(await res.arrayBuffer());
 }
 
-async function elevenLabsSpeech(text: string): Promise<string> {
-  const res = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${ELEVENLABS_VOICE_ID}`, {
+async function elevenLabsSpeech(text: string, voiceId: string): Promise<string> {
+  const res = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
     method: 'POST',
     headers: { 'xi-api-key': ELEVENLABS_API_KEY, 'Content-Type': 'application/json', Accept: 'audio/mpeg' },
     body: JSON.stringify({ text, model_id: ELEVENLABS_MODEL }),
@@ -56,16 +93,16 @@ Deno.serve(async (req) => {
   if (preflight) return preflight;
 
   try {
-    const { text, dialectId, voice } = await req.json();
+    const { text, dialectId, voiceKey, voice } = await req.json();
     if (!text) return jsonResponse({ error: 'No text provided' }, 400);
 
     let audioBase64: string;
     if (TTS_PROVIDER === 'elevenlabs') {
       if (!ELEVENLABS_API_KEY) return jsonResponse({ error: 'ELEVENLABS_API_KEY is not set — add it or use TTS_PROVIDER=openai.' }, 400);
-      audioBase64 = await elevenLabsSpeech(text);
+      audioBase64 = await elevenLabsSpeech(text, elevenVoiceFor(voiceKey));
     } else {
       if (!TTS_API_KEY) return jsonResponse({ error: 'No TTS key set (TTS_API_KEY / OPENAI_API_KEY).' }, 400);
-      audioBase64 = await openaiSpeech(text, voice ?? OPENAI_VOICE_MAP[dialectId] ?? 'alloy');
+      audioBase64 = await openaiSpeech(text, openaiVoiceFor(voiceKey, dialectId, voice));
     }
     return jsonResponse({ audioBase64, mimeType: 'audio/mpeg' });
   } catch (error) {

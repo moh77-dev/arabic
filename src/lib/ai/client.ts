@@ -46,8 +46,9 @@ export const ai = {
   transcribeSpeech: (opts: { audioBase64: string; dialectId: DialectId; expectedText?: string }) =>
     invoke<{ transcript: string; confidence: number }>('transcribe-speech', opts),
 
-  /** OpenAI TTS for native-accent playback of a phrase. */
-  textToSpeech: (opts: { text: string; dialectId: DialectId; voice?: string }) =>
+  /** Text-to-speech playback. `voiceKey` (e.g. a character's voiceId) lets the backend pick a
+   *  distinct voice per character by gender/age; `voice` forces a specific provider voice name. */
+  textToSpeech: (opts: { text: string; dialectId: DialectId; voiceKey?: string; voice?: string }) =>
     invoke<{ audioBase64: string; mimeType: string }>('text-to-speech', opts),
 
   analyzePronunciation: (opts: { audioBase64: string; targetText: string; targetTransliteration: string; dialectId: DialectId }) =>
