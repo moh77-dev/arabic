@@ -53,8 +53,15 @@ export default function StreakAndRanks() {
   // Merge the local "You" row into the global league board, sort, and assign ranks.
   const board = useMemo(() => {
     const rows = [
-      { userId: 'me', displayName, avatar: gami.activeAvatar, weeklyXp: gami.weeklyXp, isMe: true },
-      ...leaderboard.map((e) => ({ userId: e.userId, displayName: e.displayName, avatar: e.avatar, weeklyXp: e.weeklyXp, isMe: false })),
+      { userId: 'me', displayName, avatar: gami.activeAvatar, weeklyXp: gami.weeklyXp, isMe: true, isRival: false },
+      ...leaderboard.map((e) => ({
+        userId: e.userId,
+        displayName: e.displayName,
+        avatar: e.avatar,
+        weeklyXp: e.weeklyXp,
+        isMe: false,
+        isRival: e.userId.startsWith('rival_'),
+      })),
     ];
     return rows
       .sort((a, b) => b.weeklyXp - a.weeklyXp)
@@ -62,6 +69,7 @@ export default function StreakAndRanks() {
   }, [leaderboard, displayName, gami.activeAvatar, gami.weeklyXp]);
 
   const myRank = board.find((r) => r.isMe)?.rank ?? 0;
+  const hasRivals = board.some((r) => r.isRival);
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.background }}>
@@ -152,15 +160,28 @@ export default function StreakAndRanks() {
                     {row.rank}
                   </Text>
                   <Avatar id={row.avatar} size={34} ring={row.isMe} />
-                  <Text style={{ flex: 1, color: row.isMe ? theme.primary : theme.textPrimary, fontWeight: row.isMe ? '800' : '600' }} numberOfLines={1}>
-                    {row.isMe ? 'You' : row.displayName}
-                  </Text>
+                  <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 7 }}>
+                    <Text style={{ color: row.isMe ? theme.primary : theme.textPrimary, fontWeight: row.isMe ? '800' : '600' }} numberOfLines={1}>
+                      {row.isMe ? 'You' : row.displayName}
+                    </Text>
+                    {row.isRival && (
+                      <Text style={{ color: theme.textSecondary, fontSize: 10, fontWeight: '700', backgroundColor: theme.surface, borderRadius: 6, paddingHorizontal: 5, paddingVertical: 1, overflow: 'hidden' }}>
+                        practice
+                      </Text>
+                    )}
+                  </View>
                   <Text style={{ color: row.isMe ? theme.primary : theme.textSecondary, fontWeight: '700' }}>{row.weeklyXp} XP</Text>
                 </View>
               </React.Fragment>
             );
           })}
         </View>
+
+        {hasRivals && (
+          <Text style={{ color: theme.textSecondary, fontSize: 12, marginTop: 10, textAlign: 'center' }}>
+            Practice rivals fill empty seats until more learners join your league.
+          </Text>
+        )}
       </ScrollView>
     </View>
   );

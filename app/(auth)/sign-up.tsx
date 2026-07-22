@@ -19,6 +19,7 @@ interface FormData {
 export default function SignUp() {
   const theme = useTheme();
   const [error, setError] = useState<string | null>(null);
+  const [info, setInfo] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const { control, handleSubmit } = useForm<FormData>({ defaultValues: { displayName: '', email: '', password: '' } });
   const continueAsGuest = useUserStore((s) => s.continueAsGuest);
@@ -30,8 +31,9 @@ export default function SignUp() {
 
   const onSubmit = async (data: FormData) => {
     setError(null);
+    setInfo(null);
     setLoading(true);
-    const { error: signUpError } = await supabase.auth.signUp({
+    const { data: result, error: signUpError } = await supabase.auth.signUp({
       email: data.email,
       password: data.password,
       options: { data: { display_name: data.displayName } },
@@ -39,6 +41,12 @@ export default function SignUp() {
     setLoading(false);
     if (signUpError) {
       setError(signUpError.message);
+      return;
+    }
+    // If email confirmation is enabled on the project, signUp returns no session and the account
+    // can't be used until the link is clicked. Say so clearly instead of silently sending them in.
+    if (!result.session) {
+      setInfo('Account created! Check your email for a confirmation link, then come back and sign in.');
       return;
     }
     router.replace('/(tabs)');
@@ -79,6 +87,11 @@ export default function SignUp() {
         />
 
         {error ? <Text style={{ color: theme.danger }}>{error}</Text> : null}
+        {info ? (
+          <View style={{ backgroundColor: `${theme.primary}14`, borderRadius: 12, padding: 12 }}>
+            <Text style={{ color: theme.primary, fontWeight: '600' }}>{info}</Text>
+          </View>
+        ) : null}
 
         <Button label="Create Account" onPress={handleSubmit(onSubmit)} loading={loading} />
 

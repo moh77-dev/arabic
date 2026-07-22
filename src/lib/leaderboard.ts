@@ -8,10 +8,9 @@ import type { League, LeaderboardEntry } from '@/types';
  * league is never empty. The caller merges in the local "You" row and assigns final ranks.
  */
 
-const RIVAL_NAMES = [
-  'Yacine', 'Fatiha', 'Bilal', 'Salma', 'Mourad', 'Rania', 'Hamza',
-  'Amine', 'Nour', 'Karim', 'Yasmine', 'Sofiane', 'Lina', 'Zohra', 'Sami',
-];
+// A small set of placeholder rivals so a brand-new league isn't a lonely list of one. Real
+// players always sort in alongside them and push them down as the community grows.
+const RIVAL_NAMES = ['Yacine', 'Amina', 'Karim', 'Salma'];
 const AVATARS = ['default_1', 'default_2', 'camel', 'falcon', 'oasis', 'crescent', 'tea', 'desert_fox'];
 
 // Roughly where each league's weekly XP sits, so fallback rivals look league-appropriate.
@@ -48,6 +47,16 @@ function fallbackRivals(league: League): LeaderboardEntry[] {
   });
 }
 
+// A league feels dead below this many people, so we pad with labelled practice rivals up to here.
+const MIN_BOARD = 5;
+
+/** Pads a list of real players with practice rivals (keeping the real ones) up to MIN_BOARD. */
+function padWithRivals(real: LeaderboardEntry[], league: League): LeaderboardEntry[] {
+  if (real.length >= MIN_BOARD) return real;
+  const rivals = fallbackRivals(league).slice(0, MIN_BOARD - real.length);
+  return [...real, ...rivals];
+}
+
 export async function fetchLeaderboard(league: League): Promise<LeaderboardEntry[]> {
   try {
     // Cast: the RPC isn't in the generated Database types (added in migration 0004).
@@ -57,19 +66,20 @@ export async function fetchLeaderboard(league: League): Promise<LeaderboardEntry
     ) => Promise<{ data: unknown; error: unknown }>;
     const { data, error } = await rpc('get_weekly_leaderboard', { p_league: league, p_limit: 30 });
     if (error) throw error;
-    if (Array.isArray(data) && data.length > 0) {
-      return data.map((r: { display_name?: string; avatar?: string; weekly_xp?: number; league?: string }, i: number) => ({
-        userId: `lb_${league}_${i}`,
-        displayName: r.display_name ?? 'Learner',
-        avatar: r.avatar ?? 'default_1',
-        weeklyXp: r.weekly_xp ?? 0,
-        league: (r.league as League) ?? league,
-        rank: 0,
-      }));
-    }
-    // RPC reachable but nothing seeded yet — keep the UI populated.
-    return fallbackRivals(league);
+    const real: LeaderboardEntry[] = Array.isArray(data)
+      ? data.map((r: { display_name?: string; avatar?: string; weekly_xp?: number; league?: string }, i: number) => ({
+          userId: `lb_${league}_${i}`,
+          displayName: r.display_name ?? 'Learner',
+          avatar: r.avatar ?? 'default_1',
+          weeklyXp: r.weekly_xp ?? 0,
+          league: (r.league as League) ?? league,
+          rank: 0,
+        }))
+      : [];
+    // Real players always show; practice rivals only fill remaining empty seats.
+    return padWithRivals(real, league);
   } catch {
+    // Backend unreachable (or migration not applied yet) — show labelled practice rivals.
     return fallbackRivals(league);
   }
 }
