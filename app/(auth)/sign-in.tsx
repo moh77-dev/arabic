@@ -35,10 +35,8 @@ export default function SignIn() {
     if (signInError) {
       // Map Supabase's terse auth errors to something a learner can act on.
       const msg = signInError.message.toLowerCase();
-      if (msg.includes('email not confirmed')) {
-        setError('Your email isn’t confirmed yet — check your inbox for the confirmation link, then try again.');
-      } else if (msg.includes('invalid login credentials')) {
-        setError('Wrong email or password. If you just signed up, you may need to confirm your email first (check your inbox).');
+      if (msg.includes('invalid login credentials')) {
+        setError('Wrong email or password. Give it another try.');
       } else {
         setError(signInError.message);
       }
