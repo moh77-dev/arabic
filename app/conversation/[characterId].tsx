@@ -1,3 +1,5 @@
+import { Audio } from 'expo-av';
+import * as FileSystem from 'expo-file-system';
 import { useLocalSearchParams, router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { FlatList, KeyboardAvoidingView, Platform, Text, View } from 'react-native';
@@ -9,7 +11,7 @@ import { ANIS_CHARACTER_ID, findCharacter, getAnisCharacter } from '@/content/ch
 import { useTheme } from '@/lib/ThemeProvider';
 import { ai } from '@/lib/ai/client';
 import { haptic } from '@/lib/haptics';
-import { speakArabic, stopSpeaking } from '@/lib/speech';
+import { speakReply, stopSpeaking } from '@/lib/speech';
 import { useConversationStore } from '@/stores/useConversationStore';
 import { useGamificationStore } from '@/stores/useGamificationStore';
 import { useSettingsStore } from '@/stores/useSettingsStore';
@@ -40,6 +42,8 @@ export default function ConversationChat() {
   const [sending, setSending] = useState(false);
   const [score, setScore] = useState<ConversationScore | null>(null);
   const [ending, setEnding] = useState(false);
+  const [recState, setRecState] = useState<'idle' | 'recording' | 'transcribing'>('idle');
+  const [recording, setRecording] = useState<Audio.Recording | null>(null);
 
   // Stop any in-flight speech when leaving the chat so it doesn't keep talking after you navigate away.
   useEffect(() => stopSpeaking, []);
@@ -52,30 +56,74 @@ export default function ConversationChat() {
     );
   }
 
-  const send = async () => {
-    if (!input.trim() || sending) return;
-    const userTurn: ConversationTurn = { id: `u_${Date.now()}`, speaker: 'user', textEnglish: input, timestamp: Date.now() };
-    appendTurn(character.id, userTurn);
-    setInput('');
+  // Speak a reply with the AI voice if a TTS provider is configured, else the free browser voice.
+  const voiceReply = (text?: string) => {
+    if (!text || text === '...') return;
+    void speakReply(text, () => ai.textToSpeech({ text, dialectId: character!.dialectId }));
+  };
+
+  const sendText = async (text: string) => {
+    const trimmed = text.trim();
+    if (!trimmed || sending) return;
+    const userTurn: ConversationTurn = { id: `u_${Date.now()}`, speaker: 'user', textEnglish: trimmed, timestamp: Date.now() };
+    appendTurn(character!.id, userTurn);
     setSending(true);
     haptic.tap();
     try {
-      const { reply } = await ai.chatWithCharacter({ characterId: character.id, dialectId: character.dialectId, history: [...history, userTurn], userMessageText: input });
-      appendTurn(character.id, reply);
-      // Read the reply aloud in the dialect's Arabic using the device/browser voice.
-      speakArabic(reply.textArabic);
+      const { reply } = await ai.chatWithCharacter({ characterId: character!.id, dialectId: character!.dialectId, history: [...history, userTurn], userMessageText: trimmed });
+      appendTurn(character!.id, reply);
+      voiceReply(reply.textArabic);
     } catch {
       // Backend not configured in this environment — fall back to a friendly local placeholder
       // so the UI stays testable; see supabase/functions/character-chat for the real implementation.
-      appendTurn(character.id, {
+      appendTurn(character!.id, {
         id: `a_${Date.now()}`,
         speaker: 'ai',
         textArabic: '...',
-        textEnglish: `(${character.name} would reply here once the AI backend is connected.)`,
+        textEnglish: `(${character!.name} would reply here once the AI backend is connected.)`,
         timestamp: Date.now(),
       });
     } finally {
       setSending(false);
+    }
+  };
+
+  const send = () => {
+    const text = input;
+    setInput('');
+    void sendText(text);
+  };
+
+  // Voice input: record → transcribe with Whisper (free via Groq) → send the transcript.
+  const startRecording = async () => {
+    try {
+      const perm = await Audio.requestPermissionsAsync();
+      if (!perm.granted) return;
+      await Audio.setAudioModeAsync({ allowsRecordingIOS: true, playsInSilentModeIOS: true });
+      const { recording: rec } = await Audio.Recording.createAsync(Audio.RecordingOptionsPresets.HIGH_QUALITY);
+      setRecording(rec);
+      setRecState('recording');
+      haptic.tap();
+    } catch {
+      setRecState('idle');
+    }
+  };
+
+  const stopRecordingAndSend = async () => {
+    const rec = recording;
+    if (!rec) return;
+    setRecording(null);
+    setRecState('transcribing');
+    try {
+      await rec.stopAndUnloadAsync();
+      const uri = rec.getURI();
+      if (!uri) throw new Error('No recording');
+      const audioBase64 = await FileSystem.readAsStringAsync(uri, { encoding: FileSystem.EncodingType.Base64 });
+      const { transcript } = await ai.transcribeSpeech({ audioBase64, dialectId: character!.dialectId });
+      setRecState('idle');
+      if (transcript?.trim()) await sendText(transcript);
+    } catch {
+      setRecState('idle');
     }
   };
 
@@ -202,7 +250,7 @@ export default function ConversationChat() {
                 <Text style={{ color: isUser ? theme.primaryText : theme.textPrimary }}>{item.textEnglish}</Text>
                 {canSpeak ? (
                   <AnimatedPressable
-                    onPress={() => speakArabic(item.textArabic)}
+                    onPress={() => voiceReply(item.textArabic)}
                     withHaptic={false}
                     style={{ flexDirection: 'row', alignItems: 'center', gap: 5, marginTop: 8, alignSelf: 'flex-start' }}
                   >
@@ -216,8 +264,32 @@ export default function ConversationChat() {
         />
         <View style={{ flexDirection: 'row', gap: 10, padding: 16, alignItems: 'center' }}>
           <View style={{ flex: 1 }}>
-            <TextField placeholder="Type a message..." value={input} onChangeText={setInput} onSubmitEditing={send} />
+            <TextField
+              placeholder={recState === 'recording' ? 'Listening…' : recState === 'transcribing' ? 'Transcribing…' : 'Type or hold the mic…'}
+              value={input}
+              onChangeText={setInput}
+              onSubmitEditing={send}
+              editable={recState === 'idle'}
+            />
           </View>
+          {/* Mic — tap to start, tap to stop. Records → Whisper → sends the transcript. */}
+          <AnimatedPressable
+            onPress={recState === 'recording' ? stopRecordingAndSend : startRecording}
+            disabled={sending || recState === 'transcribing'}
+            withHaptic={false}
+            style={{
+              width: 54,
+              height: 54,
+              borderRadius: 27,
+              backgroundColor: recState === 'recording' ? theme.danger : theme.surfaceElevated,
+              borderWidth: 1,
+              borderColor: theme.border,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <Text style={{ fontSize: 20 }}>{recState === 'recording' ? '⏹️' : recState === 'transcribing' ? '⏳' : '🎙️'}</Text>
+          </AnimatedPressable>
           <AnimatedPressable onPress={send} disabled={sending || !input.trim()} style={{ width: 54, height: 54, borderRadius: 27, backgroundColor: theme.primary, alignItems: 'center', justifyContent: 'center' }}>
             <Text style={{ fontSize: 20 }}>➤</Text>
           </AnimatedPressable>
