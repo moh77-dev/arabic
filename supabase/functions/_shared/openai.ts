@@ -1,6 +1,12 @@
 const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
-const OPENAI_BASE_URL = 'https://api.openai.com/v1';
+// Point at any OpenAI-compatible provider via `supabase secrets set OPENAI_BASE_URL=...`.
+//   OpenAI:  https://api.openai.com/v1        (default)
+//   Groq:    https://api.groq.com/openai/v1   (free — chat + whisper)
+//   Gemini:  https://generativelanguage.googleapis.com/v1beta/openai (free)
+//   OpenRouter: https://openrouter.ai/api/v1  (free `:free` models)
+const OPENAI_BASE_URL = Deno.env.get('OPENAI_BASE_URL') ?? 'https://api.openai.com/v1';
 // Overridable via `supabase secrets set OPENAI_MODEL=...`; defaults to a broadly-available model.
+// e.g. Groq: llama-3.3-70b-versatile · Gemini: gemini-1.5-flash · OpenRouter: a `:free` model.
 const OPENAI_MODEL = Deno.env.get('OPENAI_MODEL') ?? 'gpt-4o-mini';
 
 if (!OPENAI_API_KEY) {
@@ -55,7 +61,8 @@ export async function transcribeAudio(audioBase64: string, mimeType = 'audio/m4a
   const bytes = Uint8Array.from(atob(audioBase64), (c) => c.charCodeAt(0));
   const form = new FormData();
   form.append('file', new Blob([bytes], { type: mimeType }), 'audio.m4a');
-  form.append('model', 'whisper-1');
+  // OpenAI: whisper-1 · Groq: whisper-large-v3. Override with OPENAI_WHISPER_MODEL.
+  form.append('model', Deno.env.get('OPENAI_WHISPER_MODEL') ?? 'whisper-1');
 
   const res = await fetch(`${OPENAI_BASE_URL}/audio/transcriptions`, {
     method: 'POST',
