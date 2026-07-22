@@ -13,12 +13,19 @@ import { useConversationStore } from '@/stores/useConversationStore';
 import { useGamificationStore } from '@/stores/useGamificationStore';
 import type { ConversationScore, ConversationTurn } from '@/types';
 
+// Stable empty-history reference. Returning a fresh `[]` from a Zustand v5 selector makes
+// React's useSyncExternalStore see a new snapshot every render → infinite loop (React #185).
+// Defaulting to this module-level constant outside the selector keeps the reference stable.
+const EMPTY_HISTORY: ConversationTurn[] = [];
+
 export default function ConversationChat() {
   const { characterId } = useLocalSearchParams<{ characterId: string }>();
   const theme = useTheme();
   const character = findCharacter(characterId);
 
-  const history = useConversationStore((s) => s.historyByCharacter[characterId] ?? []);
+  // Select the raw (possibly undefined) value — both the stored array and `undefined` are
+  // stable references across renders. Default to EMPTY_HISTORY *outside* the selector.
+  const history = useConversationStore((s) => s.historyByCharacter[characterId]) ?? EMPTY_HISTORY;
   const appendTurn = useConversationStore((s) => s.appendTurn);
   const saveScore = useConversationStore((s) => s.saveScore);
   const addXp = useGamificationStore((s) => s.addXp);
