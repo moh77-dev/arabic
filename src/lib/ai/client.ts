@@ -46,9 +46,9 @@ export const ai = {
   transcribeSpeech: (opts: { audioBase64: string; dialectId: DialectId; expectedText?: string }) =>
     invoke<{ transcript: string; confidence: number }>('transcribe-speech', opts),
 
-  /** Text-to-speech playback. `voiceKey` (e.g. a character's voiceId) lets the backend pick a
-   *  distinct voice per character by gender/age; `voice` forces a specific provider voice name. */
-  textToSpeech: (opts: { text: string; dialectId: DialectId; voiceKey?: string; voice?: string }) =>
+  /** Text-to-speech playback. `characterId` allows a per-character voice override; `voiceKey`
+   *  (a character's voiceId) picks a voice by gender/age; `voice` forces a provider voice name. */
+  textToSpeech: (opts: { text: string; dialectId: DialectId; characterId?: string; voiceKey?: string; voice?: string }) =>
     invoke<{ audioBase64: string; mimeType: string }>('text-to-speech', opts),
 
   analyzePronunciation: (opts: { audioBase64: string; targetText: string; targetTransliteration: string; dialectId: DialectId }) =>

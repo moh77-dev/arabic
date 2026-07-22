@@ -38,25 +38,38 @@ const ELEVEN_DEFAULTS: Record<string, string> = {
   male_elder: 'VR6AewLTigWG4xSOukaG', // Arnold
 };
 
-function elevenVoiceFor(voiceKey?: string): string {
+// Per-character voice defaults, so specific characters sound distinct from their gender/age peers.
+// Override any of these at runtime with ELEVENLABS_VOICE_<CHARACTER_ID> (e.g. ELEVENLABS_VOICE_CHAR_FOOTBALL_FAN).
+const CHAR_ELEVEN_DEFAULTS: Record<string, string> = {
+  char_football_fan: 'yoZ06aMxZJJ28mfd3POQ', // Sam — raspy/energetic, fits Amine the excited fan
+};
+const CHAR_OPENAI_DEFAULTS: Record<string, string> = {
+  char_football_fan: 'echo',
+};
+
+const envVoice = (prefix: string, id?: string) => (id ? Deno.env.get(`${prefix}_${id.toUpperCase().replace(/[^A-Z0-9]/g, '_')}`) : undefined);
+
+function elevenVoiceFor(voiceKey?: string, characterId?: string): string {
   const { gender, age } = classify(voiceKey);
   const G = gender.toUpperCase();
   const A = age.toUpperCase();
-  return (
+  const configured =
+    envVoice('ELEVENLABS_VOICE', characterId) ?? // per-character override (highest priority)
     Deno.env.get(`ELEVENLABS_VOICE_${G}_${A}`) ??
     Deno.env.get(`ELEVENLABS_VOICE_${G}`) ??
-    Deno.env.get('ELEVENLABS_VOICE_ID') ??
-    ELEVEN_DEFAULTS[`${gender}_${age}`] ??
-    ELEVEN_DEFAULTS.female_adult
-  );
+    Deno.env.get('ELEVENLABS_VOICE_ID');
+  if (configured) return configured;
+  if (characterId && CHAR_ELEVEN_DEFAULTS[characterId]) return CHAR_ELEVEN_DEFAULTS[characterId];
+  return ELEVEN_DEFAULTS[`${gender}_${age}`] ?? ELEVEN_DEFAULTS.female_adult;
 }
 
 // OpenAI stock voices by gender/age (best-effort; stock voices aren't dialect- or age-specific).
-function openaiVoiceFor(voiceKey?: string, dialectId?: string, explicit?: string): string {
+function openaiVoiceFor(voiceKey?: string, dialectId?: string, characterId?: string, explicit?: string): string {
   if (explicit) return explicit;
   const { gender, age } = classify(voiceKey);
-  const override = Deno.env.get(`OPENAI_VOICE_${gender.toUpperCase()}_${age.toUpperCase()}`);
-  if (override) return override;
+  const configured = envVoice('OPENAI_VOICE', characterId) ?? Deno.env.get(`OPENAI_VOICE_${gender.toUpperCase()}_${age.toUpperCase()}`);
+  if (configured) return configured;
+  if (characterId && CHAR_OPENAI_DEFAULTS[characterId]) return CHAR_OPENAI_DEFAULTS[characterId];
   if (gender === 'female') return age === 'young' ? 'nova' : age === 'elder' ? 'shimmer' : 'nova';
   return age === 'young' ? 'fable' : age === 'elder' ? 'onyx' : 'echo';
 }
@@ -93,16 +106,16 @@ Deno.serve(async (req) => {
   if (preflight) return preflight;
 
   try {
-    const { text, dialectId, voiceKey, voice } = await req.json();
+    const { text, dialectId, voiceKey, characterId, voice } = await req.json();
     if (!text) return jsonResponse({ error: 'No text provided' }, 400);
 
     let audioBase64: string;
     if (TTS_PROVIDER === 'elevenlabs') {
       if (!ELEVENLABS_API_KEY) return jsonResponse({ error: 'ELEVENLABS_API_KEY is not set — add it or use TTS_PROVIDER=openai.' }, 400);
-      audioBase64 = await elevenLabsSpeech(text, elevenVoiceFor(voiceKey));
+      audioBase64 = await elevenLabsSpeech(text, elevenVoiceFor(voiceKey, characterId));
     } else {
       if (!TTS_API_KEY) return jsonResponse({ error: 'No TTS key set (TTS_API_KEY / OPENAI_API_KEY).' }, 400);
-      audioBase64 = await openaiSpeech(text, openaiVoiceFor(voiceKey, dialectId, voice));
+      audioBase64 = await openaiSpeech(text, openaiVoiceFor(voiceKey, dialectId, characterId, voice));
     }
     return jsonResponse({ audioBase64, mimeType: 'audio/mpeg' });
   } catch (error) {
