@@ -1,10 +1,15 @@
 import 'react-native-url-polyfill/auto';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createClient } from '@supabase/supabase-js';
+import Constants from 'expo-constants';
 import type { Database } from '@/types/database';
 
-const rawUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
-const rawKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
+// Env vars win (set them in your host, e.g. Vercel, for overrides); otherwise fall back to the
+// public project config baked into app.json → extra, so builds work without extra configuration.
+// The anon key is a publishable key: it's meant to live in the client and is protected by RLS.
+const extra = (Constants.expoConfig?.extra ?? {}) as { supabaseUrl?: string; supabaseAnonKey?: string };
+const rawUrl = process.env.EXPO_PUBLIC_SUPABASE_URL || extra.supabaseUrl;
+const rawKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || extra.supabaseAnonKey;
 
 // createClient() calls `new URL(supabaseUrl)` internally and throws synchronously if it's
 // missing or malformed — which would take down the entire app at module-load time (a blank

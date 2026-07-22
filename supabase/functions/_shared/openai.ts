@@ -1,5 +1,7 @@
 const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
 const OPENAI_BASE_URL = 'https://api.openai.com/v1';
+// Overridable via `supabase secrets set OPENAI_MODEL=...`; defaults to a broadly-available model.
+const OPENAI_MODEL = Deno.env.get('OPENAI_MODEL') ?? 'gpt-4o-mini';
 
 if (!OPENAI_API_KEY) {
   console.warn('[lahja-functions] OPENAI_API_KEY is not set — AI calls will fail until it is configured with `supabase secrets set`.');
@@ -29,7 +31,7 @@ export async function chatComplete(opts: {
   jsonMode?: boolean;
 }): Promise<string> {
   const data = await openaiFetch('/chat/completions', {
-    model: 'gpt-5.5',
+    model: OPENAI_MODEL,
     temperature: opts.temperature ?? 0.7,
     response_format: opts.jsonMode ? { type: 'json_object' } : undefined,
     messages: [{ role: 'system', content: opts.system }, ...opts.messages],

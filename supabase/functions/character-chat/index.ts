@@ -19,13 +19,58 @@ const CHARACTER_PROMPTS: Record<string, { seed: string; dialectId: string }> = {
   char_hotel_receptionist: { seed: 'You are Lina, a friendly hotel receptionist in Beirut who speaks melodic Lebanese Arabic.', dialectId: 'lebanese' },
 };
 
+// Human-readable dialect names for generated characters (ids like "egyptian_grandmother").
+const DIALECT_NAMES: Record<string, string> = {
+  msa: 'Modern Standard Arabic',
+  algerian_algiers: 'Algiers Arabic',
+  algerian_eloued: 'El Oued (Souf) Algerian Arabic',
+  moroccan: 'Moroccan Darija',
+  tunisian: 'Tunisian Arabic',
+  libyan: 'Libyan Arabic',
+  egyptian: 'Egyptian Arabic',
+  levantine: 'Levantine Arabic',
+  palestinian: 'Palestinian Arabic',
+  lebanese: 'Lebanese Arabic',
+  syrian: 'Syrian Arabic',
+  jordanian: 'Jordanian Arabic',
+  saudi: 'Saudi Arabic',
+  gulf: 'Gulf Arabic',
+  iraqi: 'Iraqi Arabic',
+  sudanese: 'Sudanese Arabic',
+  yemeni: 'Yemeni Arabic',
+};
+
+const ROLE_SEEDS: Record<string, string> = {
+  grandmother: 'a loving grandmother who speaks slowly and warmly, blessing the listener and asking about family',
+  friend: 'a casual young friend who uses everyday slang, jokes around, and is patient with learners',
+  vendor: 'a lively market vendor who expects customers to haggle over prices',
+  waiter: 'a friendly café waiter who recommends local dishes and takes your order',
+  neighbor: 'a friendly, curious neighbor who loves chatting at the door',
+};
+
+/** Resolves a character id to a chat seed, handling both authored (char_*) and generated (dialect_role) ids. */
+function resolveCharacter(characterId: string): { seed: string; dialectId: string } | null {
+  const authored = CHARACTER_PROMPTS[characterId];
+  if (authored) return authored;
+  // Generated id shape: `${dialectId}_${roleKey}` — dialectId may itself contain an underscore.
+  const dialectId = Object.keys(DIALECT_NAMES).find((d) => characterId.startsWith(`${d}_`));
+  if (!dialectId) return null;
+  const roleKey = characterId.slice(dialectId.length + 1);
+  const roleDesc = ROLE_SEEDS[roleKey];
+  if (!roleDesc) return null;
+  return {
+    seed: `You are ${roleDesc}, from a place where people speak ${DIALECT_NAMES[dialectId]}. Speak that dialect naturally and stay in character.`,
+    dialectId,
+  };
+}
+
 Deno.serve(async (req) => {
   const preflight = handleOptions(req);
   if (preflight) return preflight;
 
   try {
     const { characterId, history, userMessageAudioBase64, userMessageText } = await req.json();
-    const character = CHARACTER_PROMPTS[characterId];
+    const character = resolveCharacter(characterId);
     if (!character) return jsonResponse({ error: `Unknown character "${characterId}"` }, 400);
 
     let userText = userMessageText;
