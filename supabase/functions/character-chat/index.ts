@@ -69,8 +69,17 @@ Deno.serve(async (req) => {
   if (preflight) return preflight;
 
   try {
-    const { characterId, history, userMessageAudioBase64, userMessageText } = await req.json();
-    const character = resolveCharacter(characterId);
+    const { characterId, dialectId, history, userMessageAudioBase64, userMessageText } = await req.json();
+    // "anis" is the dialect-agnostic tutor persona — build his seed from the dialect the app passes.
+    const character =
+      characterId === 'anis'
+        ? {
+            seed:
+              `You are Anis, the learner's warm, encouraging personal Arabic tutor. Teach and converse in ${DIALECT_NAMES[dialectId] ?? 'Arabic'}. ` +
+              'Explain simply, give short concrete examples, gently correct mistakes, and keep the learner motivated.',
+            dialectId: dialectId ?? 'msa',
+          }
+        : resolveCharacter(characterId);
     if (!character) return jsonResponse({ error: `Unknown character "${characterId}"` }, 400);
 
     let userText = userMessageText;

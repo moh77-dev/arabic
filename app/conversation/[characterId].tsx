@@ -5,13 +5,14 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { AnimatedPressable } from '@/components/ui/AnimatedPressable';
 import { Button } from '@/components/ui/Button';
 import { TextField } from '@/components/ui/TextField';
-import { findCharacter } from '@/content/characters';
+import { ANIS_CHARACTER_ID, findCharacter, getAnisCharacter } from '@/content/characters';
 import { useTheme } from '@/lib/ThemeProvider';
 import { ai } from '@/lib/ai/client';
 import { haptic } from '@/lib/haptics';
 import { speakArabic, stopSpeaking } from '@/lib/speech';
 import { useConversationStore } from '@/stores/useConversationStore';
 import { useGamificationStore } from '@/stores/useGamificationStore';
+import { useSettingsStore } from '@/stores/useSettingsStore';
 import type { ConversationScore, ConversationTurn } from '@/types';
 
 // Stable empty-history reference. Returning a fresh `[]` from a Zustand v5 selector makes
@@ -22,7 +23,9 @@ const EMPTY_HISTORY: ConversationTurn[] = [];
 export default function ConversationChat() {
   const { characterId } = useLocalSearchParams<{ characterId: string }>();
   const theme = useTheme();
-  const character = findCharacter(characterId);
+  const activeDialect = useSettingsStore((s) => s.activeDialect);
+  // Anis is the tutor persona — he teaches in whatever dialect you're currently studying.
+  const character = characterId === ANIS_CHARACTER_ID ? getAnisCharacter(activeDialect) : findCharacter(characterId);
 
   // Select the raw (possibly undefined) value — both the stored array and `undefined` are
   // stable references across renders. Default to EMPTY_HISTORY *outside* the selector.
@@ -57,7 +60,7 @@ export default function ConversationChat() {
     setSending(true);
     haptic.tap();
     try {
-      const { reply } = await ai.chatWithCharacter({ characterId: character.id, history: [...history, userTurn], userMessageText: input });
+      const { reply } = await ai.chatWithCharacter({ characterId: character.id, dialectId: character.dialectId, history: [...history, userTurn], userMessageText: input });
       appendTurn(character.id, reply);
       // Read the reply aloud in the dialect's Arabic using the device/browser voice.
       speakArabic(reply.textArabic);

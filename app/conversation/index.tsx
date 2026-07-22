@@ -18,7 +18,7 @@ import type { DialectId } from '@/types';
 const CAPABILITIES: { icon: IconName; tint: (t: ReturnType<typeof useTheme>) => string; title: string; subtitle: string; route: string }[] = [
   { icon: 'edit', tint: (t) => t.primary, title: 'Fix my Arabic', subtitle: 'Correct a phrase and explain why', route: 'tutor' },
   { icon: 'grammar', tint: (t) => t.accentGold, title: 'Explain the grammar', subtitle: 'Rules, in plain language', route: 'tutor' },
-  { icon: 'lesson', tint: () => '#0ea5e9', title: 'Make me a quick lesson', subtitle: 'A week built around your goal', route: '/plan' },
+  { icon: 'lesson', tint: () => '#0ea5e9', title: 'Make me a quick lesson', subtitle: 'Tell Anis what to improve — he builds it', route: '/custom-lesson' },
   { icon: 'speak', tint: (t) => t.primary, title: 'Say it for me', subtitle: 'Translate & hear it in your dialect', route: '/translator' },
 ];
 
@@ -46,12 +46,8 @@ export default function AskSalah() {
     return () => loop.stop();
   }, [pulse]);
 
-  // "Anis" opens a chat with the first character who speaks the active dialect, so the tutor always
-  // replies in the dialect you're studying.
-  const openTutor = () => {
-    const tutor = cast[0];
-    if (tutor) router.push(`/conversation/${tutor.id}`);
-  };
+  // Talk to Anis, the AI tutor — he replies in whatever dialect you're currently studying.
+  const openTutor = () => router.push('/conversation/anis');
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.background }}>

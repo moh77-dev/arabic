@@ -58,6 +58,8 @@ export const ai = {
 
   chatWithCharacter: (opts: {
     characterId: string;
+    /** Required for the dialect-agnostic "anis" tutor so the backend replies in the active dialect. */
+    dialectId?: DialectId;
     history: ConversationTurn[];
     userMessageAudioBase64?: string;
     userMessageText?: string;
