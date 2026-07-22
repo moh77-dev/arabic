@@ -1,22 +1,37 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Avatar } from '@/components/ui/Avatar';
 import { Icon } from '@/components/ui/Icon';
 import { useTheme } from '@/lib/ThemeProvider';
+import { fetchLeaderboard } from '@/lib/leaderboard';
 import { useGamificationStore } from '@/stores/useGamificationStore';
 import { useSocialStore } from '@/stores/useSocialStore';
 import { useUserStore } from '@/stores/useUserStore';
 
 const DAY_LABELS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+const PROMOTE_ZONE = 5; // top 5 promote
+const DEMOTE_ZONE = 5; // bottom 5 demote
 
 export default function StreakAndRanks() {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
   const gami = useGamificationStore();
-  const friends = useSocialStore((s) => s.friends);
+  const leaderboard = useSocialStore((s) => s.leaderboard);
+  const setLeaderboard = useSocialStore((s) => s.setLeaderboard);
   const displayName = useUserStore((s) => s.displayName) ?? 'You';
+
+  // Pull the global weekly leaderboard for the current league (falls back to rivals offline).
+  useEffect(() => {
+    let alive = true;
+    fetchLeaderboard(gami.league).then((rows) => {
+      if (alive) setLeaderboard(rows);
+    });
+    return () => {
+      alive = false;
+    };
+  }, [gami.league, setLeaderboard]);
 
   // Build the current week's fill state from the study heatmap (Mon–Sun).
   const weekDays = useMemo(() => {
@@ -35,14 +50,18 @@ export default function StreakAndRanks() {
     });
   }, [gami.studyHeatmap]);
 
-  // Merge the user into the friends leaderboard for display.
+  // Merge the local "You" row into the global league board, sort, and assign ranks.
   const board = useMemo(() => {
     const rows = [
       { userId: 'me', displayName, avatar: gami.activeAvatar, weeklyXp: gami.weeklyXp, isMe: true },
-      ...friends.map((f) => ({ userId: f.userId, displayName: f.displayName, avatar: f.avatar, weeklyXp: f.weeklyXp, isMe: false })),
+      ...leaderboard.map((e) => ({ userId: e.userId, displayName: e.displayName, avatar: e.avatar, weeklyXp: e.weeklyXp, isMe: false })),
     ];
-    return rows.sort((a, b) => b.weeklyXp - a.weeklyXp);
-  }, [friends, displayName, gami.activeAvatar, gami.weeklyXp]);
+    return rows
+      .sort((a, b) => b.weeklyXp - a.weeklyXp)
+      .map((row, i) => ({ ...row, rank: i + 1 }));
+  }, [leaderboard, displayName, gami.activeAvatar, gami.weeklyXp]);
+
+  const myRank = board.find((r) => r.isMe)?.rank ?? 0;
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.background }}>
@@ -94,43 +113,53 @@ export default function StreakAndRanks() {
             <Icon name="trophy" size={20} color={theme.accentGold} />
             <Text style={{ color: theme.textPrimary, fontWeight: '900', fontSize: 17, textTransform: 'capitalize' }}>{gami.league} League</Text>
           </View>
-          <Text style={{ color: theme.textSecondary, fontSize: 12 }}>Resets weekly</Text>
+          <Text style={{ color: theme.textSecondary, fontSize: 12 }}>
+            {myRank > 0 ? `You're #${myRank} of ${board.length}` : 'Resets weekly'}
+          </Text>
         </View>
 
         {/* Leaderboard */}
         <View style={{ marginTop: 12, backgroundColor: theme.surfaceElevated, borderRadius: 20, borderWidth: 1, borderColor: theme.border, overflow: 'hidden' }}>
           <View style={{ backgroundColor: `${theme.primary}12`, paddingVertical: 8, alignItems: 'center' }}>
-            <Text style={{ color: theme.primary, fontSize: 11, fontWeight: '800', letterSpacing: 1 }}>▲ TOP 5 PROMOTE</Text>
+            <Text style={{ color: theme.primary, fontSize: 11, fontWeight: '800', letterSpacing: 1 }}>▲ TOP {PROMOTE_ZONE} PROMOTE</Text>
           </View>
-          {board.map((row, i) => (
-            <View
-              key={row.userId}
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                gap: 12,
-                paddingHorizontal: 16,
-                paddingVertical: 12,
-                backgroundColor: row.isMe ? `${theme.primary}12` : 'transparent',
-                borderTopWidth: i === 0 ? 0 : 1,
-                borderTopColor: theme.border,
-              }}
-            >
-              <Text style={{ width: 20, textAlign: 'center', fontWeight: '900', color: i < 5 ? theme.primary : theme.textSecondary }}>{i + 1}</Text>
-              <Avatar id={row.avatar} size={34} ring={row.isMe} />
-              <Text style={{ flex: 1, color: row.isMe ? theme.primary : theme.textPrimary, fontWeight: row.isMe ? '800' : '600' }}>
-                {row.displayName}
-              </Text>
-              <Text style={{ color: row.isMe ? theme.primary : theme.textSecondary, fontWeight: '700' }}>{row.weeklyXp} XP</Text>
-            </View>
-          ))}
-          {friends.length === 0 && (
-            <View style={{ padding: 16, borderTopWidth: 1, borderTopColor: theme.border }}>
-              <Text style={{ color: theme.textSecondary, fontSize: 12, textAlign: 'center' }}>
-                Add friends to fill out your weekly league.
-              </Text>
-            </View>
-          )}
+          {board.map((row, i) => {
+            const promotes = row.rank <= PROMOTE_ZONE;
+            const demotes = board.length > PROMOTE_ZONE + DEMOTE_ZONE && row.rank > board.length - DEMOTE_ZONE;
+            // A divider marks where the demotion zone begins.
+            const showDemoteDivider = demotes && board[i - 1] && board[i - 1].rank <= board.length - DEMOTE_ZONE;
+            const medal = row.rank <= 3 ? ['#f0a80e', '#9aa1ae', '#c17d3a'][row.rank - 1] : undefined;
+            return (
+              <React.Fragment key={row.userId}>
+                {showDemoteDivider && (
+                  <View style={{ backgroundColor: `${theme.danger}14`, paddingVertical: 6, alignItems: 'center', borderTopWidth: 1, borderTopColor: theme.border }}>
+                    <Text style={{ color: theme.danger, fontSize: 11, fontWeight: '800', letterSpacing: 1 }}>▼ DEMOTION ZONE</Text>
+                  </View>
+                )}
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    gap: 12,
+                    paddingHorizontal: 16,
+                    paddingVertical: 12,
+                    backgroundColor: row.isMe ? `${theme.primary}14` : 'transparent',
+                    borderTopWidth: i === 0 || showDemoteDivider ? 0 : 1,
+                    borderTopColor: theme.border,
+                  }}
+                >
+                  <Text style={{ width: 22, textAlign: 'center', fontWeight: '900', color: medal ?? (promotes ? theme.primary : theme.textSecondary) }}>
+                    {row.rank}
+                  </Text>
+                  <Avatar id={row.avatar} size={34} ring={row.isMe} />
+                  <Text style={{ flex: 1, color: row.isMe ? theme.primary : theme.textPrimary, fontWeight: row.isMe ? '800' : '600' }} numberOfLines={1}>
+                    {row.isMe ? 'You' : row.displayName}
+                  </Text>
+                  <Text style={{ color: row.isMe ? theme.primary : theme.textSecondary, fontWeight: '700' }}>{row.weeklyXp} XP</Text>
+                </View>
+              </React.Fragment>
+            );
+          })}
         </View>
       </ScrollView>
     </View>
