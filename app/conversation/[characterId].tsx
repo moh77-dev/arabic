@@ -1,5 +1,5 @@
 import { useLocalSearchParams, router } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FlatList, KeyboardAvoidingView, Platform, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { AnimatedPressable } from '@/components/ui/AnimatedPressable';
@@ -9,6 +9,7 @@ import { findCharacter } from '@/content/characters';
 import { useTheme } from '@/lib/ThemeProvider';
 import { ai } from '@/lib/ai/client';
 import { haptic } from '@/lib/haptics';
+import { speakArabic, stopSpeaking } from '@/lib/speech';
 import { useConversationStore } from '@/stores/useConversationStore';
 import { useGamificationStore } from '@/stores/useGamificationStore';
 import type { ConversationScore, ConversationTurn } from '@/types';
@@ -37,6 +38,9 @@ export default function ConversationChat() {
   const [score, setScore] = useState<ConversationScore | null>(null);
   const [ending, setEnding] = useState(false);
 
+  // Stop any in-flight speech when leaving the chat so it doesn't keep talking after you navigate away.
+  useEffect(() => stopSpeaking, []);
+
   if (!character) {
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: theme.background }}>
@@ -55,6 +59,8 @@ export default function ConversationChat() {
     try {
       const { reply } = await ai.chatWithCharacter({ characterId: character.id, history: [...history, userTurn], userMessageText: input });
       appendTurn(character.id, reply);
+      // Read the reply aloud in the dialect's Arabic using the device/browser voice.
+      speakArabic(reply.textArabic);
     } catch {
       // Backend not configured in this environment — fall back to a friendly local placeholder
       // so the UI stays testable; see supabase/functions/character-chat for the real implementation.
@@ -170,26 +176,40 @@ export default function ConversationChat() {
               Say hello to {character.name} to start the conversation.
             </Text>
           }
-          renderItem={({ item }) => (
-            <View
-              style={{
-                alignSelf: item.speaker === 'user' ? 'flex-end' : 'flex-start',
-                backgroundColor: item.speaker === 'user' ? theme.primary : theme.surfaceElevated,
-                borderWidth: item.speaker === 'user' ? 0 : 1,
-                borderColor: theme.border,
-                borderRadius: 16,
-                padding: 12,
-                maxWidth: '80%',
-              }}
-            >
-              {item.textArabic ? (
-                <Text style={{ color: item.speaker === 'user' ? theme.primaryText : theme.textPrimary, fontWeight: '700', marginBottom: 2 }}>
-                  {item.textArabic}
-                </Text>
-              ) : null}
-              <Text style={{ color: item.speaker === 'user' ? theme.primaryText : theme.textPrimary }}>{item.textEnglish}</Text>
-            </View>
-          )}
+          renderItem={({ item }) => {
+            const isUser = item.speaker === 'user';
+            const canSpeak = !isUser && !!item.textArabic && item.textArabic !== '...';
+            return (
+              <View
+                style={{
+                  alignSelf: isUser ? 'flex-end' : 'flex-start',
+                  backgroundColor: isUser ? theme.primary : theme.surfaceElevated,
+                  borderWidth: isUser ? 0 : 1,
+                  borderColor: theme.border,
+                  borderRadius: 16,
+                  padding: 12,
+                  maxWidth: '80%',
+                }}
+              >
+                {item.textArabic ? (
+                  <Text style={{ color: isUser ? theme.primaryText : theme.textPrimary, fontWeight: '700', marginBottom: 2 }}>
+                    {item.textArabic}
+                  </Text>
+                ) : null}
+                <Text style={{ color: isUser ? theme.primaryText : theme.textPrimary }}>{item.textEnglish}</Text>
+                {canSpeak ? (
+                  <AnimatedPressable
+                    onPress={() => speakArabic(item.textArabic)}
+                    withHaptic={false}
+                    style={{ flexDirection: 'row', alignItems: 'center', gap: 5, marginTop: 8, alignSelf: 'flex-start' }}
+                  >
+                    <Text style={{ fontSize: 14 }}>🔊</Text>
+                    <Text style={{ color: theme.textSecondary, fontSize: 11, fontWeight: '700' }}>Replay</Text>
+                  </AnimatedPressable>
+                ) : null}
+              </View>
+            );
+          }}
         />
         <View style={{ flexDirection: 'row', gap: 10, padding: 16, alignItems: 'center' }}>
           <View style={{ flex: 1 }}>
