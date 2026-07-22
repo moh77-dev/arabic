@@ -34,6 +34,8 @@ function RootStack() {
         <Stack.Screen name="drill" options={{ presentation: 'fullScreenModal', animation: 'slide_from_bottom' }} />
         <Stack.Screen name="translator" options={{ presentation: 'card', animation: 'slide_from_right' }} />
         <Stack.Screen name="plan" options={{ presentation: 'card', animation: 'slide_from_right' }} />
+        <Stack.Screen name="custom-lesson" options={{ presentation: 'card', animation: 'slide_from_right' }} />
+        <Stack.Screen name="edit-profile" options={{ presentation: 'card', animation: 'slide_from_right' }} />
         <Stack.Screen name="paywall" options={{ presentation: 'modal' }} />
         <Stack.Screen name="achievements" options={{ presentation: 'modal' }} />
         <Stack.Screen name="season-pass" options={{ presentation: 'modal' }} />

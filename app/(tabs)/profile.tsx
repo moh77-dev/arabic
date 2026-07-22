@@ -103,6 +103,10 @@ export default function Profile() {
         </View>
 
         <View style={{ marginTop: 24 }}>
+          <Button label="Edit profile" onPress={() => router.push('/edit-profile')} />
+        </View>
+
+        <View style={{ marginTop: 12 }}>
           <Button label={isGuest ? 'Create an account' : 'Sign Out'} variant="secondary" onPress={isGuest ? () => router.push('/(auth)/sign-up') : signOut} />
         </View>
       </ScrollView>

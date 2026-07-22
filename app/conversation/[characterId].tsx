@@ -1,16 +1,18 @@
 import { useLocalSearchParams, router } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FlatList, KeyboardAvoidingView, Platform, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { AnimatedPressable } from '@/components/ui/AnimatedPressable';
 import { Button } from '@/components/ui/Button';
 import { TextField } from '@/components/ui/TextField';
-import { findCharacter } from '@/content/characters';
+import { ANIS_CHARACTER_ID, findCharacter, getAnisCharacter } from '@/content/characters';
 import { useTheme } from '@/lib/ThemeProvider';
 import { ai } from '@/lib/ai/client';
 import { haptic } from '@/lib/haptics';
+import { speakArabic, stopSpeaking } from '@/lib/speech';
 import { useConversationStore } from '@/stores/useConversationStore';
 import { useGamificationStore } from '@/stores/useGamificationStore';
+import { useSettingsStore } from '@/stores/useSettingsStore';
 import type { ConversationScore, ConversationTurn } from '@/types';
 
 // Stable empty-history reference. Returning a fresh `[]` from a Zustand v5 selector makes
@@ -21,7 +23,9 @@ const EMPTY_HISTORY: ConversationTurn[] = [];
 export default function ConversationChat() {
   const { characterId } = useLocalSearchParams<{ characterId: string }>();
   const theme = useTheme();
-  const character = findCharacter(characterId);
+  const activeDialect = useSettingsStore((s) => s.activeDialect);
+  // Anis is the tutor persona — he teaches in whatever dialect you're currently studying.
+  const character = characterId === ANIS_CHARACTER_ID ? getAnisCharacter(activeDialect) : findCharacter(characterId);
 
   // Select the raw (possibly undefined) value — both the stored array and `undefined` are
   // stable references across renders. Default to EMPTY_HISTORY *outside* the selector.
@@ -36,6 +40,9 @@ export default function ConversationChat() {
   const [sending, setSending] = useState(false);
   const [score, setScore] = useState<ConversationScore | null>(null);
   const [ending, setEnding] = useState(false);
+
+  // Stop any in-flight speech when leaving the chat so it doesn't keep talking after you navigate away.
+  useEffect(() => stopSpeaking, []);
 
   if (!character) {
     return (
@@ -53,8 +60,10 @@ export default function ConversationChat() {
     setSending(true);
     haptic.tap();
     try {
-      const { reply } = await ai.chatWithCharacter({ characterId: character.id, history: [...history, userTurn], userMessageText: input });
+      const { reply } = await ai.chatWithCharacter({ characterId: character.id, dialectId: character.dialectId, history: [...history, userTurn], userMessageText: input });
       appendTurn(character.id, reply);
+      // Read the reply aloud in the dialect's Arabic using the device/browser voice.
+      speakArabic(reply.textArabic);
     } catch {
       // Backend not configured in this environment — fall back to a friendly local placeholder
       // so the UI stays testable; see supabase/functions/character-chat for the real implementation.
@@ -170,26 +179,40 @@ export default function ConversationChat() {
               Say hello to {character.name} to start the conversation.
             </Text>
           }
-          renderItem={({ item }) => (
-            <View
-              style={{
-                alignSelf: item.speaker === 'user' ? 'flex-end' : 'flex-start',
-                backgroundColor: item.speaker === 'user' ? theme.primary : theme.surfaceElevated,
-                borderWidth: item.speaker === 'user' ? 0 : 1,
-                borderColor: theme.border,
-                borderRadius: 16,
-                padding: 12,
-                maxWidth: '80%',
-              }}
-            >
-              {item.textArabic ? (
-                <Text style={{ color: item.speaker === 'user' ? theme.primaryText : theme.textPrimary, fontWeight: '700', marginBottom: 2 }}>
-                  {item.textArabic}
-                </Text>
-              ) : null}
-              <Text style={{ color: item.speaker === 'user' ? theme.primaryText : theme.textPrimary }}>{item.textEnglish}</Text>
-            </View>
-          )}
+          renderItem={({ item }) => {
+            const isUser = item.speaker === 'user';
+            const canSpeak = !isUser && !!item.textArabic && item.textArabic !== '...';
+            return (
+              <View
+                style={{
+                  alignSelf: isUser ? 'flex-end' : 'flex-start',
+                  backgroundColor: isUser ? theme.primary : theme.surfaceElevated,
+                  borderWidth: isUser ? 0 : 1,
+                  borderColor: theme.border,
+                  borderRadius: 16,
+                  padding: 12,
+                  maxWidth: '80%',
+                }}
+              >
+                {item.textArabic ? (
+                  <Text style={{ color: isUser ? theme.primaryText : theme.textPrimary, fontWeight: '700', marginBottom: 2 }}>
+                    {item.textArabic}
+                  </Text>
+                ) : null}
+                <Text style={{ color: isUser ? theme.primaryText : theme.textPrimary }}>{item.textEnglish}</Text>
+                {canSpeak ? (
+                  <AnimatedPressable
+                    onPress={() => speakArabic(item.textArabic)}
+                    withHaptic={false}
+                    style={{ flexDirection: 'row', alignItems: 'center', gap: 5, marginTop: 8, alignSelf: 'flex-start' }}
+                  >
+                    <Text style={{ fontSize: 14 }}>🔊</Text>
+                    <Text style={{ color: theme.textSecondary, fontSize: 11, fontWeight: '700' }}>Replay</Text>
+                  </AnimatedPressable>
+                ) : null}
+              </View>
+            );
+          }}
         />
         <View style={{ flexDirection: 'row', gap: 10, padding: 16, alignItems: 'center' }}>
           <View style={{ flex: 1 }}>

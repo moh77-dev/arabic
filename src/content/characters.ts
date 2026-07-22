@@ -345,8 +345,37 @@ export function getCharactersForDialect(dialectId: DialectId): AIConversationCha
   return [...authored, ...generated].slice(0, 6);
 }
 
+/** The id used everywhere for the Anis tutor chat. */
+export const ANIS_CHARACTER_ID = 'anis';
+
+/**
+ * Anis — the app's AI tutor persona — as a chattable character. Unlike the roleplay cast he isn't
+ * tied to one dialect: he teaches in whichever dialect the learner is currently studying, so this
+ * is built on demand from the active dialect rather than living in the static AI_CHARACTERS list.
+ */
+export function getAnisCharacter(dialectId: DialectId): AIConversationCharacter {
+  const meta = DIALECTS[dialectId] ?? DIALECTS.msa;
+  return {
+    id: ANIS_CHARACTER_ID,
+    name: 'Anis',
+    nameArabic: 'أنيس',
+    role: `Your ${meta.name} tutor`,
+    avatar: '🧑‍🏫',
+    dialectId,
+    personality: 'Warm, patient AI tutor who explains simply, gives short examples, and keeps you motivated.',
+    voiceId: `${dialectId}_generic`,
+    difficulty: 1,
+    conversationGoals: ['Ask how to say something', 'Practice a phrase', 'Ask Anis to explain a rule'],
+    systemPromptSeed:
+      `You are Anis, the learner's warm, encouraging personal Arabic tutor. Teach and converse in ${meta.name}. ` +
+      'Explain simply, give short concrete examples, gently correct mistakes, and keep the learner motivated.',
+    isPremium: false,
+  };
+}
+
 /** Every character available anywhere (authored + generated for all dialects) — used to resolve a chat by id. */
 export function findCharacter(id: string): AIConversationCharacter | undefined {
+  if (id === ANIS_CHARACTER_ID) return getAnisCharacter('msa'); // dialect-agnostic default; screens override with the active dialect
   const authored = AI_CHARACTERS.find((c) => c.id === id);
   if (authored) return authored;
   // id shape is `${dialectId}_${roleKey}`; regenerate that dialect's set and look it up.

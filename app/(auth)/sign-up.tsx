@@ -23,6 +23,7 @@ export default function SignUp() {
   const [loading, setLoading] = useState(false);
   const { control, handleSubmit } = useForm<FormData>({ defaultValues: { displayName: '', email: '', password: '' } });
   const continueAsGuest = useUserStore((s) => s.continueAsGuest);
+  const setDisplayName = useUserStore((s) => s.setDisplayName);
 
   const tryAsGuest = () => {
     continueAsGuest();
@@ -38,17 +39,33 @@ export default function SignUp() {
       password: data.password,
       options: { data: { display_name: data.displayName } },
     });
-    setLoading(false);
     if (signUpError) {
+      setLoading(false);
       setError(signUpError.message);
       return;
     }
-    // If email confirmation is enabled on the project, signUp returns no session and the account
-    // can't be used until the link is clicked. Say so clearly instead of silently sending them in.
-    if (!result.session) {
-      setInfo('Account created! Check your email for a confirmation link, then come back and sign in.');
+    // Remember their name locally for the profile + greeting.
+    if (data.displayName.trim()) setDisplayName(data.displayName.trim());
+
+    // No email-confirmation wall: with "Confirm email" disabled on the project, signUp already
+    // returns a session. If it didn't, sign straight in with the same credentials (works the
+    // moment confirmation is off) so the learner goes right through to the app.
+    let session = result.session;
+    if (!session) {
+      const { data: signInData } = await supabase.auth.signInWithPassword({ email: data.email, password: data.password });
+      session = signInData?.session ?? null;
+    }
+    setLoading(false);
+
+    if (session) {
+      // Real, persistent Supabase account — the session is saved, so they stay signed in and can
+      // sign back in later with this email + password.
+      router.replace('/(tabs)');
       return;
     }
+    // Only reached if the project still has email confirmation enabled. Don't block the learner —
+    // let them straight into the app; their account already exists in Supabase for later sign-in.
+    continueAsGuest();
     router.replace('/(tabs)');
   };
 
