@@ -36,7 +36,9 @@ export type IconName =
   | 'check'
   | 'chevronRight'
   | 'chevronLeft'
+  | 'chevronDown'
   | 'close'
+  | 'gift'
   | 'plus'
   | 'send'
   | 'flag'
@@ -77,7 +79,9 @@ const GLYPHS: Record<IconName, React.ComponentProps<typeof MaterialCommunityIcon
   check: 'check',
   chevronRight: 'chevron-right',
   chevronLeft: 'chevron-left',
+  chevronDown: 'chevron-down',
   close: 'close',
+  gift: 'gift-outline',
   plus: 'plus',
   send: 'arrow-up',
   flag: 'flag-variant-outline',

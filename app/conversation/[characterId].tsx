@@ -5,7 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { AnimatedPressable } from '@/components/ui/AnimatedPressable';
 import { Button } from '@/components/ui/Button';
 import { TextField } from '@/components/ui/TextField';
-import { AI_CHARACTERS } from '@/content/characters';
+import { findCharacter } from '@/content/characters';
 import { useTheme } from '@/lib/ThemeProvider';
 import { ai } from '@/lib/ai/client';
 import { haptic } from '@/lib/haptics';
@@ -16,7 +16,7 @@ import type { ConversationScore, ConversationTurn } from '@/types';
 export default function ConversationChat() {
   const { characterId } = useLocalSearchParams<{ characterId: string }>();
   const theme = useTheme();
-  const character = AI_CHARACTERS.find((c) => c.id === characterId);
+  const character = findCharacter(characterId);
 
   const history = useConversationStore((s) => s.historyByCharacter[characterId] ?? []);
   const appendTurn = useConversationStore((s) => s.appendTurn);

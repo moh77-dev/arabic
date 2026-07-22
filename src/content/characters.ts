@@ -1,4 +1,5 @@
-import type { AIConversationCharacter } from '@/types';
+import { DIALECTS } from './dialectMeta';
+import type { AIConversationCharacter, DialectId } from '@/types';
 
 export const AI_CHARACTERS: AIConversationCharacter[] = [
   {
@@ -190,3 +191,166 @@ export const AI_CHARACTERS: AIConversationCharacter[] = [
     isPremium: true,
   },
 ];
+
+// ---------------------------------------------------------------------------
+// Per-dialect "Free Talk" cast.
+//
+// El Oued is hand-authored above (the flagship). Every other dialect gets a
+// consistent set of everyday people generated from role templates + a small
+// regional name bank, so switching dialect always shows characters who speak
+// THAT dialect — never El Oued's Yemma Zohra by mistake.
+// ---------------------------------------------------------------------------
+
+interface RoleTemplate {
+  key: string;
+  role: string;
+  avatar: string;
+  gender: 'f' | 'm';
+  difficulty: 1 | 2 | 3 | 4 | 5;
+  isPremium: boolean;
+  personality: string;
+  goals: string[];
+  seed: (name: string, dialectName: string, region: string) => string;
+}
+
+const ROLE_TEMPLATES: RoleTemplate[] = [
+  {
+    key: 'grandmother',
+    role: 'Grandmother',
+    avatar: '👵',
+    gender: 'f',
+    difficulty: 1,
+    isPremium: false,
+    personality: 'Warm and nostalgic, blesses you often, speaks slowly and patiently about family and food.',
+    goals: ['Ask about her health', 'Talk about family', 'Ask her to tell an old story'],
+    seed: (name, dn, region) =>
+      `You are ${name}, a loving grandmother from ${region}. You speak ${dn} slowly and warmly, often blessing the listener. Keep sentences short for beginners and correct mistakes gently, with love.`,
+  },
+  {
+    key: 'friend',
+    role: 'Friend',
+    avatar: '🧑',
+    gender: 'm',
+    difficulty: 1,
+    isPremium: false,
+    personality: 'Casual and funny, uses everyday slang, jokes around but stays patient with learners.',
+    goals: ['Plan to hang out', 'Joke around', 'Talk about weekend plans'],
+    seed: (name, dn, region) =>
+      `You are ${name}, a casual young friend from ${region} who speaks ${dn} with lots of everyday slang, jokes around, and is patient with learners.`,
+  },
+  {
+    key: 'vendor',
+    role: 'Market Vendor',
+    avatar: '🧺',
+    gender: 'm',
+    difficulty: 2,
+    isPremium: false,
+    personality: 'Loud and persuasive, expects you to haggle over every price.',
+    goals: ['Ask about the products', 'Haggle over the price', 'Complete a purchase'],
+    seed: (name, dn, region) =>
+      `You are ${name}, a lively market vendor in ${region} who expects customers to haggle. Speak ${dn} and enjoy the back-and-forth.`,
+  },
+  {
+    key: 'waiter',
+    role: 'Café Waiter',
+    avatar: '🧑‍🍳',
+    gender: 'm',
+    difficulty: 2,
+    isPremium: false,
+    personality: 'Polite and efficient, proud of the local dishes, checks in on your meal.',
+    goals: ['Order food and drinks', 'Ask for a recommendation', 'Ask for the bill'],
+    seed: (name, dn, region) =>
+      `You are ${name}, a friendly waiter at a café in ${region}. Recommend local dishes, take the order, and bring the bill when asked. Speak ${dn}.`,
+  },
+  {
+    key: 'neighbor',
+    role: 'Neighbor',
+    avatar: '🧕',
+    gender: 'f',
+    difficulty: 2,
+    isPremium: false,
+    personality: 'Friendly and curious, always has news and offers to lend a hand.',
+    goals: ['Greet her at the door', 'Make small talk', 'Accept or decline an invitation'],
+    seed: (name, dn, region) =>
+      `You are ${name}, a friendly, curious neighbor in ${region} who loves chatting at the door. Speak ${dn}.`,
+  },
+];
+
+/** { f: [two female names], m: [three male names] }, each as [display, arabic]. */
+type Name = [string, string];
+const NAME_BANK: Partial<Record<DialectId, { f: [Name, Name]; m: [Name, Name, Name] }>> = {
+  msa: { f: [['Layla', 'ليلى'], ['Maryam', 'مريم']], m: [['Ahmad', 'أحمد'], ['Yusuf', 'يوسف'], ['Omar', 'عمر']] },
+  algerian_algiers: { f: [['Amel', 'آمال'], ['Yasmine', 'ياسمين']], m: [['Sofiane', 'سفيان'], ['Bilal', 'بلال'], ['Riad', 'رياض']] },
+  moroccan: { f: [['Salma', 'سلمى'], ['Khadija', 'خديجة']], m: [['Rachid', 'رشيد'], ['Mehdi', 'مهدي'], ['Hamza', 'حمزة']] },
+  tunisian: { f: [['Ines', 'إيناس'], ['Rania', 'رانية']], m: [['Slim', 'سليم'], ['Aymen', 'أيمن'], ['Wael', 'وائل']] },
+  libyan: { f: [['Huda', 'هدى'], ['Aisha', 'عائشة']], m: [['Tarek', 'طارق'], ['Salem', 'سالم'], ['Faraj', 'فرج']] },
+  egyptian: { f: [['Mona', 'منى'], ['Fatma', 'فاطمة']], m: [['Ahmed', 'أحمد'], ['Mostafa', 'مصطفى'], ['Hassan', 'حسن']] },
+  levantine: { f: [['Rima', 'ريما'], ['Nada', 'ندى']], m: [['Sami', 'سامي'], ['Ziad', 'زياد'], ['Karim', 'كريم']] },
+  palestinian: { f: [['Dana', 'دانا'], ['Rasha', 'رشا']], m: [['Jad', 'جاد'], ['Tariq', 'طارق'], ['Bassel', 'باسل']] },
+  lebanese: { f: [['Maya', 'مايا'], ['Yara', 'يارا']], m: [['Elie', 'إيلي'], ['Ralph', 'رالف'], ['Marwan', 'مروان']] },
+  syrian: { f: [['Lujain', 'لجين'], ['Reem', 'ريم']], m: [['Fadi', 'فادي'], ['Kinan', 'كنان'], ['Samer', 'سامر']] },
+  jordanian: { f: [['Hala', 'هالة'], ['Ruba', 'ربى']], m: [['Zaid', 'زيد'], ['Anas', 'أنس'], ['Yousef', 'يوسف']] },
+  saudi: { f: [['Sara', 'سارة'], ['Noura', 'نورة']], m: [['Faisal', 'فيصل'], ['Turki', 'تركي'], ['Abdullah', 'عبدالله']] },
+  gulf: { f: [['Maryam', 'مريم'], ['Latifa', 'لطيفة']], m: [['Rashid', 'راشد'], ['Khalid', 'خالد'], ['Saeed', 'سعيد']] },
+  iraqi: { f: [['Zainab', 'زينب'], ['Noor', 'نور']], m: [['Mohammed', 'محمد'], ['Ali', 'علي'], ['Haider', 'حيدر']] },
+  sudanese: { f: [['Amani', 'أماني'], ['Tahani', 'تهاني']], m: [['Osman', 'عثمان'], ['Musa', 'موسى'], ['Bakri', 'بكري']] },
+  yemeni: { f: [['Bushra', 'بشرى'], ['Arwa', 'أروى']], m: [['Saleh', 'صالح'], ['Nabil', 'نبيل'], ['Fahd', 'فهد']] },
+};
+
+function generateCharactersForDialect(dialectId: DialectId): AIConversationCharacter[] {
+  const bank = NAME_BANK[dialectId];
+  const meta = DIALECTS[dialectId];
+  if (!bank || !meta) return [];
+  const pickName = (t: RoleTemplate, fIndex: number, mIndex: number): Name =>
+    t.gender === 'f' ? bank.f[fIndex] : bank.m[mIndex];
+  // Deterministic name assignment so the cast is stable across sessions.
+  const assignments: Record<string, [number, number]> = {
+    grandmother: [0, 0],
+    friend: [0, 0],
+    vendor: [0, 1],
+    waiter: [0, 2],
+    neighbor: [1, 0],
+  };
+  return ROLE_TEMPLATES.map((t) => {
+    const [fi, mi] = assignments[t.key] ?? [0, 0];
+    const [name, nameArabic] = pickName(t, fi, mi);
+    return {
+      id: `${dialectId}_${t.key}`,
+      name,
+      nameArabic,
+      role: t.role,
+      avatar: t.avatar,
+      dialectId,
+      personality: t.personality,
+      voiceId: `${dialectId}_generic`,
+      difficulty: t.difficulty,
+      conversationGoals: t.goals,
+      systemPromptSeed: t.seed(name, meta.name, meta.region),
+      isPremium: t.isPremium,
+    };
+  });
+}
+
+const GENERATED_CACHE: Partial<Record<DialectId, AIConversationCharacter[]>> = {};
+
+/**
+ * The Free Talk cast for a dialect: its hand-authored characters first, then generated everyday
+ * people to fill out the set. Guarantees every dialect shows people who actually speak it.
+ */
+export function getCharactersForDialect(dialectId: DialectId): AIConversationCharacter[] {
+  const authored = AI_CHARACTERS.filter((c) => c.dialectId === dialectId);
+  if (authored.length >= 5) return authored;
+  if (!GENERATED_CACHE[dialectId]) GENERATED_CACHE[dialectId] = generateCharactersForDialect(dialectId);
+  const generated = GENERATED_CACHE[dialectId] ?? [];
+  return [...authored, ...generated].slice(0, 6);
+}
+
+/** Every character available anywhere (authored + generated for all dialects) — used to resolve a chat by id. */
+export function findCharacter(id: string): AIConversationCharacter | undefined {
+  const authored = AI_CHARACTERS.find((c) => c.id === id);
+  if (authored) return authored;
+  // id shape is `${dialectId}_${roleKey}`; regenerate that dialect's set and look it up.
+  const dialectId = Object.keys(DIALECTS).find((d) => id.startsWith(`${d}_`)) as DialectId | undefined;
+  if (!dialectId) return undefined;
+  return getCharactersForDialect(dialectId).find((c) => c.id === id);
+}

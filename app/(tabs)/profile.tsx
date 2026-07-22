@@ -79,7 +79,7 @@ export default function Profile() {
           ) : (
             <>
               <ActivityRow icon="check" tint={theme.primary} title={`Completed ${completedLessonIds.length} lesson${completedLessonIds.length > 1 ? 's' : ''}`} meta={`${gami.totalXp} XP earned`} first />
-              <ActivityRow icon="chat" tint="#0ea5e9" title="Practiced with Salah" meta="AI conversation" />
+              <ActivityRow icon="chat" tint="#0ea5e9" title="Practiced with Anis" meta="AI conversation" />
               <ActivityRow icon="review" tint={theme.accentGold} title={`${wordsKnown} words in review`} meta="Spaced repetition" />
             </>
           )}

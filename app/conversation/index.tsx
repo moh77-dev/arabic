@@ -1,21 +1,19 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AnimatedPressable } from '@/components/ui/AnimatedPressable';
 import { Icon, type IconName } from '@/components/ui/Icon';
 import { MonumentHero } from '@/components/ui/MonumentHero';
-import { AI_CHARACTERS } from '@/content/characters';
+import { getCharactersForDialect } from '@/content/characters';
 import { getBackdrop } from '@/content/dialectBackdrops';
 import { DIALECTS } from '@/content/dialectMeta';
+import { GUIDE_GLYPH, GUIDE_NAME, getGuideGreeting } from '@/content/guide';
 import { useTheme } from '@/lib/ThemeProvider';
 import { useSettingsStore } from '@/stores/useSettingsStore';
 import { useUserStore } from '@/stores/useUserStore';
 import type { DialectId } from '@/types';
-
-// A warm El Oued tutor stand-in until a dedicated "Salah" character/voice is authored.
-const TUTOR_CHARACTER_ID = 'char_grandmother';
 
 const CAPABILITIES: { icon: IconName; tint: (t: ReturnType<typeof useTheme>) => string; title: string; subtitle: string; route: string }[] = [
   { icon: 'edit', tint: (t) => t.primary, title: 'Fix my Arabic', subtitle: 'Correct a phrase and explain why', route: 'tutor' },
@@ -31,6 +29,8 @@ export default function AskSalah() {
   const isPremium = useUserStore((s) => s.subscriptionTier !== 'free');
   const backdrop = getBackdrop(activeDialect);
   const meta = DIALECTS[activeDialect] ?? DIALECTS.msa;
+  const greeting = getGuideGreeting(activeDialect);
+  const cast = useMemo(() => getCharactersForDialect(activeDialect), [activeDialect]);
   const [draft, setDraft] = useState('');
 
   // Pulsing "live" dot.
@@ -46,7 +46,12 @@ export default function AskSalah() {
     return () => loop.stop();
   }, [pulse]);
 
-  const openTutor = () => router.push(`/conversation/${TUTOR_CHARACTER_ID}`);
+  // "Anis" opens a chat with the first character who speaks the active dialect, so the tutor always
+  // replies in the dialect you're studying.
+  const openTutor = () => {
+    const tutor = cast[0];
+    if (tutor) router.push(`/conversation/${tutor.id}`);
+  };
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.background }}>
@@ -64,22 +69,22 @@ export default function AskSalah() {
               </View>
             </View>
 
-            {/* Salah persona */}
+            {/* Anis persona */}
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, marginTop: 22 }}>
               <View style={{ width: 46, height: 46, borderRadius: 14, backgroundColor: 'rgba(255,255,255,0.9)', alignItems: 'center', justifyContent: 'center' }}>
-                <Text style={{ fontSize: 24, fontWeight: '900', color: backdrop.heroGradient[1] }}>ص</Text>
+                <Text style={{ fontSize: 24, fontWeight: '900', color: backdrop.heroGradient[1] }}>{GUIDE_GLYPH}</Text>
               </View>
               <View>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                  <Text style={{ color: '#fff', fontWeight: '800', fontSize: 16 }}>Salah</Text>
+                  <Text style={{ color: '#fff', fontWeight: '800', fontSize: 16 }}>{GUIDE_NAME}</Text>
                   <Animated.View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#42d386', opacity: pulse }} />
                 </View>
-                <Text style={{ color: 'rgba(255,255,255,0.75)', fontSize: 12 }}>Your guide · {backdrop.landmark}</Text>
+                <Text style={{ color: 'rgba(255,255,255,0.75)', fontSize: 12 }}>Your {meta.name} guide · {backdrop.landmark}</Text>
               </View>
             </View>
 
-            <Text style={{ color: '#fff', fontSize: 30, fontWeight: '700', marginTop: 18, textAlign: 'right' }}>واش نعلّموك اليوم؟</Text>
-            <Text style={{ color: 'rgba(255,255,255,0.9)', fontSize: 13, marginTop: 4 }}>What shall we work on today?</Text>
+            <Text style={{ color: '#fff', fontSize: 30, fontWeight: '700', marginTop: 18, textAlign: 'right' }}>{greeting.arabic}</Text>
+            <Text style={{ color: 'rgba(255,255,255,0.9)', fontSize: 13, marginTop: 4 }}>{greeting.english}</Text>
           </View>
         </MonumentHero>
 
@@ -106,7 +111,7 @@ export default function AskSalah() {
             <TextInput
               value={draft}
               onChangeText={setDraft}
-              placeholder="Ask Salah, or say it out loud…"
+              placeholder={`Ask ${GUIDE_NAME}, or say it out loud…`}
               placeholderTextColor={theme.textSecondary}
               style={{ flex: 1, color: theme.textPrimary, fontSize: 14 }}
               onSubmitEditing={openTutor}
@@ -143,10 +148,10 @@ export default function AskSalah() {
             ))}
           </View>
 
-          {/* Free Talk — talk to a character */}
-          <Text style={{ color: theme.textSecondary, fontSize: 11, fontWeight: '800', letterSpacing: 1.4, marginTop: 26 }}>FREE TALK · PICK A PLACE</Text>
+          {/* Free Talk — talk to a character who speaks the active dialect */}
+          <Text style={{ color: theme.textSecondary, fontSize: 11, fontWeight: '800', letterSpacing: 1.4, marginTop: 26 }}>FREE TALK · PICK A PERSON</Text>
           <View style={{ gap: 10, marginTop: 12 }}>
-            {AI_CHARACTERS.slice(0, 6).map((ch) => {
+            {cast.map((ch) => {
               const locked = ch.isPremium && !isPremium;
               return (
                 <AnimatedPressable

@@ -5,7 +5,7 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AnimatedPressable } from '@/components/ui/AnimatedPressable';
 import { Avatar } from '@/components/ui/Avatar';
-import { DialectSwitcher } from '@/components/ui/DialectSwitcher';
+import { DialectPicker } from '@/components/ui/DialectPicker';
 import { Icon, type IconName } from '@/components/ui/Icon';
 import { MonumentHero } from '@/components/ui/MonumentHero';
 import { getBackdrop } from '@/content/dialectBackdrops';
@@ -136,8 +136,8 @@ export default function Home() {
               <ActionRow
                 icon="chat"
                 tint={theme.primary}
-                title="Ask Salah"
-                subtitle="Your El Oued tutor — grammar, phrases, anything"
+                title="Ask Anis"
+                subtitle={`Your ${meta.name} tutor — grammar, phrases, anything`}
                 onPress={() => router.push('/conversation')}
               />
               <ActionRow
@@ -210,7 +210,7 @@ export default function Home() {
           <View style={{ marginTop: 26 }}>
             <MonoLabel color={theme.textSecondary}>YOUR DIALECTS</MonoLabel>
             <View style={{ marginTop: 12 }}>
-              <DialectSwitcher />
+              <DialectPicker />
             </View>
           </View>
         </View>
