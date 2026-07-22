@@ -26,6 +26,10 @@ interface GamificationState extends UserGamification {
   totalXp: number;
   league: League;
   dailyActivity: Record<string, DailyActivity>;
+  /** Unit ids whose end-of-unit reward chest has already been claimed (so it pays out once). */
+  claimedUnitRewards: string[];
+  /** Claim a unit's reward chest. Returns false if already claimed; otherwise grants coins + gems. */
+  claimUnitReward: (unitId: string) => boolean;
   recordActivity: (patch: Partial<DailyActivity>, isoDate?: string) => void;
   getTodayActivity: () => DailyActivity;
   addXp: (amount: number, opts?: { isoDate?: string; minutesStudied?: number }) => void;
@@ -71,6 +75,18 @@ export const useGamificationStore = create<GamificationState>()(
       studyHeatmap: {},
       league: 'bronze',
       dailyActivity: {},
+      claimedUnitRewards: [],
+
+      claimUnitReward: (unitId) => {
+        const s = get();
+        if (s.claimedUnitRewards.includes(unitId)) return false;
+        set({
+          claimedUnitRewards: [...s.claimedUnitRewards, unitId],
+          coins: s.coins + 50,
+          diamonds: s.diamonds + 3,
+        });
+        return true;
+      },
 
       recordActivity: (patch, isoDate) => {
         const date = isoDate ?? todayISO();
