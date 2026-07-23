@@ -1,5 +1,4 @@
 import { Audio } from 'expo-av';
-import * as FileSystem from 'expo-file-system';
 import { useLocalSearchParams, router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { FlatList, KeyboardAvoidingView, Platform, Text, View } from 'react-native';
@@ -10,6 +9,7 @@ import { TextField } from '@/components/ui/TextField';
 import { ANIS_CHARACTER_ID, findCharacter, getAnisCharacter } from '@/content/characters';
 import { useTheme } from '@/lib/ThemeProvider';
 import { ai } from '@/lib/ai/client';
+import { audioUriToBase64, recordingMimeType } from '@/lib/audio';
 import { haptic } from '@/lib/haptics';
 import { speakReply, stopSpeaking } from '@/lib/speech';
 import { useConversationStore } from '@/stores/useConversationStore';
@@ -118,8 +118,8 @@ export default function ConversationChat() {
       await rec.stopAndUnloadAsync();
       const uri = rec.getURI();
       if (!uri) throw new Error('No recording');
-      const audioBase64 = await FileSystem.readAsStringAsync(uri, { encoding: FileSystem.EncodingType.Base64 });
-      const { transcript } = await ai.transcribeSpeech({ audioBase64, dialectId: character!.dialectId });
+      const audioBase64 = await audioUriToBase64(uri);
+      const { transcript } = await ai.transcribeSpeech({ audioBase64, dialectId: character!.dialectId, mimeType: recordingMimeType() });
       setRecState('idle');
       if (transcript?.trim()) await sendText(transcript);
     } catch {

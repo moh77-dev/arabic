@@ -42,8 +42,9 @@ export const ai = {
   generateVocabulary: (opts: { dialectId: DialectId; category: string; count: number }) =>
     invoke<{ words: VocabWord[] }>('generate-vocabulary', opts),
 
-  /** Sends a recorded utterance (base64 audio) for Whisper transcription. */
-  transcribeSpeech: (opts: { audioBase64: string; dialectId: DialectId; expectedText?: string }) =>
+  /** Sends a recorded utterance (base64 audio) for Whisper transcription. `mimeType` lets the
+   *  server label the file correctly (e.g. audio/webm on web) so Whisper accepts it. */
+  transcribeSpeech: (opts: { audioBase64: string; dialectId: DialectId; mimeType?: string; expectedText?: string }) =>
     invoke<{ transcript: string; confidence: number }>('transcribe-speech', opts),
 
   /** Text-to-speech playback. `characterId` allows a per-character voice override; `voiceKey`

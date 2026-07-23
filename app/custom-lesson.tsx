@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/Button';
 import { Icon } from '@/components/ui/Icon';
 import { DIALECTS } from '@/content/dialectMeta';
 import { GUIDE_NAME } from '@/content/guide';
+import { generateSentenceBuilders, normalizeGeneratedExercises } from '@/content/lessonGenerator';
 import { LessonRunner } from '@/features/lessons/LessonRunner';
 import { useTheme } from '@/lib/ThemeProvider';
 import { ai } from '@/lib/ai/client';
@@ -18,7 +19,7 @@ import { useUserStore } from '@/stores/useUserStore';
 import type { DifficultyLevel, Lesson } from '@/types';
 
 // Quick-pick focus areas; the learner can also type their own topic.
-const FOCUS_AREAS = ['Everyday vocabulary', 'Grammar basics', 'Greetings & small talk', 'Travel & directions', 'Food & ordering', 'Family & home', 'Shopping & haggling', 'Numbers & money'];
+const FOCUS_AREAS = ['Building sentences', 'Everyday vocabulary', 'Grammar basics', 'Greetings & small talk', 'Travel & directions', 'Food & ordering', 'Family & home', 'Shopping & haggling', 'Numbers & money'];
 
 // Onboarding difficulty → the 1–5 scale the lesson generator expects.
 const DIFFICULTY_LEVEL: Record<DifficultyLevel, 1 | 2 | 3 | 4 | 5> = { easy: 2, moderate: 3, challenging: 4, intense: 5 };
@@ -56,7 +57,12 @@ export default function CustomLesson() {
         weakWordIds: getWeakWordIds(),
         userGoal,
       });
-      if (!result.exercises?.length) throw new Error('No exercises came back');
+      // Repair AI exercises so every one is actually answerable, and guarantee some sentence-building.
+      const aiExercises = normalizeGeneratedExercises(result.exercises ?? []);
+      const wantsSentences = /sentence/i.test(chosenTopic);
+      const builders = generateSentenceBuilders(dialectId, wantsSentences ? 6 : 2);
+      const exercises = wantsSentences ? [...builders, ...aiExercises] : [...aiExercises, ...builders];
+      if (!exercises.length) throw new Error('No exercises came back');
       setLesson({
         id: `custom_${Date.now()}`,
         unitId: 'custom',
@@ -65,7 +71,7 @@ export default function CustomLesson() {
         titleArabic: result.titleArabic,
         description: `Custom lesson: ${chosenTopic}`,
         category: 'phrases' as Lesson['category'],
-        exercises: result.exercises,
+        exercises,
         xpReward: 30,
         estimatedMinutes: 6,
         difficulty,
