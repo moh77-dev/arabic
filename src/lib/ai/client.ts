@@ -42,12 +42,14 @@ export const ai = {
   generateVocabulary: (opts: { dialectId: DialectId; category: string; count: number }) =>
     invoke<{ words: VocabWord[] }>('generate-vocabulary', opts),
 
-  /** Sends a recorded utterance (base64 audio) for Whisper transcription. */
-  transcribeSpeech: (opts: { audioBase64: string; dialectId: DialectId; expectedText?: string }) =>
+  /** Sends a recorded utterance (base64 audio) for Whisper transcription. `mimeType` lets the
+   *  server label the file correctly (e.g. audio/webm on web) so Whisper accepts it. */
+  transcribeSpeech: (opts: { audioBase64: string; dialectId: DialectId; mimeType?: string; expectedText?: string }) =>
     invoke<{ transcript: string; confidence: number }>('transcribe-speech', opts),
 
-  /** OpenAI TTS for native-accent playback of a phrase. */
-  textToSpeech: (opts: { text: string; dialectId: DialectId; voice?: string }) =>
+  /** Text-to-speech playback. `characterId` allows a per-character voice override; `voiceKey`
+   *  (a character's voiceId) picks a voice by gender/age; `voice` forces a provider voice name. */
+  textToSpeech: (opts: { text: string; dialectId: DialectId; characterId?: string; voiceKey?: string; voice?: string }) =>
     invoke<{ audioBase64: string; mimeType: string }>('text-to-speech', opts),
 
   analyzePronunciation: (opts: { audioBase64: string; targetText: string; targetTransliteration: string; dialectId: DialectId }) =>

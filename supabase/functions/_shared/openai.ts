@@ -56,11 +56,24 @@ export async function chatCompleteJSON<T>(opts: { system: string; user: string; 
   return JSON.parse(text) as T;
 }
 
+// Whisper picks the decoder from the file extension, so the filename must match the real format.
+const MIME_EXT: Record<string, string> = {
+  'audio/m4a': 'm4a',
+  'audio/mp4': 'm4a',
+  'audio/mpeg': 'mp3',
+  'audio/mp3': 'mp3',
+  'audio/wav': 'wav',
+  'audio/x-wav': 'wav',
+  'audio/webm': 'webm',
+  'audio/ogg': 'ogg',
+};
+
 /** Whisper speech-to-text transcription from a base64-encoded audio blob. */
 export async function transcribeAudio(audioBase64: string, mimeType = 'audio/m4a'): Promise<{ text: string }> {
   const bytes = Uint8Array.from(atob(audioBase64), (c) => c.charCodeAt(0));
+  const ext = MIME_EXT[(mimeType ?? '').toLowerCase()] ?? 'm4a';
   const form = new FormData();
-  form.append('file', new Blob([bytes], { type: mimeType }), 'audio.m4a');
+  form.append('file', new Blob([bytes], { type: mimeType }), `audio.${ext}`);
   // OpenAI: whisper-1 · Groq: whisper-large-v3. Override with OPENAI_WHISPER_MODEL.
   form.append('model', Deno.env.get('OPENAI_WHISPER_MODEL') ?? 'whisper-1');
 

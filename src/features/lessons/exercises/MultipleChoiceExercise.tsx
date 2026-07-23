@@ -92,6 +92,16 @@ export function MultipleChoiceExercise({ exercise, onAnswered }: Props) {
           );
         })}
       </View>
+
+      {/* Safety net: if an exercise somehow has no options, don't trap the learner. */}
+      {!exercise.options?.length && (
+        <AnimatedPressable
+          onPress={() => onAnswered(true)}
+          style={{ marginTop: 20, padding: 16, borderRadius: 14, backgroundColor: theme.primary, alignItems: 'center' }}
+        >
+          <Text style={{ color: theme.primaryText, fontWeight: '800', fontSize: 16 }}>Continue</Text>
+        </AnimatedPressable>
+      )}
     </View>
   );
 }
