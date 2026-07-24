@@ -5,6 +5,7 @@ import { AnimatedPressable } from '@/components/ui/AnimatedPressable';
 import { useTheme } from '@/lib/ThemeProvider';
 import { haptic } from '@/lib/haptics';
 import { speakArabic, stopSpeaking } from '@/lib/speech';
+import { toPlainText } from '@/lib/text';
 import type { Exercise } from '@/types';
 
 interface Props {
@@ -67,9 +68,12 @@ export function MultipleChoiceExercise({ exercise, onAnswered }: Props) {
       )}
       <Text style={{ fontSize: 18, color: theme.textPrimary, marginBottom: 20, textAlign: 'center' }}>{exercise.prompt}</Text>
       <View style={{ gap: 10 }}>
-        {exercise.options?.map((option) => {
+        {exercise.options?.map((rawOption, idx) => {
+          // Coerce to a string so an object option can never crash the render (#31).
+          const option = toPlainText(rawOption);
+          const answer = toPlainText(exercise.correctAnswer);
           const isSelected = selected === option;
-          const isCorrectOption = option === exercise.correctAnswer;
+          const isCorrectOption = option === answer;
           let bg = theme.surfaceElevated;
           let border = theme.border;
           if (revealed && isCorrectOption) {
@@ -80,7 +84,7 @@ export function MultipleChoiceExercise({ exercise, onAnswered }: Props) {
             border = theme.danger;
           }
           return (
-            <Animated.View key={option} style={isSelected ? shakeStyle : undefined}>
+            <Animated.View key={`${option}-${idx}`} style={isSelected ? shakeStyle : undefined}>
               <AnimatedPressable
                 onPress={() => handleSelect(option)}
                 disabled={revealed}

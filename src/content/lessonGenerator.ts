@@ -1,4 +1,5 @@
 import { ALL_VOCAB } from './dialects';
+import { toPlainText } from '@/lib/text';
 import type { DialectId, Exercise, ExerciseType, VocabWord } from '@/types';
 
 /** Deterministic PRNG so generated lessons are stable across app runs (no re-shuffling on every render). */
@@ -214,26 +215,31 @@ export function normalizeGeneratedExercises(exercises: Exercise[]): Exercise[] {
 
   return (exercises ?? []).map((e, i) => {
     const id = e.id || `ai_${i}`;
-    const answerText = Array.isArray(e.correctAnswer) ? e.correctAnswer.join(' ') : (e.correctAnswer ?? '');
+    // Everything below must end up as plain strings — the AI sometimes returns objects (e.g. an
+    // option as { word, meaning }) which would crash the renderer (#31).
+    const answerText = toPlainText(e.correctAnswer);
+    const prompt = toPlainText(e.prompt);
+    const promptArabic = e.promptArabic ? toPlainText(e.promptArabic) : undefined;
 
     if (e.type === 'word_order') {
-      const words = (e.wordBank && e.wordBank.length ? e.wordBank : answerText.split(/\s+/)).filter(Boolean);
-      return { ...e, id, wordBank: seededShuffle(words, id.length + i), correctAnswer: answerText || words.join(' ') };
+      const rawBank = Array.isArray(e.wordBank) && e.wordBank.length ? e.wordBank.map(toPlainText) : answerText.split(/\s+/);
+      const words = rawBank.filter(Boolean);
+      return { ...e, id, prompt, promptArabic, wordBank: seededShuffle(words, id.length + i), correctAnswer: answerText || words.join(' ') };
     }
 
     if (mcTypes.includes(e.type)) {
-      let opts = (e.options ?? []).filter(Boolean);
-      if (opts.length < 2) return { ...e, id, type: 'typing', options: undefined, correctAnswer: answerText };
+      let opts = (Array.isArray(e.options) ? e.options : []).map(toPlainText).filter(Boolean);
+      if (opts.length < 2) return { ...e, id, prompt, promptArabic, type: 'typing', options: undefined, correctAnswer: answerText };
       if (answerText && !opts.includes(answerText)) opts = [answerText, ...opts];
       opts = Array.from(new Set(opts)).slice(0, 4);
       if (answerText && !opts.includes(answerText)) opts[opts.length - 1] = answerText;
-      return { ...e, id, options: opts, correctAnswer: answerText };
+      return { ...e, id, prompt, promptArabic, options: opts, correctAnswer: answerText };
     }
 
     // Generated speaking items depend on the mic (unreliable on web) — make them typed instead.
-    if (speakTypes.includes(e.type)) return { ...e, id, type: 'translation', correctAnswer: answerText };
+    if (speakTypes.includes(e.type)) return { ...e, id, prompt, promptArabic, type: 'translation', correctAnswer: answerText };
 
-    return { ...e, id, correctAnswer: answerText };
+    return { ...e, id, prompt, promptArabic, options: Array.isArray(e.options) ? e.options.map(toPlainText) : e.options, correctAnswer: answerText };
   });
 }
 
