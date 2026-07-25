@@ -13,7 +13,9 @@ import type { LandmarkKind } from './dialectBackdrops';
  *   cairo: require('../../assets/images/landmarks/cairo.jpg'),
  */
 export const LANDMARK_IMAGES: Partial<Record<LandmarkKind, ImageSourcePropType>> = {
-  martyrs_memorial: require('../../assets/images/landmarks/martyrs_memorial.jpg'),
+  // Every dialect uses the same treatment — its landmark silhouette on the country's own color
+  // (the "El Oued look"). Register a photo here only if you want to override that for one dialect.
+  // martyrs_memorial: require('../../assets/images/landmarks/martyrs_memorial.jpg'),
   // domes: require('../../assets/images/landmarks/domes.jpg'),
   // minaret: require('../../assets/images/landmarks/minaret.jpg'),
   // koutoubia: require('../../assets/images/landmarks/koutoubia.jpg'),
