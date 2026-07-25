@@ -46,8 +46,10 @@ export function MonumentHero({ dialectId, height, children, radius = 30 }: Props
         </ImageBackground>
       ) : (
         <LinearGradient colors={backdrop.heroGradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
-          <View style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: 130 }}>
-            <LandmarkSilhouette kind={backdrop.silhouette} color="#ffffff" opacity={0.16} height={130} />
+          {/* The landmark reads as a real background image: it fills most of the hero height and
+              sits at a visible strength behind the greeting, each dialect on its own color. */}
+          <View style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: Math.round(height * 0.82) }}>
+            <LandmarkSilhouette kind={backdrop.silhouette} color="#ffffff" opacity={0.22} height={Math.round(height * 0.82)} />
           </View>
           {body}
         </LinearGradient>
