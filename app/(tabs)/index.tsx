@@ -144,7 +144,7 @@ export default function Home() {
               />
               <ActionRow
                 icon="freetalk"
-                tint="#0ea5e9"
+                tint={theme.accentDiamond}
                 title="Free Talk"
                 subtitle="Pick a place and start a real conversation"
                 onPress={() => router.push('/conversation')}
@@ -186,21 +186,21 @@ export default function Home() {
               />
               <ActionRow
                 icon="translate"
-                tint="#0ea5e9"
+                tint={theme.accentDiamond}
                 title="Translator"
                 subtitle="English to your dialect, with audio"
                 onPress={() => router.push('/translator')}
               />
               <ActionRow
                 icon="play"
-                tint="#7c3aed"
+                tint="#a24b6e"
                 title="Watch & speak"
                 subtitle="Listen to a native speaker, then say it back"
                 onPress={() => router.push('/drill')}
               />
               <ActionRow
                 icon="souk"
-                tint="#e6890a"
+                tint="#c9860a"
                 title="Interactive stories"
                 subtitle="Branching scenes — order food, take a taxi, meet family"
                 onPress={() => router.push('/story')}
@@ -242,7 +242,12 @@ function StatChip({ icon, value }: { icon: IconName; value: number }) {
 
 function MonoLabel({ children, color }: { children: React.ReactNode; color: string }) {
   return (
-    <Text style={{ color, fontSize: 11, fontWeight: '800', letterSpacing: 1.4 }}>{children}</Text>
+    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 7 }}>
+      {/* Small eight-point star — a nod to Islamic geometric ornament — to give section
+          headers a bit of cultural character instead of a plain caps label. */}
+      <Text style={{ color, fontSize: 11, marginTop: -1 }}>۞</Text>
+      <Text style={{ color, fontSize: 11, fontWeight: '800', letterSpacing: 1.4 }}>{children}</Text>
+    </View>
   );
 }
 
@@ -278,11 +283,33 @@ function ActionRow({
         borderColor: theme.border,
         padding: 14,
         opacity: disabled ? 0.5 : 1,
+        // A soft colored glow tinted to the row's accent gives the list depth and warmth
+        // instead of reading as flat identical rows.
+        shadowColor: tint,
+        shadowOpacity: theme.mode === 'dark' ? 0.35 : 0.18,
+        shadowRadius: 12,
+        shadowOffset: { width: 0, height: 5 },
       }}
     >
-      <View style={{ width: 44, height: 44, borderRadius: 13, backgroundColor: `${tint}1f`, alignItems: 'center', justifyContent: 'center' }}>
-        <Icon name={icon} size={22} color={tint} />
-      </View>
+      {/* Solid, saturated tile with a white glyph and a matching glow — richer than a pale wash. */}
+      <LinearGradient
+        colors={[tint, `${tint}cc`]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={{
+          width: 46,
+          height: 46,
+          borderRadius: 14,
+          alignItems: 'center',
+          justifyContent: 'center',
+          shadowColor: tint,
+          shadowOpacity: 0.5,
+          shadowRadius: 8,
+          shadowOffset: { width: 0, height: 4 },
+        }}
+      >
+        <Icon name={icon} size={22} color="#ffffff" />
+      </LinearGradient>
       <View style={{ flex: 1 }}>
         <Text style={{ color: theme.textPrimary, fontWeight: '800', fontSize: 14 }}>{title}</Text>
         <Text style={{ color: theme.textSecondary, fontSize: 12, marginTop: 1 }}>{subtitle}</Text>
