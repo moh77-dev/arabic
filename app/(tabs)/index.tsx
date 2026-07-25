@@ -99,7 +99,12 @@ export default function Home() {
               </View>
 
               <View style={{ height: 8, borderRadius: 999, backgroundColor: theme.mode === 'dark' ? '#3a2f1a' : '#e6d2a4', overflow: 'hidden', marginTop: 16 }}>
-                <View style={{ height: '100%', width: `${(xpIntoLevel / xpForNextLevel) * 100}%`, backgroundColor: theme.primary, borderRadius: 999 }} />
+                <LinearGradient
+                  colors={[theme.accentGold, theme.primary]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  style={{ height: '100%', width: `${(xpIntoLevel / xpForNextLevel) * 100}%`, borderRadius: 999 }}
+                />
               </View>
               <Text style={{ color: parchMuted, fontSize: 12, marginTop: 6 }}>
                 {xpIntoLevel} / {xpForNextLevel} XP to Level {level + 1}
@@ -113,16 +118,24 @@ export default function Home() {
                   alignItems: 'center',
                   gap: 8,
                   alignSelf: 'flex-start',
+                  overflow: 'hidden',
                   paddingHorizontal: 20,
                   paddingVertical: 13,
                   borderRadius: 15,
                   backgroundColor: theme.primary,
                   shadowColor: theme.primary,
-                  shadowOpacity: 0.4,
-                  shadowRadius: 14,
-                  shadowOffset: { width: 0, height: 6 },
+                  shadowOpacity: 0.45,
+                  shadowRadius: 16,
+                  shadowOffset: { width: 0, height: 8 },
                 }}
               >
+                {/* Glossy sheen to match the premium buttons. */}
+                <LinearGradient
+                  pointerEvents="none"
+                  colors={['rgba(255,255,255,0.28)', 'rgba(255,255,255,0.04)', 'rgba(0,0,0,0.08)']}
+                  locations={[0, 0.55, 1]}
+                  style={StyleSheet.absoluteFill}
+                />
                 <Icon name="play" size={18} color={theme.primaryText} />
                 <Text style={{ color: theme.primaryText, fontWeight: '800', fontSize: 15 }}>
                   {nextLesson ? `Continue · ${nextLesson.title}` : 'Explore lessons'}

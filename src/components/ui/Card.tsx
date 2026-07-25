@@ -8,14 +8,16 @@ interface CardProps extends ViewProps {
   padded?: boolean;
 }
 
+// Layered, warm-tinted depth — a close contact shadow plus a soft ambient one — reads more
+// premium than a single flat drop shadow.
 const softShadow = Platform.select({
-  web: { boxShadow: '0 8px 30px rgba(15, 23, 42, 0.08)' } as any,
+  web: { boxShadow: '0 1px 2px rgba(58, 33, 12, 0.06), 0 12px 34px rgba(58, 33, 12, 0.10)' } as any,
   default: {
-    shadowColor: '#0a0f1a',
-    shadowOpacity: 0.08,
-    shadowRadius: 16,
-    shadowOffset: { width: 0, height: 8 },
-    elevation: 3,
+    shadowColor: '#3a210c',
+    shadowOpacity: 0.12,
+    shadowRadius: 20,
+    shadowOffset: { width: 0, height: 10 },
+    elevation: 4,
   },
 });
 
@@ -68,12 +70,15 @@ export function Card({ glass, padded = true, style, children, ...rest }: CardPro
           padding: padded ? 16 : 0,
           borderWidth: 1,
           borderColor: theme.border,
+          overflow: 'hidden',
         },
         softShadow,
         style,
       ]}
       {...rest}
     >
+      {/* Fine bright hairline along the top edge — the way light catches a polished surface. */}
+      <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 1, backgroundColor: theme.glassHighlight }} />
       {children}
     </View>
   );
