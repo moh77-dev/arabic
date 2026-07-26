@@ -4,6 +4,7 @@ import Animated, { useAnimatedStyle, useSharedValue, withSequence, withTiming } 
 import { AnimatedPressable } from '@/components/ui/AnimatedPressable';
 import { useTheme } from '@/lib/ThemeProvider';
 import { haptic } from '@/lib/haptics';
+import { playSound } from '@/lib/sound';
 import { speakArabic, stopSpeaking } from '@/lib/speech';
 import { toPlainText } from '@/lib/text';
 import type { Exercise } from '@/types';
@@ -39,6 +40,7 @@ export function MultipleChoiceExercise({ exercise, onAnswered }: Props) {
       haptic.error();
       shake.value = withSequence(withTiming(-8, { duration: 50 }), withTiming(8, { duration: 50 }), withTiming(0, { duration: 50 }));
     }
+    playSound(isCorrect ? 'correct' : 'wrong');
     setTimeout(() => onAnswered(isCorrect), 700);
   };
 

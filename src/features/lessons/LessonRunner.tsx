@@ -6,6 +6,7 @@ import { ExerciseRenderer } from './ExerciseRenderer';
 import { LessonResults } from './LessonResults';
 import { AnimatedPressable } from '@/components/ui/AnimatedPressable';
 import { useTheme } from '@/lib/ThemeProvider';
+import { playSound } from '@/lib/sound';
 import { lessonXpReward, coinsForLesson } from '@/lib/gamificationMath';
 import { confirmAsync } from '@/lib/platformAlert';
 import { useGamificationStore } from '@/stores/useGamificationStore';
@@ -104,6 +105,7 @@ export function LessonRunner({ lesson }: { lesson: Lesson }) {
     addXp(xpEarned, { minutesStudied: lesson.estimatedMinutes });
     addCoins(coinsEarned);
     recordActivity({ lessonsCompleted: 1, perfectLessons: isPerfect ? 1 : 0 });
+    playSound(isPerfect ? 'levelup' : 'complete');
     setFinished(true);
   };
 

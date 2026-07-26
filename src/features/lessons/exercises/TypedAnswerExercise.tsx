@@ -3,16 +3,14 @@ import { Text, View } from 'react-native';
 import { Button } from '@/components/ui/Button';
 import { TextField } from '@/components/ui/TextField';
 import { useTheme } from '@/lib/ThemeProvider';
+import { acceptedAnswersFor, isAnswerCorrect } from '@/lib/answerCheck';
 import { haptic } from '@/lib/haptics';
+import { playSound } from '@/lib/sound';
 import type { Exercise } from '@/types';
 
 interface Props {
   exercise: Exercise;
   onAnswered: (correct: boolean) => void;
-}
-
-function normalize(s: string) {
-  return s.trim().toLowerCase().replace(/[.,!?؟،]/g, '');
 }
 
 export function TypedAnswerExercise({ exercise, onAnswered }: Props) {
@@ -23,12 +21,13 @@ export function TypedAnswerExercise({ exercise, onAnswered }: Props) {
 
   const submit = () => {
     if (revealed || !value.trim()) return;
-    const answer = Array.isArray(exercise.correctAnswer) ? exercise.correctAnswer.join(' ') : exercise.correctAnswer;
-    const isCorrect = normalize(value) === normalize(answer);
+    // Lenient: accepts spelling variants, synonyms and near-misses — not just the exact string.
+    const isCorrect = isAnswerCorrect(value, acceptedAnswersFor(exercise));
     setCorrect(isCorrect);
     setRevealed(true);
     if (isCorrect) haptic.success();
     else haptic.error();
+    playSound(isCorrect ? 'correct' : 'wrong');
     setTimeout(() => onAnswered(isCorrect), 900);
   };
 
