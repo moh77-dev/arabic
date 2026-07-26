@@ -8,7 +8,7 @@ import { Avatar } from '@/components/ui/Avatar';
 import { DialectPicker } from '@/components/ui/DialectPicker';
 import { Icon, type IconName } from '@/components/ui/Icon';
 import { MonumentHero } from '@/components/ui/MonumentHero';
-import { getBackdrop } from '@/content/dialectBackdrops';
+import { getPageBackground } from '@/content/dialectBackdrops';
 import { DIALECTS } from '@/content/dialectMeta';
 import { getUnitsForDialect, LESSONS_BY_ID } from '@/content/lessonPaths';
 import { useTheme } from '@/lib/ThemeProvider';
@@ -27,7 +27,6 @@ export default function Home() {
   const displayName = useUserStore((s) => s.displayName) ?? 'friend';
 
   const { level, xpIntoLevel, xpForNextLevel } = levelFromTotalXp(gami.totalXp);
-  const backdrop = getBackdrop(activeDialect);
   const meta = DIALECTS[activeDialect] ?? DIALECTS.msa;
 
   const units = useMemo(() => getUnitsForDialect(activeDialect), [activeDialect]);
@@ -41,10 +40,10 @@ export default function Home() {
   }, [units, completedLessonIds]);
 
   const dueCount = useMemo(() => getDueWordIds().length, [srsCards, getDueWordIds]);
-  const pageWash = theme.mode === 'dark' ? theme.backdropGradient : backdrop.pageWash;
   const parchment = theme.mode === 'dark' ? (['#241d12', '#191308'] as const) : (['#fbf1dc', '#f4e6c8'] as const);
   const parchInk = theme.mode === 'dark' ? '#e7d4a8' : '#5c3f12';
   const parchMuted = theme.mode === 'dark' ? '#c9a253' : '#9a7521';
+  const pageWash = getPageBackground(activeDialect, theme.mode);
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.background }}>
@@ -291,17 +290,15 @@ function ActionRow({
         alignItems: 'center',
         gap: 14,
         backgroundColor: theme.surfaceElevated,
-        borderRadius: 18,
-        borderWidth: 1,
-        borderColor: theme.border,
-        padding: 14,
+        borderRadius: 22,
+        padding: 15,
         opacity: disabled ? 0.5 : 1,
-        // A soft colored glow tinted to the row's accent gives the list depth and warmth
-        // instead of reading as flat identical rows.
+        // Clean, borderless card that floats on the tinted background with a soft accent glow —
+        // reads more modern than a boxed row with a hard border.
         shadowColor: tint,
-        shadowOpacity: theme.mode === 'dark' ? 0.35 : 0.18,
-        shadowRadius: 12,
-        shadowOffset: { width: 0, height: 5 },
+        shadowOpacity: theme.mode === 'dark' ? 0.35 : 0.16,
+        shadowRadius: 14,
+        shadowOffset: { width: 0, height: 6 },
       }}
     >
       {/* Solid, saturated tile with a white glyph and a matching glow — richer than a pale wash. */}
