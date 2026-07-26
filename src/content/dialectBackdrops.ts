@@ -1,3 +1,4 @@
+import { blendHex } from '@/lib/color';
 import type { DialectId } from '@/types';
 
 export type LandmarkKind =
@@ -146,4 +147,19 @@ export const DIALECT_BACKDROPS: Record<DialectId, DialectBackdrop> = {
 
 export function getBackdrop(dialectId: DialectId): DialectBackdrop {
   return DIALECT_BACKDROPS[dialectId] ?? DIALECT_BACKDROPS.msa;
+}
+
+/**
+ * A soft, app-wide background wash tinted to the active dialect's color — so the whole UI (every
+ * screen, not just the hero) subtly takes on the country's identity. Derived from the dialect's
+ * vivid hero color, blended most of the way toward the base surface so text stays legible.
+ */
+export function getPageBackground(dialectId: DialectId, mode: 'light' | 'dark'): readonly [string, string, string] {
+  const accent = getBackdrop(dialectId).heroGradient[0];
+  if (mode === 'dark') {
+    const base = '#120c05';
+    return [blendHex(accent, base, 0.82), base, base];
+  }
+  const base = '#faf3e8';
+  return [blendHex(accent, base, 0.80), blendHex(accent, base, 0.9), base];
 }

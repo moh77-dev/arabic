@@ -66,10 +66,8 @@ export function Card({ glass, padded = true, style, children, ...rest }: CardPro
       style={[
         {
           backgroundColor: theme.surfaceElevated,
-          borderRadius: 20,
-          padding: padded ? 16 : 0,
-          borderWidth: 1,
-          borderColor: theme.border,
+          borderRadius: 22,
+          padding: padded ? 18 : 0,
           overflow: 'hidden',
         },
         softShadow,
