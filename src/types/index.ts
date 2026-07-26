@@ -113,6 +113,8 @@ export interface Exercise {
   imageUrl?: string;
   options?: string[];
   correctAnswer: string | string[];
+  /** Extra accepted spellings/translations for typed answers (variations, synonyms). */
+  acceptedAnswers?: string[];
   wordBank?: string[];
   explanation?: string;
   xpReward: number;

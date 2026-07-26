@@ -3,7 +3,9 @@ import { Text, View } from 'react-native';
 import { AnimatedPressable } from '@/components/ui/AnimatedPressable';
 import { Button } from '@/components/ui/Button';
 import { useTheme } from '@/lib/ThemeProvider';
+import { acceptedAnswersFor, isAnswerCorrect } from '@/lib/answerCheck';
 import { haptic } from '@/lib/haptics';
+import { playSound } from '@/lib/sound';
 import type { Exercise } from '@/types';
 
 interface Props {
@@ -34,11 +36,13 @@ export function WordOrderExercise({ exercise, onAnswered }: Props) {
   };
 
   const submit = () => {
-    const isCorrect = chosen.join(' ').toLowerCase() === target.join(' ').toLowerCase();
+    const exact = chosen.join(' ').toLowerCase() === target.join(' ').toLowerCase();
+    const isCorrect = exact || isAnswerCorrect(chosen.join(' '), acceptedAnswersFor(exercise));
     setCorrect(isCorrect);
     setRevealed(true);
     if (isCorrect) haptic.success();
     else haptic.error();
+    playSound(isCorrect ? 'correct' : 'wrong');
     setTimeout(() => onAnswered(isCorrect), 900);
   };
 
