@@ -49,6 +49,7 @@ export type IconName =
   | 'sound'
   | 'translate'
   | 'menu'
+  | 'explore'
   | 'star';
 
 const GLYPHS: Record<IconName, React.ComponentProps<typeof MaterialCommunityIcons>['name']> = {
@@ -92,6 +93,7 @@ const GLYPHS: Record<IconName, React.ComponentProps<typeof MaterialCommunityIcon
   sound: 'volume-high',
   translate: 'translate',
   menu: 'dots-horizontal',
+  explore: 'compass-outline',
   star: 'star-outline',
 };
 

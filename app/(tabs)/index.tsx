@@ -144,7 +144,7 @@ export default function Home() {
           {/* Pick up where you left off */}
           <View style={{ marginTop: 26 }}>
             <MonoLabel color={theme.textSecondary}>PICK UP WHERE YOU LEFT OFF</MonoLabel>
-            <View style={{ gap: 10, marginTop: 12 }}>
+            <View style={{ gap: 12, marginTop: 12 }}>
               <ActionRow
                 icon="chat"
                 tint={theme.primary}
@@ -177,9 +177,9 @@ export default function Home() {
           </View>
 
           {/* Keep exploring */}
-          <View style={{ marginTop: 24 }}>
+          <View style={{ marginTop: 26 }}>
             <MonoLabel color={theme.textSecondary}>KEEP EXPLORING</MonoLabel>
-            <View style={{ gap: 10, marginTop: 12 }}>
+            <View style={{ gap: 12, marginTop: 12 }}>
               <ActionRow
                 icon="goal"
                 tint={theme.primary}
@@ -188,32 +188,11 @@ export default function Home() {
                 onPress={() => router.push('/plan')}
               />
               <ActionRow
-                icon="trophy"
-                tint={theme.accentGold}
-                title="Dialect Challenge"
-                subtitle="Guess where each phrase is from"
-                onPress={() => router.push('/challenge')}
-              />
-              <ActionRow
-                icon="translate"
+                icon="explore"
                 tint={theme.accentDiamond}
-                title="Translator"
-                subtitle="English to your dialect, with audio"
-                onPress={() => router.push('/translator')}
-              />
-              <ActionRow
-                icon="play"
-                tint="#a24b6e"
-                title="Watch & speak"
-                subtitle="Listen to a native speaker, then say it back"
-                onPress={() => router.push('/drill')}
-              />
-              <ActionRow
-                icon="souk"
-                tint="#c9860a"
-                title="Interactive stories"
-                subtitle="Branching scenes — order food, take a taxi, meet family"
-                onPress={() => router.push('/story')}
+                title="Explore tools & games"
+                subtitle="Translator, stories, challenges and more"
+                onPress={() => router.push('/(tabs)/explore')}
               />
             </View>
           </View>
@@ -286,17 +265,17 @@ function ActionRow({
       style={{
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 14,
+        gap: 16,
         backgroundColor: theme.surfaceElevated,
-        borderRadius: 22,
-        padding: 15,
+        borderRadius: 24,
+        padding: 20,
         opacity: disabled ? 0.5 : 1,
         // Clean, borderless card that floats on the tinted background with a soft accent glow —
         // reads more modern than a boxed row with a hard border.
         shadowColor: tint,
         shadowOpacity: theme.mode === 'dark' ? 0.35 : 0.16,
-        shadowRadius: 14,
-        shadowOffset: { width: 0, height: 6 },
+        shadowRadius: 16,
+        shadowOffset: { width: 0, height: 7 },
       }}
     >
       {/* Solid, saturated tile with a white glyph and a matching glow — richer than a pale wash. */}
@@ -305,9 +284,9 @@ function ActionRow({
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={{
-          width: 46,
-          height: 46,
-          borderRadius: 14,
+          width: 54,
+          height: 54,
+          borderRadius: 17,
           alignItems: 'center',
           justifyContent: 'center',
           shadowColor: tint,
@@ -316,11 +295,11 @@ function ActionRow({
           shadowOffset: { width: 0, height: 4 },
         }}
       >
-        <Icon name={icon} size={22} color="#ffffff" />
+        <Icon name={icon} size={26} color="#ffffff" />
       </LinearGradient>
       <View style={{ flex: 1 }}>
-        <Text style={{ color: theme.textPrimary, fontWeight: '800', fontSize: 14 }}>{title}</Text>
-        <Text style={{ color: theme.textSecondary, fontSize: 12, marginTop: 1 }}>{subtitle}</Text>
+        <Text style={{ color: theme.textPrimary, fontWeight: '800', fontSize: 15.5 }}>{title}</Text>
+        <Text style={{ color: theme.textSecondary, fontSize: 13, marginTop: 2 }}>{subtitle}</Text>
       </View>
       <Icon name="chevronRight" size={22} color={theme.textSecondary} />
     </AnimatedPressable>

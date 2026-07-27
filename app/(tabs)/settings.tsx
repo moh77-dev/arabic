@@ -27,7 +27,12 @@ export default function Settings() {
     <View style={{ flex: 1, backgroundColor: theme.background }}>
       <LinearGradient colors={theme.backdropGradient} start={{ x: 0, y: 0 }} end={{ x: 0.4, y: 1 }} style={StyleSheet.absoluteFill} />
       <ScrollView contentContainerStyle={{ paddingTop: insets.top + 16, paddingHorizontal: 20, paddingBottom: 110 }} showsVerticalScrollIndicator={false}>
-        <Text style={{ color: theme.textPrimary, fontSize: 26, fontWeight: '900', letterSpacing: -0.4 }}>Settings</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          <AnimatedPressable onPress={() => (router.canGoBack() ? router.back() : router.push('/(tabs)/profile'))} withHaptic={false}>
+            <Icon name="chevronLeft" size={28} color={theme.textPrimary} />
+          </AnimatedPressable>
+          <Text style={{ color: theme.textPrimary, fontSize: 26, fontWeight: '900', letterSpacing: -0.4 }}>Settings</Text>
+        </View>
 
         <SectionLabel text="LEARNING" />
         <Group>
