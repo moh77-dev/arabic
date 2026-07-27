@@ -26,6 +26,7 @@ function RootStack() {
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="lesson/[id]" options={{ presentation: 'fullScreenModal', animation: 'slide_from_bottom' }} />
         <Stack.Screen name="conversation/index" />
+        <Stack.Screen name="free-talk" options={{ presentation: 'card', animation: 'slide_from_right' }} />
         <Stack.Screen name="conversation/[characterId]" options={{ presentation: 'fullScreenModal', animation: 'slide_from_bottom' }} />
         <Stack.Screen name="story/index" />
         <Stack.Screen name="story/[id]" options={{ presentation: 'fullScreenModal', animation: 'slide_from_bottom' }} />

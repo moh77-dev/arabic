@@ -1,19 +1,16 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Animated, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AnimatedPressable } from '@/components/ui/AnimatedPressable';
 import { Icon, type IconName } from '@/components/ui/Icon';
 import { MonumentHero } from '@/components/ui/MonumentHero';
-import { getCharactersForDialect } from '@/content/characters';
 import { getBackdrop } from '@/content/dialectBackdrops';
 import { DIALECTS } from '@/content/dialectMeta';
 import { GUIDE_GLYPH, GUIDE_NAME, getGuideGreeting } from '@/content/guide';
 import { useTheme } from '@/lib/ThemeProvider';
 import { useSettingsStore } from '@/stores/useSettingsStore';
-import { useUserStore } from '@/stores/useUserStore';
-import type { DialectId } from '@/types';
 
 const CAPABILITIES: { icon: IconName; tint: (t: ReturnType<typeof useTheme>) => string; title: string; subtitle: string; route: string }[] = [
   { icon: 'edit', tint: (t) => t.primary, title: 'Fix my Arabic', subtitle: 'Correct a phrase and explain why', route: 'tutor' },
@@ -26,11 +23,9 @@ export default function AskSalah() {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
   const activeDialect = useSettingsStore((s) => s.activeDialect);
-  const isPremium = useUserStore((s) => s.subscriptionTier !== 'free');
   const backdrop = getBackdrop(activeDialect);
   const meta = DIALECTS[activeDialect] ?? DIALECTS.msa;
   const greeting = getGuideGreeting(activeDialect);
-  const cast = useMemo(() => getCharactersForDialect(activeDialect), [activeDialect]);
   const [draft, setDraft] = useState('');
 
   // Pulsing "live" dot.
@@ -144,31 +139,21 @@ export default function AskSalah() {
             ))}
           </View>
 
-          {/* Free Talk — talk to a character who speaks the active dialect */}
-          <Text style={{ color: theme.textSecondary, fontSize: 11, fontWeight: '800', letterSpacing: 1.4, marginTop: 26 }}>FREE TALK · PICK A PERSON</Text>
-          <View style={{ gap: 10, marginTop: 12 }}>
-            {cast.map((ch) => {
-              const locked = ch.isPremium && !isPremium;
-              return (
-                <AnimatedPressable
-                  key={ch.id}
-                  onPress={() => (locked ? router.push('/paywall') : router.push(`/conversation/${ch.id}`))}
-                  style={{ flexDirection: 'row', alignItems: 'center', gap: 14, backgroundColor: theme.surfaceElevated, borderRadius: 18, borderWidth: 1, borderColor: theme.border, padding: 14, opacity: locked ? 0.6 : 1 }}
-                >
-                  <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: `${theme.primary}1f`, alignItems: 'center', justifyContent: 'center' }}>
-                    <Text style={{ fontSize: 22 }}>{ch.avatar}</Text>
-                  </View>
-                  <View style={{ flex: 1 }}>
-                    <Text style={{ color: theme.textPrimary, fontWeight: '800', fontSize: 14 }}>{ch.name} · {ch.role}</Text>
-                    <Text style={{ color: theme.textSecondary, fontSize: 12 }}>
-                      {DIALECTS[ch.dialectId as DialectId]?.name ?? ch.dialectId} · {'★'.repeat(ch.difficulty)}
-                    </Text>
-                  </View>
-                  <Icon name={locked ? 'lock' : 'chat'} size={20} color={theme.textSecondary} />
-                </AnimatedPressable>
-              );
-            })}
-          </View>
+          {/* Free Talk lives on its own screen now — point people there instead of duplicating it. */}
+          <Text style={{ color: theme.textSecondary, fontSize: 11, fontWeight: '800', letterSpacing: 1.4, marginTop: 26 }}>WANT TO JUST CHAT?</Text>
+          <AnimatedPressable
+            onPress={() => router.push('/free-talk')}
+            style={{ flexDirection: 'row', alignItems: 'center', gap: 14, backgroundColor: theme.surfaceElevated, borderRadius: 18, borderWidth: 1, borderColor: theme.border, padding: 14, marginTop: 12 }}
+          >
+            <View style={{ width: 44, height: 44, borderRadius: 13, backgroundColor: `${theme.accentDiamond}1f`, alignItems: 'center', justifyContent: 'center' }}>
+              <Icon name="freetalk" size={22} color={theme.accentDiamond} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={{ color: theme.textPrimary, fontWeight: '800', fontSize: 14 }}>Free Talk</Text>
+              <Text style={{ color: theme.textSecondary, fontSize: 12 }}>Chat with a local — unscripted, no corrections</Text>
+            </View>
+            <Icon name="chevronRight" size={22} color={theme.textSecondary} />
+          </AnimatedPressable>
         </View>
       </ScrollView>
     </View>

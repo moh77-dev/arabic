@@ -156,8 +156,8 @@ export default function Home() {
                 icon="freetalk"
                 tint={theme.accentDiamond}
                 title="Free Talk"
-                subtitle="Pick a place and start a real conversation"
-                onPress={() => router.push('/conversation')}
+                subtitle="Chat with a local — a real, unscripted conversation"
+                onPress={() => router.push('/free-talk')}
               />
               <ActionRow
                 icon="review"
