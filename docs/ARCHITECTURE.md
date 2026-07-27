@@ -72,5 +72,5 @@ edge function lives under `supabase/functions/<name>/index.ts`, is Deno-based, a
 
 Expo Router with a root `Stack` (`app/_layout.tsx`) wrapping a `(tabs)` group for the five
 main tabs (Home, Learn, Practice, Leaderboard, Profile), plus full-screen-modal routes for
-lessons, reviews, conversations, and stories, and regular modals for settings/shop/paywall/
+lessons, reviews, conversations, and stories, and regular modals for settings/paywall/
 achievements/season-pass.

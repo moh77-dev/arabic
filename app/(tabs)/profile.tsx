@@ -102,13 +102,8 @@ export default function Profile() {
           </LinearGradient>
         </View>
 
-        <View style={{ flexDirection: 'row', gap: 12, marginTop: 24 }}>
-          <View style={{ flex: 1 }}>
-            <Button label="🛍️  Shop" variant="secondary" onPress={() => router.push('/shop')} />
-          </View>
-          <View style={{ flex: 1 }}>
-            <Button label="🏆  Awards" variant="secondary" onPress={() => router.push('/achievements')} />
-          </View>
+        <View style={{ marginTop: 24 }}>
+          <Button label="🏆  Awards" variant="secondary" onPress={() => router.push('/achievements')} />
         </View>
 
         <View style={{ marginTop: 12 }}>
