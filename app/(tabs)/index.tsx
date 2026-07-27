@@ -59,9 +59,7 @@ export default function Home() {
               </AnimatedPressable>
               <View style={{ flexDirection: 'row', gap: 8 }}>
                 <StatChip icon="streak" value={gami.currentStreak} />
-                <AnimatedPressable onPress={() => router.push('/shop')} withHaptic={false}>
-                  <StatChip icon="diamond" value={gami.diamonds} />
-                </AnimatedPressable>
+                <StatChip icon="diamond" value={gami.diamonds} />
               </View>
             </View>
             <Text style={{ color: 'rgba(255,255,255,0.85)', fontSize: 15, marginTop: 26 }}>Assalamu alaykum,</Text>
