@@ -8,6 +8,7 @@ import { useTheme } from '@/lib/ThemeProvider';
 const TAB_ICONS: Record<string, IconName> = {
   index: 'home',
   learn: 'learn',
+  explore: 'explore',
   streak: 'streak',
   profile: 'profile',
   settings: 'settings',
@@ -53,9 +54,11 @@ export default function TabsLayout() {
     >
       <Tabs.Screen name="index" options={{ title: 'Home' }} />
       <Tabs.Screen name="learn" options={{ title: 'Learn' }} />
+      <Tabs.Screen name="explore" options={{ title: 'Explore' }} />
       <Tabs.Screen name="streak" options={{ title: 'Streak' }} />
       <Tabs.Screen name="profile" options={{ title: 'Profile' }} />
-      <Tabs.Screen name="settings" options={{ title: 'Settings' }} />
+      {/* Settings stays routable (from Profile) but is no longer a bottom tab. */}
+      <Tabs.Screen name="settings" options={{ title: 'Settings', href: null }} />
     </Tabs>
   );
 }
