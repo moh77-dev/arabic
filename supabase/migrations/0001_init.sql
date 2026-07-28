@@ -1,4 +1,4 @@
--- Lahja database schema
+-- Lisan database schema
 -- Run with: supabase db push  (or paste into the Supabase SQL editor)
 
 create extension if not exists "uuid-ossp";

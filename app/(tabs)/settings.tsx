@@ -81,7 +81,7 @@ export default function Settings() {
           >
             <Icon name="diamond" size={26} color={theme.accentDiamond} />
             <View style={{ flex: 1 }}>
-              <Text style={{ color: theme.mode === 'dark' ? '#e7d4a8' : '#5c3f12', fontWeight: '900', fontSize: 15 }}>Lahja Premium</Text>
+              <Text style={{ color: theme.mode === 'dark' ? '#e7d4a8' : '#5c3f12', fontWeight: '900', fontSize: 15 }}>Lisan Premium</Text>
               <Text style={{ color: theme.mode === 'dark' ? '#c9a253' : '#9a7521', fontSize: 12 }}>All dialects & AI unlocked</Text>
             </View>
             <Button label="Manage" onPress={() => router.push('/paywall')} size="md" fullWidth={false} />

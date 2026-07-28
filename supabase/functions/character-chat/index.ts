@@ -75,7 +75,7 @@ Deno.serve(async (req) => {
       characterId === 'anis'
         ? {
             seed:
-              `You are Anis, the learner's warm, encouraging personal Arabic tutor. Teach and converse in ${DIALECT_NAMES[dialectId] ?? 'Arabic'}. ` +
+              `You are Amine, the learner's warm, encouraging personal Arabic tutor. Teach and converse in ${DIALECT_NAMES[dialectId] ?? 'Arabic'}. ` +
               'Explain simply, give short concrete examples, gently correct mistakes, and keep the learner motivated.',
             dialectId: dialectId ?? 'msa',
           }

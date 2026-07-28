@@ -79,7 +79,7 @@ export default function Profile() {
           ) : (
             <>
               <ActivityRow icon="check" tint={theme.primary} title={`Completed ${completedLessonIds.length} lesson${completedLessonIds.length > 1 ? 's' : ''}`} meta={`${gami.totalXp} XP earned`} first />
-              <ActivityRow icon="chat" tint="#0ea5e9" title="Practiced with Anis" meta="AI conversation" />
+              <ActivityRow icon="chat" tint="#0ea5e9" title="Practiced with Amine" meta="AI conversation" />
               <ActivityRow icon="review" tint={theme.accentGold} title={`${wordsKnown} words in review`} meta="Spaced repetition" />
             </>
           )}
@@ -95,7 +95,7 @@ export default function Profile() {
           >
             <Icon name="diamond" size={26} color={theme.accentDiamond} />
             <View style={{ flex: 1 }}>
-              <Text style={{ color: theme.mode === 'dark' ? '#e7d4a8' : '#5c3f12', fontWeight: '900', fontSize: 15 }}>Lahja Premium</Text>
+              <Text style={{ color: theme.mode === 'dark' ? '#e7d4a8' : '#5c3f12', fontWeight: '900', fontSize: 15 }}>Lisan Premium</Text>
               <Text style={{ color: theme.mode === 'dark' ? '#c9a253' : '#9a7521', fontSize: 12 }}>All dialects & unlimited AI</Text>
             </View>
             <Button label="Unlock" onPress={() => router.push('/paywall')} size="md" fullWidth={false} />

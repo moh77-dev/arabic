@@ -1,11 +1,11 @@
 import type { DialectId } from '@/types';
 
 /**
- * "Anis" (أنيس — "the friendly companion") is the app's AI tutor persona. He is NOT tied to one
+ * "Amine" (أمين — "trustworthy / faithful") is the app's AI tutor persona. He is NOT tied to one
  * dialect: he greets and teaches in whichever dialect the learner is currently studying, so the
  * Ask hub reads correctly whether you're on El Oued, Egyptian, or Levantine.
  */
-export const GUIDE_NAME = 'Anis';
+export const GUIDE_NAME = 'Amine';
 export const GUIDE_GLYPH = 'أ';
 
 interface Greeting {

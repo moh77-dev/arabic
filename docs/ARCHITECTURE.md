@@ -2,7 +2,7 @@
 
 ## Overview
 
-Lahja is an Expo Router app. Routing is file-based (`app/`), UI state lives in Zustand stores
+Lisan is an Expo Router app. Routing is file-based (`app/`), UI state lives in Zustand stores
 persisted to MMKV (`src/stores/`), server state (Supabase queries, when used directly instead
 of local content) goes through TanStack Query, and all AI features are proxied through
 Supabase Edge Functions so the OpenAI key never ships in the client bundle.

@@ -79,8 +79,8 @@ export const AI_CHARACTERS: AIConversationCharacter[] = [
   },
   {
     id: 'char_football_fan',
-    name: 'Amine',
-    nameArabic: 'أمين',
+    name: 'Karim',
+    nameArabic: 'كريم',
     role: 'Football Fan',
     avatar: '⚽',
     dialectId: 'algerian_eloued',
@@ -89,7 +89,7 @@ export const AI_CHARACTERS: AIConversationCharacter[] = [
     difficulty: 2,
     conversationGoals: ['Discuss the last match', 'Argue about the best player', 'Celebrate a goal together'],
     systemPromptSeed:
-      'You are Amine, an over-excited football fan from El Oued. You talk about matches, players, and get louder/faster when excited about goals. Use football vocabulary naturally.',
+      'You are Karim, an over-excited football fan from El Oued. You talk about matches, players, and get louder/faster when excited about goals. Use football vocabulary naturally.',
     isPremium: false,
   },
   {
@@ -346,11 +346,12 @@ export function getCharactersForDialect(dialectId: DialectId): AIConversationCha
   return [...authored, ...generated].slice(0, 6);
 }
 
-/** The id used everywhere for the Anis tutor chat. */
+/** The id used everywhere for the Amine tutor chat (kept as 'anis' internally so saved chats and
+ * routes don't break across the rename). */
 export const ANIS_CHARACTER_ID = 'anis';
 
 /**
- * Anis — the app's AI tutor persona — as a chattable character. Unlike the roleplay cast he isn't
+ * Amine — the app's AI tutor persona — as a chattable character. Unlike the roleplay cast he isn't
  * tied to one dialect: he teaches in whichever dialect the learner is currently studying, so this
  * is built on demand from the active dialect rather than living in the static AI_CHARACTERS list.
  */
@@ -358,17 +359,17 @@ export function getAnisCharacter(dialectId: DialectId): AIConversationCharacter 
   const meta = DIALECTS[dialectId] ?? DIALECTS.msa;
   return {
     id: ANIS_CHARACTER_ID,
-    name: 'Anis',
-    nameArabic: 'أنيس',
+    name: 'Amine',
+    nameArabic: 'أمين',
     role: `Your ${meta.name} tutor`,
     avatar: '🧑‍🏫',
     dialectId,
     personality: 'Warm, patient AI tutor who explains simply, gives short examples, and keeps you motivated.',
     voiceId: 'anis_male_adult',
     difficulty: 1,
-    conversationGoals: ['Ask how to say something', 'Practice a phrase', 'Ask Anis to explain a rule'],
+    conversationGoals: ['Ask how to say something', 'Practice a phrase', 'Ask Amine to explain a rule'],
     systemPromptSeed:
-      `You are Anis, the learner's warm, encouraging personal Arabic tutor. Teach and converse in ${meta.name}. ` +
+      `You are Amine, the learner's warm, encouraging personal Arabic tutor. Teach and converse in ${meta.name}. ` +
       'Explain simply, give short concrete examples, gently correct mistakes, and keep the learner motivated.',
     isPremium: false,
   };

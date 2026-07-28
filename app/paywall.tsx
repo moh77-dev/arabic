@@ -68,7 +68,7 @@ export default function Paywall() {
       <ScreenContainer>
         <Text style={{ fontSize: 40, textAlign: 'center' }}>🚀</Text>
         <Text style={{ fontSize: 28, fontWeight: '900', color: theme.textPrimary, textAlign: 'center', marginTop: 12 }}>
-          Lahja Premium
+          Lisan Premium
         </Text>
         <Text style={{ color: theme.textSecondary, textAlign: 'center', marginTop: 6 }}>
           Unlock the full power of your private AI tutor.

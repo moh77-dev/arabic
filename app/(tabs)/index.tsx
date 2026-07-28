@@ -148,7 +148,7 @@ export default function Home() {
               <ActionRow
                 icon="chat"
                 tint={theme.primary}
-                title="Ask Anis"
+                title="Ask Amine"
                 subtitle={`Your ${meta.name} tutor — grammar, phrases, anything`}
                 onPress={() => router.push('/conversation')}
               />

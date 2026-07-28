@@ -26,7 +26,7 @@ export default function ConversationChat() {
   const { characterId } = useLocalSearchParams<{ characterId: string }>();
   const theme = useTheme();
   const activeDialect = useSettingsStore((s) => s.activeDialect);
-  // Anis is the tutor persona — he teaches in whatever dialect you're currently studying.
+  // Amine is the tutor persona (id 'anis' kept internally) — teaches in your active dialect.
   const character = characterId === ANIS_CHARACTER_ID ? getAnisCharacter(activeDialect) : findCharacter(characterId);
 
   // Select the raw (possibly undefined) value — both the stored array and `undefined` are

@@ -1,7 +1,7 @@
 import type { VocabWord } from '@/types';
 
 /**
- * El Oued (Souf) Arabic — Lahja's flagship dialect.
+ * El Oued (Souf) Arabic — Lisan's flagship dialect.
  *
  * Linguistic note: El Oued/Souf speech belongs to the Saharan/Bedouin family of
  * Algerian Arabic (unlike the urban "Darja" of Algiers/Oran). Characteristic

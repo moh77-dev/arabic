@@ -41,7 +41,7 @@ const ELEVEN_DEFAULTS: Record<string, string> = {
 // Per-character voice defaults, so specific characters sound distinct from their gender/age peers.
 // Override any of these at runtime with ELEVENLABS_VOICE_<CHARACTER_ID> (e.g. ELEVENLABS_VOICE_CHAR_FOOTBALL_FAN).
 const CHAR_ELEVEN_DEFAULTS: Record<string, string> = {
-  char_football_fan: 'yoZ06aMxZJJ28mfd3POQ', // Sam — raspy/energetic, fits Amine the excited fan
+  char_football_fan: 'yoZ06aMxZJJ28mfd3POQ', // Sam — raspy/energetic, fits Karim the excited fan
 };
 const CHAR_OPENAI_DEFAULTS: Record<string, string> = {
   char_football_fan: 'echo',
