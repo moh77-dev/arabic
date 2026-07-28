@@ -79,8 +79,8 @@ export const AI_CHARACTERS: AIConversationCharacter[] = [
   },
   {
     id: 'char_football_fan',
-    name: 'Karim',
-    nameArabic: 'كريم',
+    name: 'Riad',
+    nameArabic: 'رياض',
     role: 'Football Fan',
     avatar: '⚽',
     dialectId: 'algerian_eloued',
@@ -89,7 +89,7 @@ export const AI_CHARACTERS: AIConversationCharacter[] = [
     difficulty: 2,
     conversationGoals: ['Discuss the last match', 'Argue about the best player', 'Celebrate a goal together'],
     systemPromptSeed:
-      'You are Karim, an over-excited football fan from El Oued. You talk about matches, players, and get louder/faster when excited about goals. Use football vocabulary naturally.',
+      'You are Riad, an over-excited football fan from El Oued. You talk about matches, players, and get louder/faster when excited about goals. Use football vocabulary naturally.',
     isPremium: false,
   },
   {
