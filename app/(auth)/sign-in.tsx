@@ -78,7 +78,7 @@ export default function SignIn() {
         <Button label="Sign In" onPress={handleSubmit(onSubmit)} loading={loading} />
 
         <View style={{ flexDirection: 'row', justifyContent: 'center', gap: 4, marginTop: 8 }}>
-          <Text style={{ color: theme.textSecondary }}>New to Lahja?</Text>
+          <Text style={{ color: theme.textSecondary }}>New to Lisan?</Text>
           <Link href="/(auth)/sign-up">
             <Text style={{ color: theme.primary, fontWeight: '700' }}>Create an account</Text>
           </Link>

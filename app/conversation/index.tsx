@@ -15,7 +15,7 @@ import { useSettingsStore } from '@/stores/useSettingsStore';
 const CAPABILITIES: { icon: IconName; tint: (t: ReturnType<typeof useTheme>) => string; title: string; subtitle: string; route: string }[] = [
   { icon: 'edit', tint: (t) => t.primary, title: 'Fix my Arabic', subtitle: 'Correct a phrase and explain why', route: 'tutor' },
   { icon: 'grammar', tint: (t) => t.accentGold, title: 'Explain the grammar', subtitle: 'Rules, in plain language', route: 'tutor' },
-  { icon: 'lesson', tint: () => '#0ea5e9', title: 'Make me a quick lesson', subtitle: 'Tell Anis what to improve — he builds it', route: '/custom-lesson' },
+  { icon: 'lesson', tint: () => '#0ea5e9', title: 'Make me a quick lesson', subtitle: 'Tell Amine what to improve — he builds it', route: '/custom-lesson' },
   { icon: 'speak', tint: (t) => t.primary, title: 'Say it for me', subtitle: 'Translate & hear it in your dialect', route: '/translator' },
 ];
 
@@ -41,7 +41,7 @@ export default function AskSalah() {
     return () => loop.stop();
   }, [pulse]);
 
-  // Talk to Anis, the AI tutor — he replies in whatever dialect you're currently studying.
+  // Talk to Amine, the AI tutor — he replies in whatever dialect you're currently studying.
   const openTutor = () => router.push('/conversation/anis');
 
   return (
@@ -60,7 +60,7 @@ export default function AskSalah() {
               </View>
             </View>
 
-            {/* Anis persona */}
+            {/* Amine persona */}
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, marginTop: 22 }}>
               <View style={{ width: 46, height: 46, borderRadius: 14, backgroundColor: 'rgba(255,255,255,0.9)', alignItems: 'center', justifyContent: 'center' }}>
                 <Text style={{ fontSize: 24, fontWeight: '900', color: backdrop.heroGradient[1] }}>{GUIDE_GLYPH}</Text>

@@ -1,6 +1,6 @@
-# Lahja — project guide & error-fixing protocol
+# Lisan — project guide & error-fixing protocol
 
-Lahja is an Expo (React Native + web) app for learning spoken Arabic dialects, with a Supabase
+Lisan is an Expo (React Native + web) app for learning spoken Arabic dialects, with a Supabase
 backend (Postgres + Edge Functions). The web build deploys to Vercel.
 
 - **App code:** `app/` (expo-router screens), `src/` (components, stores, content, lib).

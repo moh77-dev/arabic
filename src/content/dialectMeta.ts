@@ -36,7 +36,7 @@ export const DIALECTS: Record<DialectId, DialectMeta> = {
     flag: '🏜️',
     region: 'El Oued, the Algerian Sahara',
     blurb:
-      'The Bedouin-Saharan dialect of the "city of a thousand domes." Distinct pronunciation, vocabulary, and rhythm shaped by desert life, oasis agriculture, and trans-Saharan trade — Lahja\'s flagship dialect.',
+      'The Bedouin-Saharan dialect of the "city of a thousand domes." Distinct pronunciation, vocabulary, and rhythm shaped by desert life, oasis agriculture, and trans-Saharan trade — Lisan\'s flagship dialect.',
     isAlgerianRegional: true,
   },
   moroccan: {

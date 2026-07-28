@@ -14,7 +14,7 @@ import type { DialectId } from '@/types';
 
 /**
  * Free Talk — an open, unscripted roleplay: pick a local to chat with (or let it surprise you) and
- * hold a real conversation in your dialect. Distinct from "Ask Anis", which is the tutor hub for
+ * hold a real conversation in your dialect. Distinct from "Ask Amine", which is the tutor hub for
  * corrections, grammar and quick lessons.
  */
 export default function FreeTalk() {

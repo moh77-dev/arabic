@@ -1,6 +1,6 @@
-# Lahja — Speak Arabic Like a Local
+# Lisan — Speak Arabic Like a Local
 
-Lahja is a mobile app for learning spoken Arabic dialects, with Algerian Arabic — and
+Lisan is a mobile app for learning spoken Arabic dialects, with Algerian Arabic — and
 especially the **El Oued (Souf)** dialect of the Algerian Sahara — as its flagship track.
 It combines a Duolingo-style lesson/gamification loop with an AI tutor, AI conversation
 partners, and spaced-repetition vocabulary review.

@@ -323,7 +323,7 @@ function WelcomeStep() {
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: 32 }}>
       <Text style={{ fontSize: 72, marginBottom: 20 }}>🏜️</Text>
-      <Text style={{ fontSize: 34, fontWeight: '900', color: theme.textPrimary, textAlign: 'center' }}>Lahja</Text>
+      <Text style={{ fontSize: 34, fontWeight: '900', color: theme.textPrimary, textAlign: 'center' }}>Lisan</Text>
       <Text style={{ fontSize: 18, color: theme.textSecondary, textAlign: 'center', marginTop: 8 }}>
         Speak Arabic Like a Local.
       </Text>

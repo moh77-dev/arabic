@@ -111,7 +111,7 @@ export default function CustomLesson() {
         ) : phase === 'error' ? (
           <View style={{ alignItems: 'center', paddingTop: 60, gap: 14 }}>
             <Text style={{ fontSize: 44 }}>😕</Text>
-            <Text style={{ color: theme.textPrimary, fontWeight: '800', fontSize: 16, textAlign: 'center' }}>Anis couldn’t build that one</Text>
+            <Text style={{ color: theme.textPrimary, fontWeight: '800', fontSize: 16, textAlign: 'center' }}>Amine couldn’t build that one</Text>
             <Text style={{ color: theme.textSecondary, fontSize: 13, textAlign: 'center' }}>{errorMessage}</Text>
             <View style={{ marginTop: 8, width: '100%' }}>
               <Button label="Try again" onPress={() => setPhase('pick')} />

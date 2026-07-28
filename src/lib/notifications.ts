@@ -22,7 +22,7 @@ export async function registerForPushNotificationsAsync(): Promise<string | null
 
   if (Platform.OS === 'android') {
     await Notifications.setNotificationChannelAsync('default', {
-      name: 'Lahja reminders',
+      name: 'Lisan reminders',
       importance: Notifications.AndroidImportance.DEFAULT,
       vibrationPattern: [0, 150, 100, 150],
       lightColor: '#0f9a56',
@@ -45,7 +45,7 @@ export async function scheduleDailyReminder(hour: number, minute: number) {
   const quote = MOTIVATIONAL_QUOTES[Math.floor(Math.random() * MOTIVATIONAL_QUOTES.length)];
   await Notifications.scheduleNotificationAsync({
     content: {
-      title: 'Time for your Lahja lesson 🔥',
+      title: 'Time for your Lisan lesson 🔥',
       body: quote,
       data: { type: 'daily_reminder' },
     },
