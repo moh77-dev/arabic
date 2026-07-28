@@ -18,6 +18,7 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.lahja.app",
       "infoPlist": {
+        "CFBundleDisplayName": "Lisan",
         "NSMicrophoneUsageDescription": "Lisan uses your microphone so you can practice speaking and get pronunciation feedback.",
         "NSSpeechRecognitionUsageDescription": "Lisan analyzes your speech to score your pronunciation.",
         "UIBackgroundModes": ["audio"]
