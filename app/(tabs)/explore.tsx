@@ -19,15 +19,18 @@ interface Topic {
   icon: IconName;
   tint: (t: ReturnType<typeof useTheme>) => string;
   count: number;
-  route: string;
+  /** A fixed screen to open (e.g. stories). */
+  route?: string;
+  /** Or a topic to auto-build a lesson around (opens custom-lesson pre-generating). */
+  lessonTopic?: string;
 }
 
 const TOPICS: Topic[] = [
   { id: 'souk', title: 'At the souk', icon: 'souk', tint: (t) => t.accentGold, count: 18, route: '/story' },
-  { id: 'food', title: 'Food & family', icon: 'food', tint: (t) => t.primary, count: 22, route: '/custom-lesson' },
-  { id: 'around', title: 'Getting around', icon: 'travel', tint: (t) => t.accentDiamond, count: 15, route: '/custom-lesson' },
-  { id: 'greet', title: 'Greetings', icon: 'chat', tint: (t) => t.primary, count: 12, route: '/custom-lesson' },
-  { id: 'money', title: 'Numbers & money', icon: 'coins', tint: (t) => t.accentGold, count: 20, route: '/custom-lesson' },
+  { id: 'food', title: 'Food & family', icon: 'food', tint: (t) => t.primary, count: 22, lessonTopic: 'Food & family' },
+  { id: 'around', title: 'Getting around', icon: 'travel', tint: (t) => t.accentDiamond, count: 15, lessonTopic: 'Getting around & directions' },
+  { id: 'greet', title: 'Greetings', icon: 'chat', tint: (t) => t.primary, count: 12, lessonTopic: 'Greetings & small talk' },
+  { id: 'money', title: 'Numbers & money', icon: 'coins', tint: (t) => t.accentGold, count: 20, lessonTopic: 'Numbers & money' },
 ];
 
 const TOOLS: { id: string; title: string; icon: IconName; tint: (t: ReturnType<typeof useTheme>) => string; route: string }[] = [
@@ -140,7 +143,7 @@ export default function Explore() {
               {topics.map((t) => (
                 <AnimatedPressable
                   key={t.id}
-                  onPress={() => router.push(t.route as never)}
+                  onPress={() => router.push(t.lessonTopic ? { pathname: '/custom-lesson', params: { topic: t.lessonTopic } } : (t.route as never))}
                   style={{ width: 138, backgroundColor: theme.surfaceElevated, borderRadius: 18, overflow: 'hidden', shadowColor: t.tint(theme), shadowOpacity: theme.mode === 'dark' ? 0.3 : 0.14, shadowRadius: 12, shadowOffset: { width: 0, height: 5 } }}
                 >
                   <LinearGradient colors={[t.tint(theme), `${t.tint(theme)}cc`]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ height: 66, alignItems: 'flex-start', justifyContent: 'center', paddingHorizontal: 14 }}>

@@ -1,6 +1,6 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import { router, Stack } from 'expo-router';
-import React, { useState } from 'react';
+import { router, Stack, useLocalSearchParams } from 'expo-router';
+import React, { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AnimatedPressable } from '@/components/ui/AnimatedPressable';
@@ -42,8 +42,23 @@ export default function CustomLesson() {
 
   const chosenTopic = (custom.trim() || topic).trim();
 
-  const generate = async () => {
-    if (!chosenTopic) return;
+  // When opened from a topic card (e.g. Explore), a `topic` param auto-builds that lesson so the
+  // learner lands straight in "Amine is building your <topic> lesson…" instead of the picker.
+  const params = useLocalSearchParams<{ topic?: string }>();
+  const autoStarted = useRef(false);
+  useEffect(() => {
+    const preset = typeof params.topic === 'string' ? params.topic : undefined;
+    if (preset && !autoStarted.current) {
+      autoStarted.current = true;
+      setTopic(preset);
+      generate(preset);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [params.topic]);
+
+  const generate = async (topicOverride?: string) => {
+    const chosen = (topicOverride ?? (custom.trim() || topic)).trim();
+    if (!chosen) return;
     haptic.tap();
     setPhase('generating');
     setErrorMessage(null);
@@ -52,14 +67,14 @@ export default function CustomLesson() {
       const userGoal = profile.goals?.[0] ?? 'speak like a local';
       const result = await ai.generateLesson({
         dialectId,
-        topic: chosenTopic,
+        topic: chosen,
         difficulty,
         weakWordIds: getWeakWordIds(),
         userGoal,
       });
       // Repair AI exercises so every one is actually answerable, and guarantee some sentence-building.
       const aiExercises = normalizeGeneratedExercises(result.exercises ?? []);
-      const wantsSentences = /sentence/i.test(chosenTopic);
+      const wantsSentences = /sentence/i.test(chosen);
       const builders = generateSentenceBuilders(dialectId, wantsSentences ? 6 : 2);
       const exercises = wantsSentences ? [...builders, ...aiExercises] : [...aiExercises, ...builders];
       if (!exercises.length) throw new Error('No exercises came back');
@@ -69,7 +84,7 @@ export default function CustomLesson() {
         dialectId,
         title: result.title,
         titleArabic: result.titleArabic,
-        description: `Custom lesson: ${chosenTopic}`,
+        description: `Custom lesson: ${chosen}`,
         category: 'phrases' as Lesson['category'],
         exercises,
         xpReward: 30,
@@ -162,7 +177,7 @@ export default function CustomLesson() {
             </View>
 
             <View style={{ marginTop: 28 }}>
-              <Button label="Build my lesson" onPress={generate} disabled={!chosenTopic} />
+              <Button label="Build my lesson" onPress={() => generate()} disabled={!chosenTopic} />
             </View>
           </>
         )}
