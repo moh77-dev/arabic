@@ -47,22 +47,24 @@ export interface Theme {
   glassHighlight: string;
 }
 
+// Light mode is the "daytime majlis": warm parchment ground, brass primary (with dark ink on it),
+// zellige-teal accent, deep warm-ink text.
 export const lightTheme: Theme = {
   mode: 'light',
-  background: palette.sand[50],
-  surface: palette.sand[100],
-  surfaceElevated: '#fffaf1', // warm off-white — never a cold pure white
-  border: '#ecdcc2',
-  textPrimary: '#3a2a17', // deep espresso ink, warmer than black
-  textSecondary: '#8a7355',
-  primary: palette.spice[600],
-  primaryText: '#fff8ef',
+  background: '#F4ECDB', // warm parchment
+  surface: '#F1E7D2',
+  surfaceElevated: '#FFFBF2', // warm off-white — never a cold pure white
+  border: '#E7D7B8',
+  textPrimary: '#241B10', // deep warm ink
+  textSecondary: '#8A7458',
+  primary: '#A9781E', // brass
+  primaryText: '#2A1E0A', // dark ink reads on brass
   accentGold: palette.gold[500],
-  accentDiamond: palette.turquoise[500],
+  accentDiamond: '#17827A', // zellige teal
   danger: palette.danger,
-  backdropGradient: ['#fbeede', '#f8ecdf', '#fdf3e0'],
-  glassTint: 'rgba(255,250,242,0.55)',
-  glassBorder: 'rgba(255,244,228,0.70)',
+  backdropGradient: ['#F7EFDD', '#F4ECDB', '#FBF3E2'],
+  glassTint: 'rgba(255,251,242,0.6)',
+  glassBorder: 'rgba(120,90,30,0.14)',
   glassHighlight: 'rgba(255,252,246,0.9)',
 };
 

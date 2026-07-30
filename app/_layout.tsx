@@ -1,6 +1,8 @@
 import '../src/styles/global.css';
 import 'react-native-reanimated';
 import { QueryClientProvider } from '@tanstack/react-query';
+import { NotoNaskhArabic_400Regular, NotoNaskhArabic_700Bold } from '@expo-google-fonts/noto-naskh-arabic';
+import { ReemKufi_600SemiBold, ReemKufi_700Bold } from '@expo-google-fonts/reem-kufi';
 import * as Font from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
@@ -50,8 +52,11 @@ export default function RootLayout() {
 
   useEffect(() => {
     Font.loadAsync({
-      // App ships with system fonts by default; swap in custom Cairo/Noto files under assets/fonts
-      // and reference them here once designers deliver final type assets.
+      // Arabic display (Reem Kufi) + body (Noto Naskh Arabic). Keys become the fontFamily names.
+      ReemKufi_600SemiBold,
+      ReemKufi_700Bold,
+      NotoNaskhArabic_400Regular,
+      NotoNaskhArabic_700Bold,
     })
       .catch(() => {})
       .finally(() => setFontsReady(true));

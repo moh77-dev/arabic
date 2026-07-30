@@ -11,6 +11,7 @@ import { getPageBackground } from '@/content/dialectBackdrops';
 import { DIALECTS } from '@/content/dialectMeta';
 import { getUnitsForDialect, LESSONS_BY_ID } from '@/content/lessonPaths';
 import { getPhraseOfDay } from '@/content/phraseOfDay';
+import { fonts } from '@/lib/fonts';
 import { useTheme } from '@/lib/ThemeProvider';
 import { useGamificationStore } from '@/stores/useGamificationStore';
 import { useLessonStore } from '@/stores/useLessonStore';
@@ -92,7 +93,7 @@ export default function Home() {
         {/* Phrase of the evening — the thesis */}
         <View style={{ marginTop: 20, padding: 22, borderRadius: 24, borderWidth: 1, borderColor: theme.border, backgroundColor: theme.surfaceElevated }}>
           <Kicker color={brass}>PHRASE OF THE EVENING</Kicker>
-          <Text style={{ color: theme.textPrimary, fontSize: 40, lineHeight: 58, fontWeight: '700', textAlign: 'right', writingDirection: 'rtl', marginTop: 8 }}>
+          <Text style={{ color: theme.textPrimary, fontFamily: fonts.arabicDisplay, fontSize: 40, lineHeight: 62, textAlign: 'right', writingDirection: 'rtl', marginTop: 8 }}>
             {phrase.arabic}
           </Text>
           <Text style={{ color: brass, fontSize: 18, fontStyle: 'italic', marginTop: 2 }}>{phrase.translit}</Text>
@@ -216,7 +217,7 @@ function MajlisCard({ onPress, theme }: { onPress: () => void; theme: ReturnType
       }}
     >
       <LinearGradient colors={[theme.accentGold, theme.primary]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ width: 52, height: 52, borderRadius: 16, alignItems: 'center', justifyContent: 'center' }}>
-        <Text style={{ fontSize: 24, fontWeight: '900', color: theme.primaryText }}>أ</Text>
+        <Text style={{ fontFamily: fonts.arabicDisplayBold, fontSize: 24, color: theme.primaryText }}>أ</Text>
       </LinearGradient>
       <View style={{ flex: 1 }}>
         <Text style={{ color: theme.textPrimary, fontWeight: '800', fontSize: 15 }}>Tonight with Amine</Text>
