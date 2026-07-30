@@ -3,6 +3,7 @@ import { Text, View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { AnimatedPressable } from '@/components/ui/AnimatedPressable';
 import { Button } from '@/components/ui/Button';
+import { fonts } from '@/lib/fonts';
 import { useTheme } from '@/lib/ThemeProvider';
 import { speakArabic } from '@/lib/speech';
 import type { Exercise, SRSGrade } from '@/types';
@@ -40,7 +41,7 @@ export function FlashcardExercise({ exercise, onGraded }: Props) {
       <AnimatedPressable onPress={flip} withHaptic={false} style={{ width: '100%' }}>
         <View style={{ height: 220, alignItems: 'center', justifyContent: 'center' }}>
           <Animated.View style={[{ position: 'absolute', width: '100%', height: 220, borderRadius: 24, backgroundColor: theme.primary, alignItems: 'center', justifyContent: 'center', padding: 20 }, frontStyle]}>
-            <Text style={{ fontSize: 40, color: '#fff', fontWeight: '900', textAlign: 'center' }}>{exercise.promptArabic}</Text>
+            <Text style={{ fontFamily: fonts.arabicDisplay, fontSize: 40, color: '#fff', textAlign: 'center' }}>{exercise.promptArabic}</Text>
             <Text style={{ fontSize: 16, color: 'rgba(255,255,255,0.85)', marginTop: 8 }}>{exercise.prompt}</Text>
           </Animated.View>
           <Animated.View style={[{ width: '100%', height: 220, borderRadius: 24, backgroundColor: theme.surfaceElevated, borderWidth: 2, borderColor: theme.primary, alignItems: 'center', justifyContent: 'center', padding: 20 }, backStyle]}>

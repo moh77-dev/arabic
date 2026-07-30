@@ -7,6 +7,7 @@ import { AnimatedPressable } from '@/components/ui/AnimatedPressable';
 import { Icon } from '@/components/ui/Icon';
 import { ELOUED_CONVERSATIONS } from '@/content/dialects';
 import { SpeakingExercise } from '@/features/lessons/exercises/SpeakingExercise';
+import { fonts } from '@/lib/fonts';
 import { useTheme } from '@/lib/ThemeProvider';
 import { speakArabic } from '@/lib/speech';
 import { useGamificationStore } from '@/stores/useGamificationStore';
@@ -93,7 +94,7 @@ export default function Drill() {
                   }}
                 >
                   <Text style={{ color: theme.textSecondary, fontSize: 11, fontWeight: '700' }}>{line.speaker}</Text>
-                  <Text style={{ color: theme.textPrimary, fontSize: 19, fontWeight: '700', marginTop: 4, textAlign: 'right' }}>{line.arabic}</Text>
+                  <Text style={{ color: theme.textPrimary, fontFamily: fonts.arabicBody, fontSize: 19, marginTop: 4, textAlign: 'right' }}>{line.arabic}</Text>
                   <Text style={{ color: theme.textSecondary, fontSize: 12, marginTop: 2 }}>{line.english}</Text>
                 </AnimatedPressable>
               );

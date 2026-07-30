@@ -4,6 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AnimatedPressable } from './AnimatedPressable';
 import { Icon } from './Icon';
 import { DIALECT_LIST, DIALECTS } from '@/content/dialectMeta';
+import { fonts } from '@/lib/fonts';
 import { useTheme } from '@/lib/ThemeProvider';
 import { useSettingsStore } from '@/stores/useSettingsStore';
 import type { DialectId } from '@/types';
@@ -167,7 +168,7 @@ function DialectRow({
       <View style={{ flex: 1 }}>
         <Text style={{ color: theme.textPrimary, fontSize: 15, fontWeight: '800' }}>{meta.name}</Text>
         <Text style={{ color: theme.textSecondary, fontSize: 12 }} numberOfLines={1}>
-          {meta.nativeName} · {meta.region}
+          <Text style={{ fontFamily: fonts.arabicBody }}>{meta.nativeName}</Text> · {meta.region}
         </Text>
       </View>
       {onRemove && !selected && (
