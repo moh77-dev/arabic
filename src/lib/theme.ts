@@ -66,23 +66,25 @@ export const lightTheme: Theme = {
   glassHighlight: 'rgba(255,252,246,0.9)',
 };
 
+// Dark mode is the "lantern-lit majlis" night: deep teal-black ground, brass primary, an amber
+// glow, zellige-teal accent, and parchment-bone text.
 export const darkTheme: Theme = {
   mode: 'dark',
-  background: palette.night[950],
-  surface: palette.night[900],
-  surfaceElevated: palette.night[700],
-  border: '#3a2c1b',
-  textPrimary: '#f7ecd9', // warm parchment
-  textSecondary: '#b39b78',
-  primary: palette.spice[400],
-  primaryText: '#1a0e05',
+  background: '#0C1719',
+  surface: '#13262B',
+  surfaceElevated: '#17323A',
+  border: '#26363c',
+  textPrimary: '#EFE6D2', // parchment bone
+  textSecondary: '#8FA39C', // muted sage
+  primary: '#C79A3E', // lantern brass
+  primaryText: '#1A1206',
   accentGold: palette.gold[400],
-  accentDiamond: palette.turquoise[400],
-  danger: '#ef6a52',
-  backdropGradient: ['#1a1109', '#17110b', '#211509'],
-  glassTint: 'rgba(38,28,17,0.55)',
-  glassBorder: 'rgba(255,225,180,0.10)',
-  glassHighlight: 'rgba(255,235,200,0.07)',
+  accentDiamond: '#31A79C', // zellige teal
+  danger: '#CE6A5F',
+  backdropGradient: ['#0e2226', '#0C1719', '#12262a'],
+  glassTint: 'rgba(19,38,43,0.6)',
+  glassBorder: 'rgba(239,230,210,0.10)',
+  glassHighlight: 'rgba(239,230,210,0.06)',
 };
 
 export const spacing = { xs: 4, sm: 8, md: 12, lg: 16, xl: 24, xxl: 32 };
