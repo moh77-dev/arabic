@@ -69,7 +69,7 @@ export function MultipleChoiceExercise({ exercise, onAnswered }: Props) {
         )
       )}
       <Text style={{ fontSize: 18, color: theme.textPrimary, marginBottom: 20, textAlign: 'center' }}>{exercise.prompt}</Text>
-      <View style={{ gap: 10 }}>
+      <View style={{ gap: 14, alignItems: 'center' }}>
         {exercise.options?.map((rawOption, idx) => {
           // Coerce to a string so an object option can never crash the render (#31).
           const option = toPlainText(rawOption);
@@ -86,13 +86,13 @@ export function MultipleChoiceExercise({ exercise, onAnswered }: Props) {
             border = theme.danger;
           }
           return (
-            <Animated.View key={`${option}-${idx}`} style={isSelected ? shakeStyle : undefined}>
+            <Animated.View key={`${option}-${idx}`} style={[{ width: '92%' }, isSelected ? shakeStyle : undefined]}>
               <AnimatedPressable
                 onPress={() => handleSelect(option)}
                 disabled={revealed}
-                style={{ padding: 16, borderRadius: 14, borderWidth: 2, borderColor: border, backgroundColor: bg }}
+                style={{ paddingVertical: 22, paddingHorizontal: 18, borderRadius: 18, borderWidth: 2, borderColor: border, backgroundColor: bg, alignItems: 'center', justifyContent: 'center' }}
               >
-                <Text style={{ color: theme.textPrimary, fontWeight: '600', fontSize: 16 }}>{option}</Text>
+                <Text style={{ color: theme.textPrimary, fontWeight: '700', fontSize: 18, textAlign: 'center' }}>{option}</Text>
               </AnimatedPressable>
             </Animated.View>
           );
