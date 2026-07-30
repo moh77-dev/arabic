@@ -8,6 +8,7 @@ import { Icon } from '@/components/ui/Icon';
 import { generateChallengeRounds } from '@/content/challenge';
 import { getPageBackground } from '@/content/dialectBackdrops';
 import { DIALECTS } from '@/content/dialectMeta';
+import { fonts } from '@/lib/fonts';
 import { useTheme } from '@/lib/ThemeProvider';
 import { haptic } from '@/lib/haptics';
 import { speakArabic } from '@/lib/speech';
@@ -127,7 +128,7 @@ export default function DialectChallenge() {
       {/* Prompt */}
       <View style={{ alignItems: 'center', marginTop: 28, paddingHorizontal: 20 }}>
         <Text style={{ color: theme.textSecondary, fontSize: 14 }}>Where is this phrase from?</Text>
-        <Text style={{ color: theme.textPrimary, fontSize: 40, fontWeight: '700', marginTop: 16, textAlign: 'center' }}>{round.arabic}</Text>
+        <Text style={{ color: theme.textPrimary, fontFamily: fonts.arabicBody, fontSize: 40, marginTop: 16, textAlign: 'center' }}>{round.arabic}</Text>
         <Text style={{ color: theme.textSecondary, fontStyle: 'italic', marginTop: 8 }}>{round.transliteration}</Text>
         <AnimatedPressable
           onPress={() => speakArabic(round.arabic)}

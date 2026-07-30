@@ -3,6 +3,7 @@ import { Text, View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withSequence, withTiming } from 'react-native-reanimated';
 import { AnimatedPressable } from '@/components/ui/AnimatedPressable';
 import { Icon } from '@/components/ui/Icon';
+import { fonts } from '@/lib/fonts';
 import { useTheme } from '@/lib/ThemeProvider';
 import { haptic } from '@/lib/haptics';
 import { playSound } from '@/lib/sound';
@@ -60,7 +61,7 @@ export function MultipleChoiceExercise({ exercise, onAnswered }: Props) {
       ) : (
         exercise.promptArabic && (
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, marginBottom: 8 }}>
-            <Text style={{ fontSize: 34, textAlign: 'center', color: theme.textPrimary, fontWeight: '700' }}>
+            <Text style={{ fontFamily: fonts.arabicBody, fontSize: 34, textAlign: 'center', color: theme.textPrimary }}>
               {exercise.promptArabic}
             </Text>
             <AnimatedPressable onPress={() => speakArabic(exercise.promptArabic)} withHaptic={false}>

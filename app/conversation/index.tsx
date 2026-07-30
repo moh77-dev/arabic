@@ -9,6 +9,7 @@ import { MonumentHero } from '@/components/ui/MonumentHero';
 import { getBackdrop } from '@/content/dialectBackdrops';
 import { DIALECTS } from '@/content/dialectMeta';
 import { GUIDE_GLYPH, GUIDE_NAME, getGuideGreeting } from '@/content/guide';
+import { fonts } from '@/lib/fonts';
 import { useTheme } from '@/lib/ThemeProvider';
 import { useSettingsStore } from '@/stores/useSettingsStore';
 
@@ -74,7 +75,7 @@ export default function AskSalah() {
               </View>
             </View>
 
-            <Text style={{ color: '#fff', fontSize: 30, fontWeight: '700', marginTop: 18, textAlign: 'right' }}>{greeting.arabic}</Text>
+            <Text style={{ color: '#fff', fontFamily: fonts.arabicDisplay, fontSize: 30, marginTop: 18, textAlign: 'right' }}>{greeting.arabic}</Text>
             <Text style={{ color: 'rgba(255,255,255,0.9)', fontSize: 13, marginTop: 4 }}>{greeting.english}</Text>
           </View>
         </MonumentHero>

@@ -12,6 +12,7 @@ import { ANIS_CHARACTER_ID, findCharacter, getAnisCharacter } from '@/content/ch
 import { useTheme } from '@/lib/ThemeProvider';
 import { ai } from '@/lib/ai/client';
 import { audioUriToBase64, recordingMimeType } from '@/lib/audio';
+import { fonts } from '@/lib/fonts';
 import { haptic } from '@/lib/haptics';
 import { speakReply, stopSpeaking } from '@/lib/speech';
 import { useConversationStore } from '@/stores/useConversationStore';
@@ -210,7 +211,7 @@ export default function ConversationChat() {
           <Icon name="chevronLeft" size={26} color={theme.textPrimary} />
         </AnimatedPressable>
         <LinearGradient colors={[theme.accentGold, theme.primary]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ width: 44, height: 44, borderRadius: 14, alignItems: 'center', justifyContent: 'center' }}>
-          <Text style={{ fontFamily: undefined, fontSize: 22, fontWeight: '900', color: theme.primaryText }}>{character.nameArabic?.[0] ?? character.avatar}</Text>
+          <Text style={{ fontFamily: fonts.arabicDisplayBold, fontSize: 22, color: theme.primaryText }}>{character.nameArabic?.[0] ?? character.avatar}</Text>
         </LinearGradient>
         <View style={{ flex: 1 }}>
           <Text style={{ color: theme.textPrimary, fontWeight: '800', fontSize: 15 }}>{character.name}</Text>
@@ -245,7 +246,7 @@ export default function ConversationChat() {
                   {isUser ? 'You' : character.name}
                 </Text>
                 {item.textArabic && item.textArabic !== '...' ? (
-                  <Text style={{ color: theme.textPrimary, fontSize: 26, lineHeight: 40, fontWeight: '700', writingDirection: 'rtl', textAlign: 'right', marginTop: 8 }}>
+                  <Text style={{ color: theme.textPrimary, fontFamily: fonts.arabicBody, fontSize: 26, lineHeight: 44, writingDirection: 'rtl', textAlign: 'right', marginTop: 8 }}>
                     {item.textArabic}
                   </Text>
                 ) : null}
