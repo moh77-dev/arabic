@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withSequence, withTiming } from 'react-native-reanimated';
 import { AnimatedPressable } from '@/components/ui/AnimatedPressable';
+import { Icon } from '@/components/ui/Icon';
 import { useTheme } from '@/lib/ThemeProvider';
 import { haptic } from '@/lib/haptics';
 import { playSound } from '@/lib/sound';
@@ -52,7 +53,7 @@ export function MultipleChoiceExercise({ exercise, onAnswered }: Props) {
             onPress={() => speakArabic(exercise.promptArabic)}
             style={{ width: 84, height: 84, borderRadius: 42, backgroundColor: theme.primary, alignItems: 'center', justifyContent: 'center' }}
           >
-            <Text style={{ fontSize: 34 }}>🔊</Text>
+            <Icon name="speak" size={34} color={theme.primaryText} />
           </AnimatedPressable>
           <Text style={{ color: theme.textSecondary, fontSize: 12, marginTop: 8 }}>Tap to listen again</Text>
         </View>
@@ -63,7 +64,7 @@ export function MultipleChoiceExercise({ exercise, onAnswered }: Props) {
               {exercise.promptArabic}
             </Text>
             <AnimatedPressable onPress={() => speakArabic(exercise.promptArabic)} withHaptic={false}>
-              <Text style={{ fontSize: 22 }}>🔊</Text>
+              <Icon name="speak" size={22} color={theme.accentGold} />
             </AnimatedPressable>
           </View>
         )
