@@ -1,10 +1,12 @@
 import { Audio } from 'expo-av';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { FlatList, KeyboardAvoidingView, Platform, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { AnimatedPressable } from '@/components/ui/AnimatedPressable';
 import { Button } from '@/components/ui/Button';
+import { Icon } from '@/components/ui/Icon';
 import { TextField } from '@/components/ui/TextField';
 import { ANIS_CHARACTER_ID, findCharacter, getAnisCharacter } from '@/content/characters';
 import { useTheme } from '@/lib/ThemeProvider';
@@ -205,15 +207,21 @@ export default function ConversationChat() {
     <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, padding: 16, borderBottomWidth: 1, borderBottomColor: theme.border }}>
         <AnimatedPressable onPress={() => router.back()} withHaptic={false}>
-          <Text style={{ fontSize: 20, color: theme.textSecondary }}>‹</Text>
+          <Icon name="chevronLeft" size={26} color={theme.textPrimary} />
         </AnimatedPressable>
-        <Text style={{ fontSize: 24 }}>{character.avatar}</Text>
+        <LinearGradient colors={[theme.accentGold, theme.primary]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ width: 44, height: 44, borderRadius: 14, alignItems: 'center', justifyContent: 'center' }}>
+          <Text style={{ fontFamily: undefined, fontSize: 22, fontWeight: '900', color: theme.primaryText }}>{character.nameArabic?.[0] ?? character.avatar}</Text>
+        </LinearGradient>
         <View style={{ flex: 1 }}>
-          <Text style={{ color: theme.textPrimary, fontWeight: '800' }}>{character.name}</Text>
-          <Text style={{ color: theme.textSecondary, fontSize: 12 }}>{character.role}</Text>
+          <Text style={{ color: theme.textPrimary, fontWeight: '800', fontSize: 15 }}>{character.name}</Text>
+          <Text style={{ color: theme.textSecondary, fontSize: 12 }}>{character.role} · here now</Text>
         </View>
-        <AnimatedPressable onPress={endConversation} disabled={ending || history.length === 0}>
-          <Text style={{ color: theme.primary, fontWeight: '700' }}>{ending ? 'Scoring...' : 'End'}</Text>
+        <AnimatedPressable
+          onPress={endConversation}
+          disabled={ending || history.length === 0}
+          style={{ borderWidth: 1, borderColor: theme.border, borderRadius: 999, paddingHorizontal: 14, paddingVertical: 7, opacity: history.length === 0 ? 0.5 : 1 }}
+        >
+          <Text style={{ color: theme.textPrimary, fontWeight: '700', fontSize: 13 }}>{ending ? 'Scoring…' : 'End'}</Text>
         </AnimatedPressable>
       </View>
 
@@ -221,40 +229,39 @@ export default function ConversationChat() {
         <FlatList
           data={history}
           keyExtractor={(item) => item.id}
-          contentContainerStyle={{ padding: 16, gap: 10 }}
+          contentContainerStyle={{ paddingHorizontal: 20, paddingVertical: 8 }}
           ListEmptyComponent={
             <Text style={{ color: theme.textSecondary, textAlign: 'center', marginTop: 40 }}>
-              Say hello to {character.name} to start the conversation.
+              Say hello to {character.name} to start talking.
             </Text>
           }
           renderItem={({ item }) => {
             const isUser = item.speaker === 'user';
             const canSpeak = !isUser && !!item.textArabic && item.textArabic !== '...';
+            const align = isUser ? 'right' : 'left';
             return (
-              <View
-                style={{
-                  alignSelf: isUser ? 'flex-end' : 'flex-start',
-                  backgroundColor: isUser ? theme.primary : theme.surfaceElevated,
-                  borderWidth: isUser ? 0 : 1,
-                  borderColor: theme.border,
-                  borderRadius: 16,
-                  padding: 12,
-                  maxWidth: '80%',
-                }}
-              >
-                {item.textArabic ? (
-                  <Text style={{ color: isUser ? theme.primaryText : theme.textPrimary, fontWeight: '700', marginBottom: 2 }}>
+              <View style={{ paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: theme.border, opacity: 1 }}>
+                <Text style={{ fontSize: 10, fontWeight: '800', letterSpacing: 2, textTransform: 'uppercase', color: isUser ? theme.accentDiamond : theme.textSecondary, textAlign: align }}>
+                  {isUser ? 'You' : character.name}
+                </Text>
+                {item.textArabic && item.textArabic !== '...' ? (
+                  <Text style={{ color: theme.textPrimary, fontSize: 26, lineHeight: 40, fontWeight: '700', writingDirection: 'rtl', textAlign: 'right', marginTop: 8 }}>
                     {item.textArabic}
                   </Text>
                 ) : null}
-                <Text style={{ color: isUser ? theme.primaryText : theme.textPrimary }}>{item.textEnglish}</Text>
+                {item.textTransliteration ? (
+                  <Text style={{ color: theme.accentGold, fontSize: 15, fontStyle: 'italic', marginTop: 4, textAlign: align }}>{item.textTransliteration}</Text>
+                ) : null}
+                {item.textEnglish ? (
+                  <Text style={{ color: theme.textSecondary, fontSize: 13, marginTop: 3, textAlign: align }}>{item.textEnglish}</Text>
+                ) : null}
                 {canSpeak ? (
                   <AnimatedPressable
                     onPress={() => voiceReply(item.textArabic)}
                     withHaptic={false}
-                    style={{ flexDirection: 'row', alignItems: 'center', gap: 5, marginTop: 8, alignSelf: 'flex-start' }}
+                    style={{ flexDirection: 'row', alignItems: 'center', gap: 5, marginTop: 10, alignSelf: 'flex-start' }}
                   >
-                    <Text style={{ fontSize: 14 }}>🔊</Text>
+                    <Icon name="speak" size={16} color={theme.accentGold} />
                     <Text style={{ color: theme.textSecondary, fontSize: 11, fontWeight: '700' }}>Replay</Text>
                   </AnimatedPressable>
                 ) : null}
@@ -262,10 +269,10 @@ export default function ConversationChat() {
             );
           }}
         />
-        <View style={{ flexDirection: 'row', gap: 10, padding: 16, alignItems: 'center' }}>
+        <View style={{ flexDirection: 'row', gap: 10, paddingHorizontal: 16, paddingTop: 10, paddingBottom: 16, alignItems: 'center' }}>
           <View style={{ flex: 1 }}>
             <TextField
-              placeholder={recState === 'recording' ? 'Listening…' : recState === 'transcribing' ? 'Transcribing…' : 'Type or hold the mic…'}
+              placeholder={recState === 'recording' ? 'Listening…' : recState === 'transcribing' ? 'Transcribing…' : 'Type, or tap the mic…'}
               value={input}
               onChangeText={setInput}
               onSubmitEditing={send}
@@ -278,20 +285,26 @@ export default function ConversationChat() {
             disabled={sending || recState === 'transcribing'}
             withHaptic={false}
             style={{
-              width: 54,
-              height: 54,
-              borderRadius: 27,
+              width: 52,
+              height: 52,
+              borderRadius: 16,
               backgroundColor: recState === 'recording' ? theme.danger : theme.surfaceElevated,
               borderWidth: 1,
-              borderColor: theme.border,
+              borderColor: recState === 'recording' ? theme.danger : theme.border,
               alignItems: 'center',
               justifyContent: 'center',
             }}
           >
-            <Text style={{ fontSize: 20 }}>{recState === 'recording' ? '⏹️' : recState === 'transcribing' ? '⏳' : '🎙️'}</Text>
+            <Icon name={recState === 'recording' ? 'close' : 'mic'} size={22} color={recState === 'recording' ? '#fff' : theme.textPrimary} />
           </AnimatedPressable>
-          <AnimatedPressable onPress={send} disabled={sending || !input.trim()} style={{ width: 54, height: 54, borderRadius: 27, backgroundColor: theme.primary, alignItems: 'center', justifyContent: 'center' }}>
-            <Text style={{ fontSize: 20 }}>➤</Text>
+          <AnimatedPressable
+            onPress={send}
+            disabled={sending || !input.trim()}
+            style={{ width: 52, height: 52, borderRadius: 16, overflow: 'hidden', opacity: !input.trim() ? 0.5 : 1 }}
+          >
+            <LinearGradient colors={[theme.accentGold, theme.primary]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+              <Icon name="send" size={22} color={theme.primaryText} />
+            </LinearGradient>
           </AnimatedPressable>
         </View>
       </KeyboardAvoidingView>
