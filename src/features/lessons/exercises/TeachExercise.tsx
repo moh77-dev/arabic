@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/Button';
 import { Icon } from '@/components/ui/Icon';
 import { DIALECTS } from '@/content/dialectMeta';
 import { VOCAB_BY_ID } from '@/content/dialects';
+import { fonts } from '@/lib/fonts';
 import { useTheme } from '@/lib/ThemeProvider';
 import { speakArabic } from '@/lib/speech';
 import type { DialectId, Exercise } from '@/types';
@@ -32,7 +33,7 @@ export function TeachExercise({ exercise, onDone }: Props) {
     // Fallback if the word isn't in the static dictionary (e.g. AI-generated).
     return (
       <View style={{ alignItems: 'center' }}>
-        <Text style={{ fontSize: 40, color: theme.textPrimary, fontWeight: '700' }}>{exercise.promptArabic}</Text>
+        <Text style={{ fontFamily: fonts.arabicDisplay, fontSize: 40, color: theme.textPrimary }}>{exercise.promptArabic}</Text>
         <Text style={{ color: theme.textSecondary, marginTop: 8 }}>{exercise.prompt}</Text>
         <View style={{ marginTop: 28, width: '100%' }}>
           <Button label="Got it" onPress={onDone} />
@@ -51,7 +52,7 @@ export function TeachExercise({ exercise, onDone }: Props) {
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 12 }}>
         {/* Headword */}
         <View style={{ alignItems: 'center' }}>
-          <Text style={{ color: theme.textPrimary, fontSize: 46, fontWeight: '800' }}>{word.arabic}</Text>
+          <Text style={{ color: theme.textPrimary, fontFamily: fonts.arabicDisplay, fontSize: 46 }}>{word.arabic}</Text>
           <AnimatedPressable
             onPress={() => speakArabic(word.arabic)}
             style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 10, backgroundColor: `${theme.primary}18`, borderRadius: 999, paddingHorizontal: 14, paddingVertical: 8 }}
@@ -73,7 +74,7 @@ export function TeachExercise({ exercise, onDone }: Props) {
                 <Icon name="speak" size={18} color={theme.textSecondary} />
               </AnimatedPressable>
             </View>
-            <Text style={{ color: theme.textPrimary, fontSize: 20, fontWeight: '700', marginTop: 8, textAlign: 'right' }}>{word.exampleSentenceArabic}</Text>
+            <Text style={{ color: theme.textPrimary, fontFamily: fonts.arabicBody, fontSize: 20, marginTop: 8, textAlign: 'right' }}>{word.exampleSentenceArabic}</Text>
             {word.exampleSentenceTranslit ? <Text style={{ color: theme.textSecondary, fontStyle: 'italic', marginTop: 4 }}>{word.exampleSentenceTranslit}</Text> : null}
             {word.exampleSentenceEnglish ? <Text style={{ color: theme.textPrimary, marginTop: 6 }}>{word.exampleSentenceEnglish}</Text> : null}
           </View>

@@ -9,6 +9,7 @@ import { MonumentHero } from '@/components/ui/MonumentHero';
 import { getCharactersForDialect } from '@/content/characters';
 import { getBackdrop, getPageBackground } from '@/content/dialectBackdrops';
 import { DIALECTS } from '@/content/dialectMeta';
+import { fonts } from '@/lib/fonts';
 import { useTheme } from '@/lib/ThemeProvider';
 import { useSettingsStore } from '@/stores/useSettingsStore';
 import type { DialectId } from '@/types';
@@ -192,7 +193,7 @@ export default function Explore() {
                   style={{ flexDirection: 'row', alignItems: 'center', gap: 14, backgroundColor: theme.surfaceElevated, borderRadius: 16, padding: 14, shadowColor: theme.primary, shadowOpacity: theme.mode === 'dark' ? 0.28 : 0.1, shadowRadius: 12, shadowOffset: { width: 0, height: 5 } }}
                 >
                   <View style={{ width: 46, height: 46, borderRadius: 13, backgroundColor: `${theme.primary}1f`, alignItems: 'center', justifyContent: 'center' }}>
-                    <Text style={{ fontSize: 20, fontWeight: '900', color: theme.primary }}>{ch.nameArabic?.[0] ?? ch.name?.[0] ?? '؟'}</Text>
+                    <Text style={{ fontFamily: fonts.arabicDisplayBold, fontSize: 20, color: theme.primary }}>{ch.nameArabic?.[0] ?? ch.name?.[0] ?? '؟'}</Text>
                   </View>
                   <View style={{ flex: 1 }}>
                     <Text style={{ color: theme.textPrimary, fontWeight: '800', fontSize: 14 }}>{ch.name}</Text>

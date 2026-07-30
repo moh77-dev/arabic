@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Text, View } from 'react-native';
 import { AnimatedPressable } from '@/components/ui/AnimatedPressable';
 import { Button } from '@/components/ui/Button';
+import { fonts } from '@/lib/fonts';
 import { useTheme } from '@/lib/ThemeProvider';
 import { ai } from '@/lib/ai/client';
 import { haptic } from '@/lib/haptics';
@@ -74,7 +75,7 @@ export function SpeakingExercise({ exercise, onAnswered }: Props) {
     <View style={{ alignItems: 'center' }}>
       {exercise.promptArabic && (
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, marginBottom: 4 }}>
-          <Text style={{ fontSize: 34, textAlign: 'center', color: theme.textPrimary, fontWeight: '700' }}>
+          <Text style={{ fontFamily: fonts.arabicBody, fontSize: 34, textAlign: 'center', color: theme.textPrimary }}>
             {exercise.promptArabic}
           </Text>
           <AnimatedPressable onPress={() => speakArabic(exercise.promptArabic)} withHaptic={false}>

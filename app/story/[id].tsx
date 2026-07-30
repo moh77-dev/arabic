@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/Button';
 import { ACHIEVEMENTS } from '@/content/achievements';
 import { VOCAB_BY_ID } from '@/content/dialects';
 import { STORIES } from '@/content/stories';
+import { fonts } from '@/lib/fonts';
 import { useTheme } from '@/lib/ThemeProvider';
 import { haptic } from '@/lib/haptics';
 import { useGamificationStore } from '@/stores/useGamificationStore';
@@ -64,7 +65,7 @@ export default function StoryRunner() {
             <Text style={{ color: theme.textPrimary, fontWeight: '800', marginBottom: 8 }}>Vocabulary review</Text>
             {words.map((w) => (
               <View key={w.id} style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 6 }}>
-                <Text style={{ color: theme.textPrimary, fontWeight: '700' }}>{w.arabic}</Text>
+                <Text style={{ color: theme.textPrimary, fontFamily: fonts.arabicBody }}>{w.arabic}</Text>
                 <Text style={{ color: theme.textSecondary }}>{w.english}</Text>
               </View>
             ))}
@@ -82,7 +83,7 @@ export default function StoryRunner() {
     <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
       <ScrollView contentContainerStyle={{ padding: 24, flexGrow: 1, justifyContent: 'center' }}>
         <Text style={{ color: theme.textSecondary, fontWeight: '700', fontSize: 12, marginBottom: 8 }}>{node.speaker.toUpperCase()}</Text>
-        <Text style={{ fontSize: 28, color: theme.textPrimary, fontWeight: '800' }}>{node.textArabic}</Text>
+        <Text style={{ fontFamily: fonts.arabicDisplay, fontSize: 28, color: theme.textPrimary }}>{node.textArabic}</Text>
         <Text style={{ fontSize: 15, color: theme.textSecondary, marginTop: 6 }}>{node.textTransliteration}</Text>
         <Text style={{ fontSize: 16, color: theme.textPrimary, marginTop: 10 }}>{node.textEnglish}</Text>
 
@@ -94,7 +95,7 @@ export default function StoryRunner() {
                 onPress={() => choose(choice.nextNodeId, node.vocabHighlights)}
                 style={{ padding: 16, borderRadius: 16, backgroundColor: theme.surfaceElevated, borderWidth: 2, borderColor: theme.border }}
               >
-                <Text style={{ color: theme.textPrimary, fontWeight: '700' }}>{choice.textArabic}</Text>
+                <Text style={{ color: theme.textPrimary, fontFamily: fonts.arabicBody }}>{choice.textArabic}</Text>
                 <Text style={{ color: theme.textSecondary, fontSize: 12, marginTop: 2 }}>{choice.textEnglish}</Text>
               </AnimatedPressable>
             ))}

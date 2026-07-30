@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Text, View } from 'react-native';
 import { Button } from '@/components/ui/Button';
 import { TextField } from '@/components/ui/TextField';
+import { fonts } from '@/lib/fonts';
 import { useTheme } from '@/lib/ThemeProvider';
 import { acceptedAnswersFor, isAnswerCorrect } from '@/lib/answerCheck';
 import { haptic } from '@/lib/haptics';
@@ -36,7 +37,7 @@ export function TypedAnswerExercise({ exercise, onAnswered }: Props) {
   return (
     <View>
       {exercise.promptArabic && (
-        <Text style={{ fontSize: 34, textAlign: 'center', color: theme.textPrimary, marginBottom: 8, fontWeight: '700' }}>
+        <Text style={{ fontFamily: fonts.arabicBody, fontSize: 34, textAlign: 'center', color: theme.textPrimary, marginBottom: 8 }}>
           {exercise.promptArabic}
         </Text>
       )}

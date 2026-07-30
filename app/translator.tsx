@@ -7,6 +7,7 @@ import { AnimatedPressable } from '@/components/ui/AnimatedPressable';
 import { Icon } from '@/components/ui/Icon';
 import { DIALECTS } from '@/content/dialectMeta';
 import { translateLocally, TRANSLATE_SUGGESTIONS, type TranslateResult } from '@/content/translate';
+import { fonts } from '@/lib/fonts';
 import { useTheme } from '@/lib/ThemeProvider';
 import { haptic } from '@/lib/haptics';
 import { notify } from '@/lib/platformAlert';
@@ -130,7 +131,7 @@ export default function Translator() {
                     <Icon name="speak" size={18} color={theme.primaryText} />
                   </AnimatedPressable>
                 </View>
-                <Text style={{ color: parchInk, fontSize: 32, fontWeight: '900', marginTop: 10, textAlign: 'right' }}>{result.word.arabic}</Text>
+                <Text style={{ color: parchInk, fontFamily: fonts.arabicDisplay, fontSize: 32, marginTop: 10, textAlign: 'right' }}>{result.word.arabic}</Text>
                 <Text style={{ color: parchMuted, fontStyle: 'italic', marginTop: 6 }}>{result.word.transliteration}</Text>
               </LinearGradient>
             </View>
@@ -150,7 +151,7 @@ export default function Translator() {
                     <View key={o.dialectId} style={{ flexDirection: 'row', alignItems: 'center', gap: 10, padding: 14, borderTopWidth: i === 0 ? 0 : 1, borderTopColor: theme.border }}>
                       <Text style={{ fontSize: 16 }}>{DIALECTS[o.dialectId]?.flag ?? '🏳️'}</Text>
                       <Text style={{ flex: 1, color: theme.textSecondary, fontWeight: '600', fontSize: 13 }}>{DIALECTS[o.dialectId]?.name ?? o.dialectId}</Text>
-                      <Text style={{ color: theme.textPrimary, fontWeight: '700' }}>{o.arabic}</Text>
+                      <Text style={{ color: theme.textPrimary, fontFamily: fonts.arabicBody }}>{o.arabic}</Text>
                       <AnimatedPressable onPress={() => speakArabic(o.arabic)} withHaptic={false}>
                         <Icon name="speak" size={18} color={theme.textSecondary} />
                       </AnimatedPressable>
