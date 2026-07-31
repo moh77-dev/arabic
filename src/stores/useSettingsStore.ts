@@ -1,9 +1,12 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
+import type { Lang } from '@/lib/i18n';
 import { zustandMMKVStorage } from '@/lib/storage';
 import type { DialectId } from '@/types';
 
 interface SettingsState {
+  /** UI language for the whole app (set from onboarding's native-language step or Settings). */
+  language: Lang;
   themePreference: 'light' | 'dark' | 'system';
   reduceMotion: boolean;
   largeText: boolean;
@@ -25,6 +28,7 @@ interface SettingsState {
   toggleHaptics: () => void;
   toggleNotifications: () => void;
   setReminderTime: (t: string) => void;
+  setLanguage: (l: Lang) => void;
   /** Switches the focused dialect, enrolling it first if it isn't already being learned. */
   setActiveDialect: (d: DialectId) => void;
   enrollDialect: (d: DialectId) => void;
@@ -36,6 +40,7 @@ interface SettingsState {
 export const useSettingsStore = create<SettingsState>()(
   persist(
     (set, get) => ({
+      language: 'en',
       themePreference: 'system',
       reduceMotion: false,
       largeText: false,
@@ -55,6 +60,7 @@ export const useSettingsStore = create<SettingsState>()(
       toggleHaptics: () => set((s) => ({ hapticsEnabled: !s.hapticsEnabled })),
       toggleNotifications: () => set((s) => ({ notificationsEnabled: !s.notificationsEnabled })),
       setReminderTime: (reminderTime) => set({ reminderTime }),
+      setLanguage: (language) => set({ language }),
       setActiveDialect: (activeDialect) => {
         get().enrollDialect(activeDialect);
         set({ activeDialect });

@@ -4,6 +4,7 @@ import React from 'react';
 import { Platform, View } from 'react-native';
 import { Icon, type IconName } from '@/components/ui/Icon';
 import { useTheme } from '@/lib/ThemeProvider';
+import { useT } from '@/lib/i18n';
 
 const TAB_ICONS: Record<string, IconName> = {
   index: 'home',
@@ -16,6 +17,7 @@ const TAB_ICONS: Record<string, IconName> = {
 
 export default function TabsLayout() {
   const theme = useTheme();
+  const t = useT();
   return (
     <Tabs
       screenOptions={({ route }) => ({
@@ -78,13 +80,13 @@ export default function TabsLayout() {
       })}
     >
       {/* Order sets the bar layout — Home sits dead center. */}
-      <Tabs.Screen name="learn" options={{ title: 'Learn' }} />
-      <Tabs.Screen name="explore" options={{ title: 'Explore' }} />
-      <Tabs.Screen name="index" options={{ title: 'Home', tabBarLabel: () => null }} />
-      <Tabs.Screen name="streak" options={{ title: 'Streak' }} />
-      <Tabs.Screen name="profile" options={{ title: 'Profile' }} />
+      <Tabs.Screen name="learn" options={{ title: t('tab.learn') }} />
+      <Tabs.Screen name="explore" options={{ title: t('tab.explore') }} />
+      <Tabs.Screen name="index" options={{ title: t('tab.home'), tabBarLabel: () => null }} />
+      <Tabs.Screen name="streak" options={{ title: t('tab.streak') }} />
+      <Tabs.Screen name="profile" options={{ title: t('tab.profile') }} />
       {/* Settings stays routable (from Profile) but is no longer a bottom tab. */}
-      <Tabs.Screen name="settings" options={{ title: 'Settings', href: null }} />
+      <Tabs.Screen name="settings" options={{ title: t('tab.settings'), href: null }} />
     </Tabs>
   );
 }
