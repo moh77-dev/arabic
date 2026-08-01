@@ -157,7 +157,7 @@ export function getBackdrop(dialectId: DialectId): DialectBackdrop {
 export function getPageBackground(dialectId: DialectId, mode: 'light' | 'dark'): readonly [string, string, string] {
   const accent = getBackdrop(dialectId).heroGradient[0];
   if (mode === 'dark') {
-    const base = '#0C1719';
+    const base = '#120c05';
     return [blendHex(accent, base, 0.82), base, base];
   }
   const base = '#faf3e8';

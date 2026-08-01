@@ -47,46 +47,42 @@ export interface Theme {
   glassHighlight: string;
 }
 
-// Light mode is the "daytime majlis": warm parchment ground, brass primary (with dark ink on it),
-// zellige-teal accent, deep warm-ink text.
 export const lightTheme: Theme = {
   mode: 'light',
-  background: '#F4ECDB', // warm parchment
-  surface: '#F1E7D2',
-  surfaceElevated: '#FFFBF2', // warm off-white — never a cold pure white
-  border: '#E7D7B8',
-  textPrimary: '#241B10', // deep warm ink
-  textSecondary: '#8A7458',
-  primary: '#A9781E', // brass
-  primaryText: '#2A1E0A', // dark ink reads on brass
+  background: palette.sand[50],
+  surface: palette.sand[100],
+  surfaceElevated: '#fffaf1', // warm off-white — never a cold pure white
+  border: '#ecdcc2',
+  textPrimary: '#3a2a17', // deep espresso ink, warmer than black
+  textSecondary: '#8a7355',
+  primary: palette.spice[600],
+  primaryText: '#fff8ef',
   accentGold: palette.gold[500],
-  accentDiamond: '#17827A', // zellige teal
+  accentDiamond: palette.turquoise[500],
   danger: palette.danger,
-  backdropGradient: ['#F7EFDD', '#F4ECDB', '#FBF3E2'],
-  glassTint: 'rgba(255,251,242,0.6)',
-  glassBorder: 'rgba(120,90,30,0.14)',
+  backdropGradient: ['#fbeede', '#f8ecdf', '#fdf3e0'],
+  glassTint: 'rgba(255,250,242,0.55)',
+  glassBorder: 'rgba(255,244,228,0.70)',
   glassHighlight: 'rgba(255,252,246,0.9)',
 };
 
-// Dark mode is the "lantern-lit majlis" night: deep teal-black ground, brass primary, an amber
-// glow, zellige-teal accent, and parchment-bone text.
 export const darkTheme: Theme = {
   mode: 'dark',
-  background: '#0C1719',
-  surface: '#13262B',
-  surfaceElevated: '#17323A',
-  border: '#26363c',
-  textPrimary: '#EFE6D2', // parchment bone
-  textSecondary: '#8FA39C', // muted sage
-  primary: '#C79A3E', // lantern brass
-  primaryText: '#1A1206',
+  background: palette.night[950],
+  surface: palette.night[900],
+  surfaceElevated: palette.night[700],
+  border: '#3a2c1b',
+  textPrimary: '#f7ecd9', // warm parchment
+  textSecondary: '#b39b78',
+  primary: palette.spice[400],
+  primaryText: '#1a0e05',
   accentGold: palette.gold[400],
-  accentDiamond: '#31A79C', // zellige teal
-  danger: '#CE6A5F',
-  backdropGradient: ['#0e2226', '#0C1719', '#12262a'],
-  glassTint: 'rgba(19,38,43,0.6)',
-  glassBorder: 'rgba(239,230,210,0.10)',
-  glassHighlight: 'rgba(239,230,210,0.06)',
+  accentDiamond: palette.turquoise[400],
+  danger: '#ef6a52',
+  backdropGradient: ['#1a1109', '#17110b', '#211509'],
+  glassTint: 'rgba(38,28,17,0.55)',
+  glassBorder: 'rgba(255,225,180,0.10)',
+  glassHighlight: 'rgba(255,235,200,0.07)',
 };
 
 export const spacing = { xs: 4, sm: 8, md: 12, lg: 16, xl: 24, xxl: 32 };

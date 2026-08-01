@@ -1,14 +1,14 @@
 /**
- * Arabic type roles. Reem Kufi (geometric, architectural — echoes tilework and monuments) is the
- * display face for the wordmark, greetings and hero phrases; Noto Naskh Arabic is the readable body
- * face for running Arabic (conversation, exercise prompts).
+ * Arabic type roles.
  *
- * NOTE: when a specific fontFamily is set, React Native ignores `fontWeight` — pick the weighted
- * family directly (e.g. `fonts.arabicDisplayBold`) instead of setting fontWeight.
+ * The custom Arabic display/body faces (Reem Kufi + Noto Naskh Arabic) were part of the "majlis"
+ * look, which has been rolled back. These now resolve to `undefined` so every `fontFamily: fonts.*`
+ * reference falls back to the system font — undoing the display-font sweep app-wide without touching
+ * each screen. Re-point these to loaded font-family names to bring custom Arabic type back.
  */
 export const fonts = {
-  arabicDisplay: 'ReemKufi_600SemiBold',
-  arabicDisplayBold: 'ReemKufi_700Bold',
-  arabicBody: 'NotoNaskhArabic_400Regular',
-  arabicBodyBold: 'NotoNaskhArabic_700Bold',
+  arabicDisplay: undefined,
+  arabicDisplayBold: undefined,
+  arabicBody: undefined,
+  arabicBodyBold: undefined,
 } as const;
