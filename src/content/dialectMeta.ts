@@ -169,5 +169,7 @@ export const DIALECTS: Record<DialectId, DialectMeta> = {
 
 // `algerian_algiers` is retired as a separate dialect (merged into the single "Algerian Arabic").
 // Its meta entry stays so cross-dialect comparison data still resolves, but it's never offered.
-const HIDDEN_DIALECTS: DialectId[] = ['algerian_algiers'];
-export const DIALECT_LIST = Object.values(DIALECTS).filter((d) => !HIDDEN_DIALECTS.includes(d.id));
+export const HIDDEN_DIALECTS: DialectId[] = ['algerian_algiers'];
+/** A dialect a learner is allowed to select/enroll (retired ones are hidden but still resolvable). */
+export const isSelectableDialect = (id: DialectId): boolean => !HIDDEN_DIALECTS.includes(id);
+export const DIALECT_LIST = Object.values(DIALECTS).filter((d) => isSelectableDialect(d.id));

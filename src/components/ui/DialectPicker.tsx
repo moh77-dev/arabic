@@ -3,9 +3,9 @@ import { Modal, Pressable, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AnimatedPressable } from './AnimatedPressable';
 import { Icon } from './Icon';
-import { DIALECT_LIST, DIALECTS } from '@/content/dialectMeta';
-import { fonts } from '@/lib/fonts';
+import { DIALECT_LIST, DIALECTS, isSelectableDialect } from '@/content/dialectMeta';
 import { useTheme } from '@/lib/ThemeProvider';
+import { fonts } from '@/lib/fonts';
 import { useSettingsStore } from '@/stores/useSettingsStore';
 import type { DialectId } from '@/types';
 
@@ -25,7 +25,12 @@ export function DialectPicker() {
   const [open, setOpen] = useState(false);
 
   const activeMeta = DIALECTS[active] ?? DIALECTS.msa;
-  const validEnrolled = useMemo(() => enrolled.filter((id) => DIALECTS[id]), [enrolled]);
+  // Only ever show dialects that still exist AND are selectable — retired ones (e.g. the old
+  // "Algiers Arabic") stay in the data for cross-dialect lookups but never appear in the picker.
+  const validEnrolled = useMemo(
+    () => enrolled.filter((id) => DIALECTS[id] && isSelectableDialect(id)),
+    [enrolled],
+  );
   const others = useMemo(
     () => DIALECT_LIST.filter((d) => !validEnrolled.includes(d.id)),
     [validEnrolled],

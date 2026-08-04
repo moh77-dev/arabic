@@ -84,7 +84,9 @@ export const useSettingsStore = create<SettingsState>()(
     {
       name: 'lahja-settings',
       storage: createJSONStorage(() => zustandMMKVStorage),
-      version: 1,
+      // v2: re-run the Algerian remap so anyone still holding the retired "Algiers Arabic"
+      // (algerian_algiers) gets collapsed into the single "Algerian Arabic" (algerian_eloued).
+      version: 2,
       // The Oran/Constantine/Annaba/Tlemcen/Kabyle Algerian dialects were retired; anyone who had
       // one enrolled from an older build gets it remapped to Algiers so nothing dangles.
       migrate: (persisted: any, _version) => {
