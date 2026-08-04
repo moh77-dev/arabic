@@ -5,11 +5,13 @@ import { VOCAB_BY_ID } from '@/content/dialects';
 import { generateFlashcards } from '@/content/lessonGenerator';
 import { LessonRunner } from '@/features/lessons/LessonRunner';
 import { useTheme } from '@/lib/ThemeProvider';
+import { useT } from '@/lib/i18n';
 import type { Lesson } from '@/types';
 
 export default function ReviewScreen() {
   const { wordIds } = useLocalSearchParams<{ wordIds: string }>();
   const theme = useTheme();
+  const t = useT();
 
   const lesson: Lesson | null = useMemo(() => {
     const ids = (wordIds ?? '').split(',').filter(Boolean);
@@ -33,7 +35,7 @@ export default function ReviewScreen() {
   if (!lesson) {
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: theme.background }}>
-        <Text style={{ color: theme.textPrimary }}>Nothing to review.</Text>
+        <Text style={{ color: theme.textPrimary }}>{t('review.nothing')}</Text>
       </View>
     );
   }

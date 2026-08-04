@@ -75,14 +75,14 @@ export default function Profile() {
           {completedLessonIds.length === 0 ? (
             <View style={{ padding: 16 }}>
               <Text style={{ color: theme.textSecondary, fontSize: 13, textAlign: 'center' }}>
-                Finish a lesson and it'll show up here.
+                {t('profile.empty')}
               </Text>
             </View>
           ) : (
             <>
-              <ActivityRow icon="check" tint={theme.primary} title={`Completed ${completedLessonIds.length} lesson${completedLessonIds.length > 1 ? 's' : ''}`} meta={`${gami.totalXp} XP earned`} first />
-              <ActivityRow icon="chat" tint="#0ea5e9" title="Practiced with Amine" meta="AI conversation" />
-              <ActivityRow icon="review" tint={theme.accentGold} title={`${wordsKnown} words in review`} meta="Spaced repetition" />
+              <ActivityRow icon="check" tint={theme.primary} title={t('profile.completed', { n: completedLessonIds.length })} meta={t('profile.xpEarned', { xp: gami.totalXp })} first />
+              <ActivityRow icon="chat" tint="#0ea5e9" title={t('profile.practicedWith', { name: 'Amine' })} meta={t('profile.aiConversation')} />
+              <ActivityRow icon="review" tint={theme.accentGold} title={t('profile.wordsInReview', { n: wordsKnown })} meta={t('profile.spacedRep')} />
             </>
           )}
         </View>

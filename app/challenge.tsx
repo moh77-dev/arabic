@@ -8,9 +8,10 @@ import { Icon } from '@/components/ui/Icon';
 import { generateChallengeRounds } from '@/content/challenge';
 import { getPageBackground } from '@/content/dialectBackdrops';
 import { DIALECTS } from '@/content/dialectMeta';
-import { fonts } from '@/lib/fonts';
 import { useTheme } from '@/lib/ThemeProvider';
+import { fonts } from '@/lib/fonts';
 import { haptic } from '@/lib/haptics';
+import { useT } from '@/lib/i18n';
 import { speakArabic } from '@/lib/speech';
 import { useGamificationStore } from '@/stores/useGamificationStore';
 import { useSettingsStore } from '@/stores/useSettingsStore';
@@ -35,6 +36,7 @@ function Backdrop({ children, center }: { children: React.ReactNode; center?: bo
 
 export default function DialectChallenge() {
   const theme = useTheme();
+  const t = useT();
   const rounds = useMemo(() => generateChallengeRounds(ROUNDS), []);
   const addXp = useGamificationStore((s) => s.addXp);
   const addCoins = useGamificationStore((s) => s.addCoins);
@@ -127,7 +129,7 @@ export default function DialectChallenge() {
 
       {/* Prompt */}
       <View style={{ alignItems: 'center', marginTop: 28, paddingHorizontal: 20 }}>
-        <Text style={{ color: theme.textSecondary, fontSize: 14 }}>Where is this phrase from?</Text>
+        <Text style={{ color: theme.textSecondary, fontSize: 14 }}>{t('challenge.whereFrom')}</Text>
         <Text style={{ color: theme.textPrimary, fontFamily: fonts.arabicBody, fontSize: 40, marginTop: 16, textAlign: 'center' }}>{round.arabic}</Text>
         <Text style={{ color: theme.textSecondary, fontStyle: 'italic', marginTop: 8 }}>{round.transliteration}</Text>
         <AnimatedPressable
@@ -135,7 +137,7 @@ export default function DialectChallenge() {
           style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 16, backgroundColor: theme.surfaceElevated, borderRadius: 999, paddingHorizontal: 14, paddingVertical: 8 }}
         >
           <Icon name="speak" size={16} color={theme.primary} />
-          <Text style={{ color: theme.textPrimary, fontWeight: '700', fontSize: 13 }}>Hear it again</Text>
+          <Text style={{ color: theme.textPrimary, fontWeight: '700', fontSize: 13 }}>{t('challenge.hearAgain')}</Text>
         </AnimatedPressable>
       </View>
 

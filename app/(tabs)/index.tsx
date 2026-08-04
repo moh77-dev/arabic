@@ -164,21 +164,21 @@ export default function Home() {
                 icon="chat"
                 tint={theme.primary}
                 title={t('home.askTutor', { name: 'Amine' })}
-                subtitle={`Your ${meta.name} tutor — grammar, phrases, anything`}
+                subtitle={t('home.askTutorSub', { dialect: meta.name })}
                 onPress={() => router.push('/conversation')}
               />
               <ActionRow
                 icon="freetalk"
                 tint={theme.accentDiamond}
                 title={t('home.freeTalk')}
-                subtitle="Chat with a local — a real, unscripted conversation"
+                subtitle={t('home.freeTalkSub')}
                 onPress={() => router.push('/free-talk')}
               />
               <ActionRow
                 icon="review"
                 tint={theme.accentGold}
                 title={dueCount > 0 ? t('home.reviewN', { n: dueCount }) : t('home.review')}
-                subtitle="Spaced repetition keeps them from fading"
+                subtitle={t('home.reviewSub')}
                 onPress={() => router.push('/(tabs)/streak')}
                 overridePress={() =>
                   router.push({
@@ -199,14 +199,14 @@ export default function Home() {
                 icon="goal"
                 tint={theme.primary}
                 title={t('home.plan')}
-                subtitle="This week's path, made for your goal"
+                subtitle={t('home.planSub')}
                 onPress={() => router.push('/plan')}
               />
               <ActionRow
                 icon="explore"
                 tint={theme.accentDiamond}
-                title="Explore tools & games"
-                subtitle="Translator, stories, challenges and more"
+                title={t('home.exploreTools')}
+                subtitle={t('home.exploreToolsSub')}
                 onPress={() => router.push('/(tabs)/explore')}
               />
             </View>

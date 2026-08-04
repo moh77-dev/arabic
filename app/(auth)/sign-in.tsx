@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/Button';
 import { ScreenContainer } from '@/components/ui/ScreenContainer';
 import { TextField } from '@/components/ui/TextField';
 import { useTheme } from '@/lib/ThemeProvider';
+import { useT } from '@/lib/i18n';
 import { supabase } from '@/lib/supabase';
 import { useUserStore } from '@/stores/useUserStore';
 
@@ -17,6 +18,7 @@ interface FormData {
 
 export default function SignIn() {
   const theme = useTheme();
+  const t = useT();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const { control, handleSubmit } = useForm<FormData>({ defaultValues: { email: '', password: '' } });
@@ -35,8 +37,10 @@ export default function SignIn() {
     if (signInError) {
       // Map Supabase's terse auth errors to something a learner can act on.
       const msg = signInError.message.toLowerCase();
-      if (msg.includes('invalid login credentials')) {
-        setError('Wrong email or password. Give it another try.');
+      if (msg.includes('email not confirmed')) {
+        setError(t('auth.errConfirm'));
+      } else if (msg.includes('invalid login credentials')) {
+        setError(t('auth.errInvalid'));
       } else {
         setError(signInError.message);
       }
@@ -49,9 +53,9 @@ export default function SignIn() {
     <ScreenContainer>
       <View style={{ marginTop: 60, marginBottom: 32 }}>
         <Text style={{ fontSize: 34 }}>🕌</Text>
-        <Text style={{ fontSize: 30, fontWeight: '900', color: theme.textPrimary, marginTop: 12 }}>Welcome back</Text>
+        <Text style={{ fontSize: 30, fontWeight: '900', color: theme.textPrimary, marginTop: 12 }}>{t('auth.welcomeBack')}</Text>
         <Text style={{ fontSize: 16, color: theme.textSecondary, marginTop: 4 }}>
-          Sign in to keep your streak alive.
+          {t('auth.signInSub')}
         </Text>
       </View>
 
@@ -61,7 +65,7 @@ export default function SignIn() {
           name="email"
           rules={{ required: true, pattern: /^\S+@\S+\.\S+$/ }}
           render={({ field }) => (
-            <TextField label="Email" placeholder="you@example.com" autoCapitalize="none" keyboardType="email-address" value={field.value} onChangeText={field.onChange} />
+            <TextField label={t('auth.email')} placeholder="you@example.com" autoCapitalize="none" keyboardType="email-address" value={field.value} onChangeText={field.onChange} />
           )}
         />
         <Controller
@@ -69,24 +73,24 @@ export default function SignIn() {
           name="password"
           rules={{ required: true, minLength: 6 }}
           render={({ field }) => (
-            <TextField label="Password" placeholder="••••••••" secureTextEntry value={field.value} onChangeText={field.onChange} />
+            <TextField label={t('auth.password')} placeholder="••••••••" secureTextEntry value={field.value} onChangeText={field.onChange} />
           )}
         />
 
         {error ? <Text style={{ color: theme.danger }}>{error}</Text> : null}
 
-        <Button label="Sign In" onPress={handleSubmit(onSubmit)} loading={loading} />
+        <Button label={t('auth.signIn')} onPress={handleSubmit(onSubmit)} loading={loading} />
 
         <View style={{ flexDirection: 'row', justifyContent: 'center', gap: 4, marginTop: 8 }}>
-          <Text style={{ color: theme.textSecondary }}>New to Lisan?</Text>
+          <Text style={{ color: theme.textSecondary }}>{t('auth.newHere')}</Text>
           <Link href="/(auth)/sign-up">
-            <Text style={{ color: theme.primary, fontWeight: '700' }}>Create an account</Text>
+            <Text style={{ color: theme.primary, fontWeight: '700' }}>{t('auth.createAccount')}</Text>
           </Link>
         </View>
 
         <AnimatedPressable onPress={tryAsGuest} withHaptic={false} style={{ marginTop: 4 }}>
           <Text style={{ color: theme.textSecondary, textAlign: 'center', textDecorationLine: 'underline' }}>
-            Try without an account
+            {t('auth.tryGuest')}
           </Text>
         </AnimatedPressable>
       </View>

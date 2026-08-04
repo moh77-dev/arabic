@@ -7,8 +7,9 @@ import { AnimatedPressable } from '@/components/ui/AnimatedPressable';
 import { Icon } from '@/components/ui/Icon';
 import { ELOUED_CONVERSATIONS } from '@/content/dialects';
 import { SpeakingExercise } from '@/features/lessons/exercises/SpeakingExercise';
-import { fonts } from '@/lib/fonts';
 import { useTheme } from '@/lib/ThemeProvider';
+import { fonts } from '@/lib/fonts';
+import { useT } from '@/lib/i18n';
 import { speakArabic } from '@/lib/speech';
 import { useGamificationStore } from '@/stores/useGamificationStore';
 import type { Exercise } from '@/types';
@@ -18,6 +19,7 @@ const CONV = ELOUED_CONVERSATIONS[0];
 
 export default function Drill() {
   const theme = useTheme();
+  const t = useT();
   const insets = useSafeAreaInsets();
   const addXp = useGamificationStore((s) => s.addXp);
   const recordActivity = useGamificationStore((s) => s.recordActivity);
@@ -70,10 +72,10 @@ export default function Drill() {
 
         <View style={{ paddingHorizontal: 20, paddingTop: 18 }}>
           <Text style={{ color: theme.textPrimary, fontSize: 20, fontWeight: '900' }}>{CONV.title}</Text>
-          <Text style={{ color: theme.textSecondary, fontSize: 13, marginTop: 2 }}>With a native Souf speaker</Text>
+          <Text style={{ color: theme.textSecondary, fontSize: 13, marginTop: 2 }}>{t('drill.withNative')}</Text>
 
           {/* Transcript */}
-          <Text style={{ color: theme.textSecondary, fontSize: 11, fontWeight: '800', letterSpacing: 1.2, marginTop: 22 }}>TRANSCRIPT</Text>
+          <Text style={{ color: theme.textSecondary, fontSize: 11, fontWeight: '800', letterSpacing: 1.2, marginTop: 22 }}>{t('drill.transcript')}</Text>
           <View style={{ gap: 8, marginTop: 12 }}>
             {CONV.lines.map((line, i) => {
               const active = i === activeLine;
@@ -102,20 +104,20 @@ export default function Drill() {
           </View>
 
           {/* Say it back */}
-          <Text style={{ color: theme.textSecondary, fontSize: 11, fontWeight: '800', letterSpacing: 1.2, marginTop: 24 }}>YOUR TURN — SAY IT BACK</Text>
+          <Text style={{ color: theme.textSecondary, fontSize: 11, fontWeight: '800', letterSpacing: 1.2, marginTop: 24 }}>{t('drill.yourTurn')}</Text>
           <View style={{ marginTop: 12, backgroundColor: theme.surfaceElevated, borderRadius: 20, borderWidth: 1, borderColor: theme.border, padding: 20 }}>
             {done ? (
               <View style={{ alignItems: 'center' }}>
                 <Icon name="check" size={40} color={theme.primary} />
-                <Text style={{ color: theme.textPrimary, fontWeight: '800', marginTop: 10 }}>Nice work!</Text>
+                <Text style={{ color: theme.textPrimary, fontWeight: '800', marginTop: 10 }}>{t('drill.niceWork')}</Text>
                 <View style={{ marginTop: 16, flexDirection: 'row', gap: 10 }}>
                   {activeLine + 1 < CONV.lines.length && (
                     <AnimatedPressable onPress={() => { setActiveLine((i) => i + 1); setDone(false); }} style={{ backgroundColor: theme.primary, borderRadius: 14, paddingHorizontal: 20, paddingVertical: 12 }}>
-                      <Text style={{ color: theme.primaryText, fontWeight: '800' }}>Next line</Text>
+                      <Text style={{ color: theme.primaryText, fontWeight: '800' }}>{t('drill.nextLine')}</Text>
                     </AnimatedPressable>
                   )}
                   <AnimatedPressable onPress={() => router.back()} style={{ borderRadius: 14, borderWidth: 1, borderColor: theme.border, paddingHorizontal: 20, paddingVertical: 12 }}>
-                    <Text style={{ color: theme.textPrimary, fontWeight: '800' }}>Finish</Text>
+                    <Text style={{ color: theme.textPrimary, fontWeight: '800' }}>{t('drill.finish')}</Text>
                   </AnimatedPressable>
                 </View>
               </View>

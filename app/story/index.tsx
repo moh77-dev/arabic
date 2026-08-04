@@ -7,11 +7,13 @@ import { ScreenContainer } from '@/components/ui/ScreenContainer';
 import { DIALECTS } from '@/content/dialectMeta';
 import { getStoriesForDialect } from '@/content/stories';
 import { useTheme } from '@/lib/ThemeProvider';
+import { useT } from '@/lib/i18n';
 import { useSettingsStore } from '@/stores/useSettingsStore';
 import { useUserStore } from '@/stores/useUserStore';
 
 export default function StoryList() {
   const theme = useTheme();
+  const t = useT();
   const isPremium = useUserStore((s) => s.subscriptionTier !== 'free');
   const activeDialect = useSettingsStore((s) => s.activeDialect);
   const meta = DIALECTS[activeDialect] ?? DIALECTS.msa;
@@ -19,7 +21,7 @@ export default function StoryList() {
 
   return (
     <ScreenContainer>
-      <Text style={{ fontSize: 26, fontWeight: '900', color: theme.textPrimary }}>Interactive Stories</Text>
+      <Text style={{ fontSize: 26, fontWeight: '900', color: theme.textPrimary }}>{t('story.title')}</Text>
       <Text style={{ color: theme.textSecondary, marginTop: 4 }}>
         {meta.flag} {meta.name} · make choices, hear native dialogue, review vocabulary.
       </Text>

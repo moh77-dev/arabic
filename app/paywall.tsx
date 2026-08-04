@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { ScreenContainer } from '@/components/ui/ScreenContainer';
 import { useTheme } from '@/lib/ThemeProvider';
+import { useT } from '@/lib/i18n';
 import { notify } from '@/lib/platformAlert';
 import { purchasePackage, restorePurchases, tierFromCustomerInfo } from '@/lib/purchases';
 import { useUserStore } from '@/stores/useUserStore';
@@ -26,6 +27,7 @@ const PLANS = [
 
 export default function Paywall() {
   const theme = useTheme();
+  const t = useT();
   const [selected, setSelected] = useState(PLANS[1].id);
   const [loading, setLoading] = useState(false);
   const setSubscription = useUserStore((s) => s.setSubscription);
@@ -104,10 +106,10 @@ export default function Paywall() {
         </View>
         <View style={{ marginTop: 10, flexDirection: 'row', justifyContent: 'center', gap: 16 }}>
           <AnimatedPressable onPress={restore} withHaptic={false}>
-            <Text style={{ color: theme.textSecondary, fontSize: 13 }}>Restore purchases</Text>
+            <Text style={{ color: theme.textSecondary, fontSize: 13 }}>{t('paywall.restore')}</Text>
           </AnimatedPressable>
           <AnimatedPressable onPress={() => router.back()} withHaptic={false}>
-            <Text style={{ color: theme.textSecondary, fontSize: 13 }}>Not now</Text>
+            <Text style={{ color: theme.textSecondary, fontSize: 13 }}>{t('paywall.notNow')}</Text>
           </AnimatedPressable>
         </View>
       </ScreenContainer>

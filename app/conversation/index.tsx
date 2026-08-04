@@ -14,11 +14,11 @@ import { fonts } from '@/lib/fonts';
 import { useT } from '@/lib/i18n';
 import { useSettingsStore } from '@/stores/useSettingsStore';
 
-const CAPABILITIES: { icon: IconName; tint: (t: ReturnType<typeof useTheme>) => string; titleKey: string; subtitle: string; route: string }[] = [
-  { icon: 'edit', tint: (t) => t.primary, titleKey: 'hub.capFix', subtitle: 'Correct a phrase and explain why', route: 'tutor' },
-  { icon: 'grammar', tint: (t) => t.accentGold, titleKey: 'hub.capGrammar', subtitle: 'Rules, in plain language', route: 'tutor' },
-  { icon: 'lesson', tint: () => '#0ea5e9', titleKey: 'hub.capLesson', subtitle: 'Tell Amine what to improve — he builds it', route: '/custom-lesson' },
-  { icon: 'speak', tint: (t) => t.primary, titleKey: 'hub.capSay', subtitle: 'Translate & hear it in your dialect', route: '/translator' },
+const CAPABILITIES: { icon: IconName; tint: (t: ReturnType<typeof useTheme>) => string; titleKey: string; subKey: string; route: string }[] = [
+  { icon: 'edit', tint: (t) => t.primary, titleKey: 'hub.capFix', subKey: 'hub.capFixSub', route: 'tutor' },
+  { icon: 'grammar', tint: (t) => t.accentGold, titleKey: 'hub.capGrammar', subKey: 'hub.capGrammarSub', route: 'tutor' },
+  { icon: 'lesson', tint: () => '#0ea5e9', titleKey: 'hub.capLesson', subKey: 'hub.capLessonSub', route: '/custom-lesson' },
+  { icon: 'speak', tint: (t) => t.primary, titleKey: 'hub.capSay', subKey: 'hub.capSaySub', route: '/translator' },
 ];
 
 export default function AskSalah() {
@@ -73,7 +73,7 @@ export default function AskSalah() {
                   <Text style={{ color: '#fff', fontWeight: '800', fontSize: 16 }}>{GUIDE_NAME}</Text>
                   <Animated.View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#42d386', opacity: pulse }} />
                 </View>
-                <Text style={{ color: 'rgba(255,255,255,0.75)', fontSize: 12 }}>Your {meta.name} guide · {backdrop.landmark}</Text>
+                <Text style={{ color: 'rgba(255,255,255,0.75)', fontSize: 12 }}>{t('hub.yourGuide', { dialect: meta.name })} · {backdrop.landmark}</Text>
               </View>
             </View>
 
@@ -135,7 +135,7 @@ export default function AskSalah() {
                 </View>
                 <View style={{ flex: 1 }}>
                   <Text style={{ color: theme.textPrimary, fontWeight: '800', fontSize: 14 }}>{t(c.titleKey)}</Text>
-                  <Text style={{ color: theme.textSecondary, fontSize: 12 }}>{c.subtitle}</Text>
+                  <Text style={{ color: theme.textSecondary, fontSize: 12 }}>{t(c.subKey, { name: GUIDE_NAME })}</Text>
                 </View>
                 <Icon name="chevronRight" size={22} color={theme.textSecondary} />
               </AnimatedPressable>
@@ -153,7 +153,7 @@ export default function AskSalah() {
             </View>
             <View style={{ flex: 1 }}>
               <Text style={{ color: theme.textPrimary, fontWeight: '800', fontSize: 14 }}>{t('freetalk.title')}</Text>
-              <Text style={{ color: theme.textSecondary, fontSize: 12 }}>Chat with a local — unscripted, no corrections</Text>
+              <Text style={{ color: theme.textSecondary, fontSize: 12 }}>{t('hub.freeTalkSub')}</Text>
             </View>
             <Icon name="chevronRight" size={22} color={theme.textSecondary} />
           </AnimatedPressable>

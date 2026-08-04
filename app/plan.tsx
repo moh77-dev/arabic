@@ -9,6 +9,7 @@ import { ProgressRing } from '@/components/ui/ProgressRing';
 import { DIALECTS } from '@/content/dialectMeta';
 import { getUnitsForDialect, LESSONS_BY_ID } from '@/content/lessonPaths';
 import { useTheme } from '@/lib/ThemeProvider';
+import { useT } from '@/lib/i18n';
 import { useLessonStore } from '@/stores/useLessonStore';
 import { useSettingsStore } from '@/stores/useSettingsStore';
 import { useUserStore } from '@/stores/useUserStore';
@@ -32,6 +33,7 @@ interface Step {
 
 export default function Plan() {
   const theme = useTheme();
+  const t = useT();
   const insets = useSafeAreaInsets();
   const dialectId = useSettingsStore((s) => s.activeDialect);
   const profile = useUserStore((s) => s.onboardingProfile);
@@ -86,14 +88,14 @@ export default function Plan() {
           <AnimatedPressable onPress={() => router.back()} withHaptic={false}>
             <Icon name="chevronLeft" size={24} color={theme.textPrimary} />
           </AnimatedPressable>
-          <Text style={{ color: theme.textPrimary, fontSize: 22, fontWeight: '900' }}>Your Plan</Text>
+          <Text style={{ color: theme.textPrimary, fontSize: 22, fontWeight: '900' }}>{t('plan.title')}</Text>
         </View>
 
         {/* Hero */}
         <View style={{ marginTop: 16, borderRadius: 22, overflow: 'hidden' }}>
           <LinearGradient colors={parch} style={{ padding: 20, borderRadius: 22, borderWidth: 1, borderColor: theme.mode === 'dark' ? '#3a2f1a' : '#e9d4a6', flexDirection: 'row', alignItems: 'center', gap: 16 }}>
             <View style={{ flex: 1 }}>
-              <Text style={{ color: parchMuted, fontSize: 11, fontWeight: '800', letterSpacing: 1.2 }}>MADE FOR YOU</Text>
+              <Text style={{ color: parchMuted, fontSize: 11, fontWeight: '800', letterSpacing: 1.2 }}>{t('plan.madeForYou')}</Text>
               <Text style={{ color: parchInk, fontSize: 19, fontWeight: '900', marginTop: 6 }}>
                 {goal} in {meta.name}
               </Text>
@@ -106,7 +108,7 @@ export default function Plan() {
         </View>
 
         {/* Timeline */}
-        <Text style={{ color: theme.textSecondary, fontSize: 11, fontWeight: '800', letterSpacing: 1.2, marginTop: 26 }}>THIS WEEK</Text>
+        <Text style={{ color: theme.textSecondary, fontSize: 11, fontWeight: '800', letterSpacing: 1.2, marginTop: 26 }}>{t('plan.thisWeek')}</Text>
         <View style={{ marginTop: 14 }}>
           {steps.map((st, i) => {
             const isDone = doneFlags[i];

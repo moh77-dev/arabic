@@ -46,7 +46,7 @@ export default function FreeTalk() {
         <Text style={{ color: theme.textPrimary, fontSize: 30, fontWeight: '900', letterSpacing: -0.5 }}>{t('freetalk.title')}</Text>
       </View>
       <Text style={{ color: theme.textSecondary, fontSize: 14, marginBottom: 18 }}>
-        A real, unscripted conversation in {meta.name} — no lesson, no right answer. Pick who you want to talk to.
+        {t('freetalk.subtitle', { dialect: meta.name })}
       </Text>
 
       {/* Surprise me — jump into a random local. */}
@@ -71,13 +71,13 @@ export default function FreeTalk() {
         </View>
         <View style={{ flex: 1 }}>
           <Text style={{ color: theme.primaryText, fontWeight: '900', fontSize: 16 }}>{t('freetalk.surprise')}</Text>
-          <Text style={{ color: theme.primaryText, opacity: 0.85, fontSize: 13 }}>Drop into a chat with a random local</Text>
+          <Text style={{ color: theme.primaryText, opacity: 0.85, fontSize: 13 }}>{t('freetalk.surpriseSub')}</Text>
         </View>
         <Icon name="chevronRight" size={22} color={theme.primaryText} />
       </AnimatedPressable>
 
       <Text style={{ color: theme.textSecondary, fontSize: 11, fontWeight: '800', letterSpacing: 1.4, marginBottom: 12 }}>
-        PEOPLE TO TALK TO
+        {t('freetalk.people')}
       </Text>
       <View style={{ gap: 12 }}>
         {cast.map((ch) => {

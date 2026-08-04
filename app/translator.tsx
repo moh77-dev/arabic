@@ -7,9 +7,10 @@ import { AnimatedPressable } from '@/components/ui/AnimatedPressable';
 import { Icon } from '@/components/ui/Icon';
 import { DIALECTS } from '@/content/dialectMeta';
 import { translateLocally, TRANSLATE_SUGGESTIONS, type TranslateResult } from '@/content/translate';
-import { fonts } from '@/lib/fonts';
 import { useTheme } from '@/lib/ThemeProvider';
+import { fonts } from '@/lib/fonts';
 import { haptic } from '@/lib/haptics';
+import { useT } from '@/lib/i18n';
 import { notify } from '@/lib/platformAlert';
 import { speakArabic } from '@/lib/speech';
 import { useLessonStore } from '@/stores/useLessonStore';
@@ -17,6 +18,7 @@ import { useSettingsStore } from '@/stores/useSettingsStore';
 
 export default function Translator() {
   const theme = useTheme();
+  const t = useT();
   const insets = useSafeAreaInsets();
   const dialectId = useSettingsStore((s) => s.activeDialect);
   const ensureSRSCard = useLessonStore((s) => s.ensureSRSCard);
@@ -55,7 +57,7 @@ export default function Translator() {
           <AnimatedPressable onPress={() => router.back()} withHaptic={false}>
             <Icon name="chevronLeft" size={24} color={theme.textPrimary} />
           </AnimatedPressable>
-          <Text style={{ color: theme.textPrimary, fontSize: 22, fontWeight: '900' }}>Translator</Text>
+          <Text style={{ color: theme.textPrimary, fontSize: 22, fontWeight: '900' }}>{t('translator.title')}</Text>
         </View>
 
         {/* Language selector */}
@@ -72,7 +74,7 @@ export default function Translator() {
 
         {/* Input card */}
         <View style={{ marginTop: 18, backgroundColor: theme.surfaceElevated, borderRadius: 18, borderWidth: 1, borderColor: theme.border, padding: 16 }}>
-          <Text style={{ color: theme.textSecondary, fontSize: 11, fontWeight: '800', letterSpacing: 1.2 }}>ENGLISH</Text>
+          <Text style={{ color: theme.textSecondary, fontSize: 11, fontWeight: '800', letterSpacing: 1.2 }}>{t('translator.english')}</Text>
           <TextInput
             value={input}
             onChangeText={setInput}
@@ -88,7 +90,7 @@ export default function Translator() {
               style={{ alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: theme.primary, borderRadius: 14, paddingHorizontal: 18, paddingVertical: 11 }}
             >
               <Icon name="translate" size={18} color={theme.primaryText} />
-              <Text style={{ color: theme.primaryText, fontWeight: '800' }}>Translate</Text>
+              <Text style={{ color: theme.primaryText, fontWeight: '800' }}>{t('translator.translate')}</Text>
             </AnimatedPressable>
           </View>
         </View>
@@ -113,7 +115,7 @@ export default function Translator() {
 
         {notFound && (
           <View style={{ marginTop: 16, backgroundColor: theme.surfaceElevated, borderRadius: 16, borderWidth: 1, borderColor: theme.border, padding: 16 }}>
-            <Text style={{ color: theme.textPrimary, fontWeight: '700' }}>Not in the offline dictionary yet</Text>
+            <Text style={{ color: theme.textPrimary, fontWeight: '700' }}>{t('translator.notInDict')}</Text>
             <Text style={{ color: theme.textSecondary, fontSize: 13, marginTop: 4 }}>
               Try a common word (see the suggestions), or connect the AI backend to translate any phrase.
             </Text>
@@ -145,7 +147,7 @@ export default function Translator() {
             {/* Other dialects */}
             {result.others.length > 0 && (
               <>
-                <Text style={{ color: theme.textSecondary, fontSize: 11, fontWeight: '800', letterSpacing: 1.2, marginTop: 24 }}>IN OTHER DIALECTS</Text>
+                <Text style={{ color: theme.textSecondary, fontSize: 11, fontWeight: '800', letterSpacing: 1.2, marginTop: 24 }}>{t('translator.inOtherDialects')}</Text>
                 <View style={{ marginTop: 12, backgroundColor: theme.surfaceElevated, borderRadius: 16, borderWidth: 1, borderColor: theme.border, overflow: 'hidden' }}>
                   {result.others.map((o, i) => (
                     <View key={o.dialectId} style={{ flexDirection: 'row', alignItems: 'center', gap: 10, padding: 14, borderTopWidth: i === 0 ? 0 : 1, borderTopColor: theme.border }}>
