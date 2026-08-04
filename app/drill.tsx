@@ -1,11 +1,11 @@
-import { ResizeMode, Video } from 'expo-av';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router, Stack } from 'expo-router';
-import React, { useMemo, useRef, useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import React, { useMemo, useState } from 'react';
+import { ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AnimatedPressable } from '@/components/ui/AnimatedPressable';
 import { Icon } from '@/components/ui/Icon';
+import { SceneVideoPlayer } from '@/components/ui/SceneVideoPlayer';
 import { getConversationsForDialect } from '@/content/conversations';
 import { DIALECTS } from '@/content/dialectMeta';
 import { SpeakingExercise } from '@/features/lessons/exercises/SpeakingExercise';
@@ -17,10 +17,15 @@ import { useGamificationStore } from '@/stores/useGamificationStore';
 import { useSettingsStore } from '@/stores/useSettingsStore';
 import type { Exercise } from '@/types';
 
-// Real filmed clips for hand-authored scenes. Anything not listed falls back to the
-// audio-only (text-to-speech) player below. `require` returns an asset module id.
-const SCENE_VIDEOS: Record<string, number> = {
-  eloued_conv_market: require('../assets/videos/algeria-date-market.mp4'),
+// Real filmed clips for hand-authored scenes. Anything not listed falls back to the audio-only
+// (text-to-speech) player below. `aspect` = width / height, so the player frame matches the clip
+// (this one is a 1080×1920 vertical video) instead of cropping it. Drop new scenes in here.
+interface SceneVideo {
+  source: number;
+  aspect: number;
+}
+const SCENE_VIDEOS: Record<string, SceneVideo> = {
+  eloued_conv_market: { source: require('../assets/videos/algeria-date-market.mp4'), aspect: 1080 / 1920 },
 };
 
 export default function Drill() {
@@ -40,10 +45,14 @@ export default function Drill() {
   );
   const [activeLine, setActiveLine] = useState(0);
   const [done, setDone] = useState(false);
-  const videoRef = useRef<Video>(null);
+  const { width: winW, height: winH } = useWindowDimensions();
 
   const CONV = conversations[Math.min(convIndex, Math.max(0, conversations.length - 1))];
   const sceneVideo = CONV ? SCENE_VIDEOS[CONV.id] : undefined;
+  // Fit the WHOLE clip on screen (no cropping): size the frame to the video's own aspect ratio,
+  // capped so a tall vertical clip doesn't eat the entire screen. Works on phone and wide desktop.
+  const frameH = sceneVideo ? Math.min(winH * 0.56, (winW - 32) / sceneVideo.aspect, 520) : 0;
+  const frameW = sceneVideo ? frameH * sceneVideo.aspect : 0;
   const nextScene = () => {
     setConvIndex((i) => (conversations.length > 1 ? (i + 1) % conversations.length : i));
     setActiveLine(0);
@@ -86,47 +95,47 @@ export default function Drill() {
       <LinearGradient colors={theme.backdropGradient} style={StyleSheet.absoluteFill} />
       <ScrollView contentContainerStyle={{ paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
         {/* Video header — a real filmed clip when the scene has one, otherwise an audio player. */}
-        <View style={{ height: 230 + insets.top, backgroundColor: '#0a0c11', paddingTop: insets.top }}>
-          {sceneVideo ? (
-            <>
-              <Video
-                ref={videoRef}
-                source={sceneVideo}
-                style={StyleSheet.absoluteFill}
-                resizeMode={ResizeMode.COVER}
-                useNativeControls
-                isLooping={false}
+        {sceneVideo ? (
+          <View style={{ backgroundColor: '#05070c', paddingTop: insets.top + 8, paddingBottom: 16, alignItems: 'center' }}>
+            {/* Back button floats over the video area. */}
+            <View style={{ position: 'absolute', top: insets.top + 8, left: 16, zIndex: 3 }}>
+              <AnimatedPressable onPress={() => router.back()} withHaptic={false} style={{ width: 38, height: 38, borderRadius: 19, backgroundColor: 'rgba(0,0,0,0.45)', alignItems: 'center', justifyContent: 'center' }}>
+                <Icon name="chevronLeft" size={22} color="#fff" />
+              </AnimatedPressable>
+            </View>
+            {/* Frame matches the clip's aspect ratio so the whole video is visible — never cropped. */}
+            <View style={{ width: frameW, height: frameH, borderRadius: 18, overflow: 'hidden', backgroundColor: '#000' }}>
+              <SceneVideoPlayer
+                key={CONV.id}
+                source={sceneVideo.source}
+                width={frameW}
+                height={frameH}
+                label={t('drill.tapToPlay')}
               />
-              {/* Back button floats over the video. */}
-              <View style={{ flexDirection: 'row', paddingHorizontal: 16, paddingTop: 8 }}>
-                <AnimatedPressable onPress={() => router.back()} withHaptic={false} style={{ width: 38, height: 38, borderRadius: 19, backgroundColor: 'rgba(0,0,0,0.4)', alignItems: 'center', justifyContent: 'center' }}>
-                  <Icon name="chevronLeft" size={22} color="#fff" />
-                </AnimatedPressable>
+            </View>
+          </View>
+        ) : (
+          <View style={{ height: 230 + insets.top, backgroundColor: '#0a0c11', paddingTop: insets.top }}>
+            <View style={{ flexDirection: 'row', paddingHorizontal: 16, paddingTop: 8 }}>
+              <AnimatedPressable onPress={() => router.back()} withHaptic={false} style={{ width: 38, height: 38, borderRadius: 19, backgroundColor: 'rgba(255,255,255,0.14)', alignItems: 'center', justifyContent: 'center' }}>
+                <Icon name="chevronLeft" size={22} color="#fff" />
+              </AnimatedPressable>
+            </View>
+            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+              <AnimatedPressable
+                onPress={() => speakArabic(CONV.lines.map((l) => l.arabic).join('، '))}
+                style={{ width: 62, height: 62, borderRadius: 31, backgroundColor: 'rgba(255,255,255,0.92)', alignItems: 'center', justifyContent: 'center' }}
+              >
+                <Icon name="play" size={30} color="#0a0c11" />
+              </AnimatedPressable>
+            </View>
+            <View style={{ paddingHorizontal: 16, paddingBottom: 12 }}>
+              <View style={{ height: 4, borderRadius: 999, backgroundColor: 'rgba(255,255,255,0.2)', overflow: 'hidden' }}>
+                <View style={{ height: '100%', width: '32%', backgroundColor: theme.primary }} />
               </View>
-            </>
-          ) : (
-            <>
-              <View style={{ flexDirection: 'row', paddingHorizontal: 16, paddingTop: 8 }}>
-                <AnimatedPressable onPress={() => router.back()} withHaptic={false} style={{ width: 38, height: 38, borderRadius: 19, backgroundColor: 'rgba(255,255,255,0.14)', alignItems: 'center', justifyContent: 'center' }}>
-                  <Icon name="chevronLeft" size={22} color="#fff" />
-                </AnimatedPressable>
-              </View>
-              <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                <AnimatedPressable
-                  onPress={() => speakArabic(CONV.lines.map((l) => l.arabic).join('، '))}
-                  style={{ width: 62, height: 62, borderRadius: 31, backgroundColor: 'rgba(255,255,255,0.92)', alignItems: 'center', justifyContent: 'center' }}
-                >
-                  <Icon name="play" size={30} color="#0a0c11" />
-                </AnimatedPressable>
-              </View>
-              <View style={{ paddingHorizontal: 16, paddingBottom: 12 }}>
-                <View style={{ height: 4, borderRadius: 999, backgroundColor: 'rgba(255,255,255,0.2)', overflow: 'hidden' }}>
-                  <View style={{ height: '100%', width: '32%', backgroundColor: theme.primary }} />
-                </View>
-              </View>
-            </>
-          )}
-        </View>
+            </View>
+          </View>
+        )}
 
         <View style={{ paddingHorizontal: 20, paddingTop: 18 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
