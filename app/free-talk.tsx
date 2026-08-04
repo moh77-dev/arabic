@@ -8,6 +8,7 @@ import { ScreenContainer } from '@/components/ui/ScreenContainer';
 import { getCharactersForDialect } from '@/content/characters';
 import { DIALECTS } from '@/content/dialectMeta';
 import { useTheme } from '@/lib/ThemeProvider';
+import { useT } from '@/lib/i18n';
 import { useSettingsStore } from '@/stores/useSettingsStore';
 import { useUserStore } from '@/stores/useUserStore';
 import type { DialectId } from '@/types';
@@ -19,6 +20,7 @@ import type { DialectId } from '@/types';
  */
 export default function FreeTalk() {
   const theme = useTheme();
+  const t = useT();
   const insets = useSafeAreaInsets();
   const activeDialect = useSettingsStore((s) => s.activeDialect);
   const isPremium = useUserStore((s) => s.subscriptionTier !== 'free');
@@ -41,7 +43,7 @@ export default function FreeTalk() {
         <AnimatedPressable onPress={() => (router.canGoBack() ? router.back() : router.push('/(tabs)'))} withHaptic={false}>
           <Icon name="chevronLeft" size={28} color={theme.textPrimary} />
         </AnimatedPressable>
-        <Text style={{ color: theme.textPrimary, fontSize: 30, fontWeight: '900', letterSpacing: -0.5 }}>Free Talk</Text>
+        <Text style={{ color: theme.textPrimary, fontSize: 30, fontWeight: '900', letterSpacing: -0.5 }}>{t('freetalk.title')}</Text>
       </View>
       <Text style={{ color: theme.textSecondary, fontSize: 14, marginBottom: 18 }}>
         A real, unscripted conversation in {meta.name} — no lesson, no right answer. Pick who you want to talk to.
@@ -68,7 +70,7 @@ export default function FreeTalk() {
           <Icon name="freetalk" size={24} color={theme.primaryText} />
         </View>
         <View style={{ flex: 1 }}>
-          <Text style={{ color: theme.primaryText, fontWeight: '900', fontSize: 16 }}>Surprise me</Text>
+          <Text style={{ color: theme.primaryText, fontWeight: '900', fontSize: 16 }}>{t('freetalk.surprise')}</Text>
           <Text style={{ color: theme.primaryText, opacity: 0.85, fontSize: 13 }}>Drop into a chat with a random local</Text>
         </View>
         <Icon name="chevronRight" size={22} color={theme.primaryText} />

@@ -9,19 +9,21 @@ import { MonumentHero } from '@/components/ui/MonumentHero';
 import { getBackdrop } from '@/content/dialectBackdrops';
 import { DIALECTS } from '@/content/dialectMeta';
 import { GUIDE_GLYPH, GUIDE_NAME, getGuideGreeting } from '@/content/guide';
-import { fonts } from '@/lib/fonts';
 import { useTheme } from '@/lib/ThemeProvider';
+import { fonts } from '@/lib/fonts';
+import { useT } from '@/lib/i18n';
 import { useSettingsStore } from '@/stores/useSettingsStore';
 
-const CAPABILITIES: { icon: IconName; tint: (t: ReturnType<typeof useTheme>) => string; title: string; subtitle: string; route: string }[] = [
-  { icon: 'edit', tint: (t) => t.primary, title: 'Fix my Arabic', subtitle: 'Correct a phrase and explain why', route: 'tutor' },
-  { icon: 'grammar', tint: (t) => t.accentGold, title: 'Explain the grammar', subtitle: 'Rules, in plain language', route: 'tutor' },
-  { icon: 'lesson', tint: () => '#0ea5e9', title: 'Make me a quick lesson', subtitle: 'Tell Amine what to improve — he builds it', route: '/custom-lesson' },
-  { icon: 'speak', tint: (t) => t.primary, title: 'Say it for me', subtitle: 'Translate & hear it in your dialect', route: '/translator' },
+const CAPABILITIES: { icon: IconName; tint: (t: ReturnType<typeof useTheme>) => string; titleKey: string; subtitle: string; route: string }[] = [
+  { icon: 'edit', tint: (t) => t.primary, titleKey: 'hub.capFix', subtitle: 'Correct a phrase and explain why', route: 'tutor' },
+  { icon: 'grammar', tint: (t) => t.accentGold, titleKey: 'hub.capGrammar', subtitle: 'Rules, in plain language', route: 'tutor' },
+  { icon: 'lesson', tint: () => '#0ea5e9', titleKey: 'hub.capLesson', subtitle: 'Tell Amine what to improve — he builds it', route: '/custom-lesson' },
+  { icon: 'speak', tint: (t) => t.primary, titleKey: 'hub.capSay', subtitle: 'Translate & hear it in your dialect', route: '/translator' },
 ];
 
 export default function AskSalah() {
   const theme = useTheme();
+  const t = useT();
   const insets = useSafeAreaInsets();
   const activeDialect = useSettingsStore((s) => s.activeDialect);
   const backdrop = getBackdrop(activeDialect);
@@ -120,11 +122,11 @@ export default function AskSalah() {
           </View>
 
           {/* Capabilities */}
-          <Text style={{ color: theme.textSecondary, fontSize: 11, fontWeight: '800', letterSpacing: 1.4, marginTop: 24 }}>THINGS I CAN DO</Text>
+          <Text style={{ color: theme.textSecondary, fontSize: 11, fontWeight: '800', letterSpacing: 1.4, marginTop: 24 }}>{t('hub.thingsICanDo')}</Text>
           <View style={{ gap: 10, marginTop: 12 }}>
             {CAPABILITIES.map((c) => (
               <AnimatedPressable
-                key={c.title}
+                key={c.titleKey}
                 onPress={() => (c.route === 'tutor' ? openTutor() : router.push(c.route as never))}
                 style={{ flexDirection: 'row', alignItems: 'center', gap: 14, backgroundColor: theme.surfaceElevated, borderRadius: 18, borderWidth: 1, borderColor: theme.border, padding: 14 }}
               >
@@ -132,7 +134,7 @@ export default function AskSalah() {
                   <Icon name={c.icon} size={22} color={c.tint(theme)} />
                 </View>
                 <View style={{ flex: 1 }}>
-                  <Text style={{ color: theme.textPrimary, fontWeight: '800', fontSize: 14 }}>{c.title}</Text>
+                  <Text style={{ color: theme.textPrimary, fontWeight: '800', fontSize: 14 }}>{t(c.titleKey)}</Text>
                   <Text style={{ color: theme.textSecondary, fontSize: 12 }}>{c.subtitle}</Text>
                 </View>
                 <Icon name="chevronRight" size={22} color={theme.textSecondary} />
@@ -141,7 +143,7 @@ export default function AskSalah() {
           </View>
 
           {/* Free Talk lives on its own screen now — point people there instead of duplicating it. */}
-          <Text style={{ color: theme.textSecondary, fontSize: 11, fontWeight: '800', letterSpacing: 1.4, marginTop: 26 }}>WANT TO JUST CHAT?</Text>
+          <Text style={{ color: theme.textSecondary, fontSize: 11, fontWeight: '800', letterSpacing: 1.4, marginTop: 26 }}>{t('hub.wantToChat')}</Text>
           <AnimatedPressable
             onPress={() => router.push('/free-talk')}
             style={{ flexDirection: 'row', alignItems: 'center', gap: 14, backgroundColor: theme.surfaceElevated, borderRadius: 18, borderWidth: 1, borderColor: theme.border, padding: 14, marginTop: 12 }}
@@ -150,7 +152,7 @@ export default function AskSalah() {
               <Icon name="freetalk" size={22} color={theme.accentDiamond} />
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={{ color: theme.textPrimary, fontWeight: '800', fontSize: 14 }}>Free Talk</Text>
+              <Text style={{ color: theme.textPrimary, fontWeight: '800', fontSize: 14 }}>{t('freetalk.title')}</Text>
               <Text style={{ color: theme.textSecondary, fontSize: 12 }}>Chat with a local — unscripted, no corrections</Text>
             </View>
             <Icon name="chevronRight" size={22} color={theme.textSecondary} />

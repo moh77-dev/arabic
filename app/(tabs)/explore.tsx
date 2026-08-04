@@ -9,8 +9,9 @@ import { MonumentHero } from '@/components/ui/MonumentHero';
 import { getCharactersForDialect } from '@/content/characters';
 import { getBackdrop, getPageBackground } from '@/content/dialectBackdrops';
 import { DIALECTS } from '@/content/dialectMeta';
-import { fonts } from '@/lib/fonts';
 import { useTheme } from '@/lib/ThemeProvider';
+import { fonts } from '@/lib/fonts';
+import { useT } from '@/lib/i18n';
 import { useSettingsStore } from '@/stores/useSettingsStore';
 import type { DialectId } from '@/types';
 
@@ -43,6 +44,7 @@ const TOOLS: { id: string; title: string; icon: IconName; tint: (t: ReturnType<t
 
 export default function Explore() {
   const theme = useTheme();
+  const t = useT();
   const insets = useSafeAreaInsets();
   const activeDialect = useSettingsStore((s) => s.activeDialect);
   const enrolledDialects = useSettingsStore((s) => s.enrolledDialects);
@@ -69,7 +71,7 @@ export default function Explore() {
     <View style={{ flex: 1, backgroundColor: theme.background }}>
       <LinearGradient colors={wash} start={{ x: 0, y: 0 }} end={{ x: 0.5, y: 1 }} style={StyleSheet.absoluteFill} />
       <ScrollView contentContainerStyle={{ paddingTop: insets.top + 12, paddingBottom: 120 }} showsVerticalScrollIndicator={false}>
-        <Text style={{ color: theme.textPrimary, fontSize: 30, fontWeight: '900', letterSpacing: -0.5, paddingHorizontal: 20 }}>Explore</Text>
+        <Text style={{ color: theme.textPrimary, fontSize: 30, fontWeight: '900', letterSpacing: -0.5, paddingHorizontal: 20 }}>{t('explore.title')}</Text>
 
         {/* Search */}
         <View style={{ paddingHorizontal: 20, marginTop: 14 }}>
@@ -127,7 +129,7 @@ export default function Explore() {
             <AnimatedPressable onPress={() => router.push('/story')} style={{ borderRadius: 22, overflow: 'hidden' }}>
               <MonumentHero dialectId={activeDialect} height={176} radius={22}>
                 <View style={{ padding: 18 }}>
-                  <Text style={{ color: 'rgba(255,255,255,0.85)', fontSize: 11, fontWeight: '800', letterSpacing: 1.4 }}>STORY OF THE WEEK</Text>
+                  <Text style={{ color: 'rgba(255,255,255,0.85)', fontSize: 11, fontWeight: '800', letterSpacing: 1.4 }}>{t('explore.storyOfWeek')}</Text>
                   <Text style={{ color: '#fff', fontSize: 19, fontWeight: '800', marginTop: 4 }}>Phrases from {meta.name}</Text>
                   <Text style={{ color: 'rgba(255,255,255,0.85)', fontSize: 12, marginTop: 2 }}>8 phrases · {backdrop.landmark} · 4 min</Text>
                 </View>
@@ -218,12 +220,13 @@ export default function Explore() {
 
 function ShelfHeader({ title, onSeeAll }: { title: string; onSeeAll?: () => void }) {
   const theme = useTheme();
+  const t = useT();
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, marginTop: 26, marginBottom: 12 }}>
       <Text style={{ color: theme.textSecondary, fontSize: 11, fontWeight: '800', letterSpacing: 1.4 }}>{title}</Text>
       {onSeeAll && (
         <AnimatedPressable onPress={onSeeAll} withHaptic={false}>
-          <Text style={{ color: theme.primary, fontSize: 12, fontWeight: '800' }}>See all</Text>
+          <Text style={{ color: theme.primary, fontSize: 12, fontWeight: '800' }}>{t('explore.seeAll')}</Text>
         </AnimatedPressable>
       )}
     </View>

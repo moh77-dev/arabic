@@ -5,17 +5,19 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Avatar } from '@/components/ui/Avatar';
 import { Icon } from '@/components/ui/Icon';
 import { useTheme } from '@/lib/ThemeProvider';
+import { useT } from '@/lib/i18n';
 import { fetchLeaderboard } from '@/lib/leaderboard';
 import { useGamificationStore } from '@/stores/useGamificationStore';
 import { useSocialStore } from '@/stores/useSocialStore';
 import { useUserStore } from '@/stores/useUserStore';
 
-const DAY_LABELS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+const DAY_KEYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
 const PROMOTE_ZONE = 5; // top 5 promote
 const DEMOTE_ZONE = 5; // bottom 5 demote
 
 export default function StreakAndRanks() {
   const theme = useTheme();
+  const t = useT();
   const insets = useSafeAreaInsets();
   const gami = useGamificationStore();
   const leaderboard = useSocialStore((s) => s.leaderboard);
@@ -39,15 +41,16 @@ export default function StreakAndRanks() {
     const monday = new Date(today);
     const dow = (today.getDay() + 6) % 7; // 0 = Monday
     monday.setDate(today.getDate() - dow);
-    return DAY_LABELS.map((label, i) => {
+    return DAY_KEYS.map((key, i) => {
       const d = new Date(monday);
       d.setDate(monday.getDate() + i);
       const iso = d.toISOString().slice(0, 10);
       const studied = (gami.studyHeatmap[iso] ?? 0) > 0;
       const isToday = iso === today.toISOString().slice(0, 10);
       const isFuture = d > today;
-      return { label, studied, isToday, isFuture };
+      return { key, label: t(`day.${key}`), studied, isToday, isFuture };
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gami.studyHeatmap]);
 
   // Merge the local "You" row into the global league board, sort, and assign ranks.
@@ -75,7 +78,7 @@ export default function StreakAndRanks() {
     <View style={{ flex: 1, backgroundColor: theme.background }}>
       <LinearGradient colors={theme.backdropGradient} start={{ x: 0, y: 0 }} end={{ x: 0.4, y: 1 }} style={StyleSheet.absoluteFill} />
       <ScrollView contentContainerStyle={{ paddingTop: insets.top + 16, paddingHorizontal: 20, paddingBottom: 110 }} showsVerticalScrollIndicator={false}>
-        <Text style={{ color: theme.textPrimary, fontSize: 26, fontWeight: '900', letterSpacing: -0.4 }}>Streak &amp; Ranks</Text>
+        <Text style={{ color: theme.textPrimary, fontSize: 26, fontWeight: '900', letterSpacing: -0.4 }}>{t('streak.title')}</Text>
 
         {/* Streak card */}
         <View style={{ marginTop: 18, backgroundColor: theme.surfaceElevated, borderRadius: 20, borderWidth: 1, borderColor: theme.border, padding: 20 }}>
@@ -84,16 +87,16 @@ export default function StreakAndRanks() {
               <Icon name="streak" size={26} color="#ff6b3d" />
             </View>
             <View>
-              <Text style={{ color: theme.textPrimary, fontSize: 32, fontWeight: '900' }}>{gami.currentStreak} days</Text>
+              <Text style={{ color: theme.textPrimary, fontSize: 32, fontWeight: '900' }}>{gami.currentStreak} {t('streak.daysUnit')}</Text>
               <Text style={{ color: theme.textSecondary, fontSize: 13 }}>
-                {gami.currentStreak >= gami.longestStreak && gami.currentStreak > 0 ? 'Your best yet — keep it lit' : `Best: ${gami.longestStreak} days`}
+                {gami.currentStreak >= gami.longestStreak && gami.currentStreak > 0 ? t('streak.bestYet') : t('streak.best', { n: gami.longestStreak })}
               </Text>
             </View>
           </View>
 
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
             {weekDays.map((d) => (
-              <View key={d.label} style={{ alignItems: 'center', gap: 6 }}>
+              <View key={d.key} style={{ alignItems: 'center', gap: 6 }}>
                 <View
                   style={{
                     width: 34,
@@ -119,17 +122,17 @@ export default function StreakAndRanks() {
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 26 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
             <Icon name="trophy" size={20} color={theme.accentGold} />
-            <Text style={{ color: theme.textPrimary, fontWeight: '900', fontSize: 17, textTransform: 'capitalize' }}>{gami.league} League</Text>
+            <Text style={{ color: theme.textPrimary, fontWeight: '900', fontSize: 17, textTransform: 'capitalize' }}>{gami.league} {t('streak.leagueWord')}</Text>
           </View>
           <Text style={{ color: theme.textSecondary, fontSize: 12 }}>
-            {myRank > 0 ? `You're #${myRank} of ${board.length}` : 'Resets weekly'}
+            {myRank > 0 ? t('streak.rankOf', { rank: myRank, total: board.length }) : t('streak.resets')}
           </Text>
         </View>
 
         {/* Leaderboard */}
         <View style={{ marginTop: 12, backgroundColor: theme.surfaceElevated, borderRadius: 20, borderWidth: 1, borderColor: theme.border, overflow: 'hidden' }}>
           <View style={{ backgroundColor: `${theme.primary}12`, paddingVertical: 8, alignItems: 'center' }}>
-            <Text style={{ color: theme.primary, fontSize: 11, fontWeight: '800', letterSpacing: 1 }}>▲ TOP {PROMOTE_ZONE} PROMOTE</Text>
+            <Text style={{ color: theme.primary, fontSize: 11, fontWeight: '800', letterSpacing: 1 }}>▲ {t('streak.promote', { n: PROMOTE_ZONE })}</Text>
           </View>
           {board.map((row, i) => {
             const promotes = row.rank <= PROMOTE_ZONE;
@@ -141,7 +144,7 @@ export default function StreakAndRanks() {
               <React.Fragment key={row.userId}>
                 {showDemoteDivider && (
                   <View style={{ backgroundColor: `${theme.danger}14`, paddingVertical: 6, alignItems: 'center', borderTopWidth: 1, borderTopColor: theme.border }}>
-                    <Text style={{ color: theme.danger, fontSize: 11, fontWeight: '800', letterSpacing: 1 }}>▼ DEMOTION ZONE</Text>
+                    <Text style={{ color: theme.danger, fontSize: 11, fontWeight: '800', letterSpacing: 1 }}>▼ {t('streak.demote')}</Text>
                   </View>
                 )}
                 <View
@@ -162,11 +165,11 @@ export default function StreakAndRanks() {
                   <Avatar id={row.avatar} size={34} ring={row.isMe} />
                   <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 7 }}>
                     <Text style={{ color: row.isMe ? theme.primary : theme.textPrimary, fontWeight: row.isMe ? '800' : '600' }} numberOfLines={1}>
-                      {row.isMe ? 'You' : row.displayName}
+                      {row.isMe ? t('streak.you') : row.displayName}
                     </Text>
                     {row.isRival && (
                       <Text style={{ color: theme.textSecondary, fontSize: 10, fontWeight: '700', backgroundColor: theme.surface, borderRadius: 6, paddingHorizontal: 5, paddingVertical: 1, overflow: 'hidden' }}>
-                        practice
+                        {t('streak.practice')}
                       </Text>
                     )}
                   </View>
@@ -179,7 +182,7 @@ export default function StreakAndRanks() {
 
         {hasRivals && (
           <Text style={{ color: theme.textSecondary, fontSize: 12, marginTop: 10, textAlign: 'center' }}>
-            Practice rivals fill empty seats until more learners join your league.
+            {t('streak.rivalsNote')}
           </Text>
         )}
       </ScrollView>

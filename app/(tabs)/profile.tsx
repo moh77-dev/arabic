@@ -9,6 +9,7 @@ import { Icon, type IconName } from '@/components/ui/Icon';
 import { DIALECTS } from '@/content/dialectMeta';
 import { useTheme } from '@/lib/ThemeProvider';
 import { levelFromTotalXp } from '@/lib/gamificationMath';
+import { useT } from '@/lib/i18n';
 import { supabase } from '@/lib/supabase';
 import { useGamificationStore } from '@/stores/useGamificationStore';
 import { useLessonStore } from '@/stores/useLessonStore';
@@ -17,6 +18,7 @@ import { useUserStore } from '@/stores/useUserStore';
 
 export default function Profile() {
   const theme = useTheme();
+  const t = useT();
   const insets = useSafeAreaInsets();
   const { displayName, isGuest, clearSession } = useUserStore();
   const gami = useGamificationStore();
@@ -38,7 +40,7 @@ export default function Profile() {
       <ScrollView contentContainerStyle={{ paddingTop: insets.top + 24, paddingHorizontal: 20, paddingBottom: 110 }} showsVerticalScrollIndicator={false}>
         <View style={{ alignItems: 'center' }}>
           <Avatar id={gami.activeAvatar} size={82} ring />
-          <Text style={{ color: theme.textPrimary, fontSize: 22, fontWeight: '900', marginTop: 12 }}>{displayName ?? 'Learner'}</Text>
+          <Text style={{ color: theme.textPrimary, fontSize: 22, fontWeight: '900', marginTop: 12 }}>{displayName ?? t('profile.learner')}</Text>
           <View
             style={{
               flexDirection: 'row',
@@ -55,20 +57,20 @@ export default function Profile() {
           >
             <Text style={{ fontSize: 13 }}>{meta.flag}</Text>
             <Text style={{ color: theme.mode === 'dark' ? '#e7d4a8' : '#9a7521', fontWeight: '700', fontSize: 12 }}>
-              {meta.name} · Level {level}
+              {meta.name} · {t('profile.level')} {level}
             </Text>
           </View>
         </View>
 
         {/* Stats row */}
         <View style={{ flexDirection: 'row', gap: 10, marginTop: 24 }}>
-          <StatCard icon="streak" tint="#ff6b3d" value={`${gami.currentStreak}`} label="day streak" />
-          <StatCard icon="star" tint={theme.primary} value={`${gami.totalXp}`} label="total XP" />
-          <StatCard icon="learn" tint="#0ea5e9" value={`${wordsKnown}`} label="words known" />
+          <StatCard icon="streak" tint="#ff6b3d" value={`${gami.currentStreak}`} label={t('profile.dayStreak')} />
+          <StatCard icon="star" tint={theme.primary} value={`${gami.totalXp}`} label={t('profile.totalXp')} />
+          <StatCard icon="learn" tint="#0ea5e9" value={`${wordsKnown}`} label={t('profile.wordsKnown')} />
         </View>
 
         {/* Recent activity */}
-        <Text style={{ color: theme.textSecondary, fontSize: 11, fontWeight: '800', letterSpacing: 1.4, marginTop: 28 }}>RECENT ACTIVITY</Text>
+        <Text style={{ color: theme.textSecondary, fontSize: 11, fontWeight: '800', letterSpacing: 1.4, marginTop: 28 }}>{t('profile.recentActivity')}</Text>
         <View style={{ marginTop: 12, backgroundColor: theme.surfaceElevated, borderRadius: 18, borderWidth: 1, borderColor: theme.border, overflow: 'hidden' }}>
           {completedLessonIds.length === 0 ? (
             <View style={{ padding: 16 }}>
@@ -95,27 +97,27 @@ export default function Profile() {
           >
             <Icon name="diamond" size={26} color={theme.accentDiamond} />
             <View style={{ flex: 1 }}>
-              <Text style={{ color: theme.mode === 'dark' ? '#e7d4a8' : '#5c3f12', fontWeight: '900', fontSize: 15 }}>Lisan Premium</Text>
-              <Text style={{ color: theme.mode === 'dark' ? '#c9a253' : '#9a7521', fontSize: 12 }}>All dialects & unlimited AI</Text>
+              <Text style={{ color: theme.mode === 'dark' ? '#e7d4a8' : '#5c3f12', fontWeight: '900', fontSize: 15 }}>{t('settings.premium')}</Text>
+              <Text style={{ color: theme.mode === 'dark' ? '#c9a253' : '#9a7521', fontSize: 12 }}>{t('settings.premiumSub')}</Text>
             </View>
-            <Button label="Unlock" onPress={() => router.push('/paywall')} size="md" fullWidth={false} />
+            <Button label={t('profile.unlock')} onPress={() => router.push('/paywall')} size="md" fullWidth={false} />
           </LinearGradient>
         </View>
 
         <View style={{ marginTop: 24 }}>
-          <Button label="🏆  Awards" variant="secondary" onPress={() => router.push('/achievements')} />
+          <Button label={`🏆  ${t('profile.awards')}`} variant="secondary" onPress={() => router.push('/achievements')} />
         </View>
 
         <View style={{ marginTop: 12 }}>
-          <Button label="Edit profile" onPress={() => router.push('/edit-profile')} />
+          <Button label={t('profile.editProfile')} onPress={() => router.push('/edit-profile')} />
         </View>
 
         <View style={{ marginTop: 12 }}>
-          <Button label="⚙️  Settings" variant="secondary" onPress={() => router.push('/(tabs)/settings')} />
+          <Button label={`⚙️  ${t('tab.settings')}`} variant="secondary" onPress={() => router.push('/(tabs)/settings')} />
         </View>
 
         <View style={{ marginTop: 12 }}>
-          <Button label={isGuest ? 'Create an account' : 'Sign Out'} variant="secondary" onPress={isGuest ? () => router.push('/(auth)/sign-up') : signOut} />
+          <Button label={isGuest ? t('profile.createAccount') : t('profile.signOut')} variant="secondary" onPress={isGuest ? () => router.push('/(auth)/sign-up') : signOut} />
         </View>
       </ScrollView>
     </View>

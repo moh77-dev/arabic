@@ -171,7 +171,7 @@ function UnitBanner({
         <View style={{ height: '100%', width: `${total ? (done / total) * 100 : 0}%`, backgroundColor: '#fff' }} />
       </View>
       <Text style={{ color: 'rgba(255,255,255,0.85)', fontSize: 12, marginTop: 6 }}>
-        {done} of {total} lessons complete
+        {t('learn.lessonsComplete', { done, total })}
       </Text>
     </View>
   );
