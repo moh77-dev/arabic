@@ -1,43 +1,64 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { router, Stack } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AnimatedPressable } from '@/components/ui/AnimatedPressable';
 import { Icon } from '@/components/ui/Icon';
-import { ELOUED_CONVERSATIONS } from '@/content/dialects';
+import { getConversationsForDialect } from '@/content/conversations';
+import { DIALECTS } from '@/content/dialectMeta';
 import { SpeakingExercise } from '@/features/lessons/exercises/SpeakingExercise';
 import { useTheme } from '@/lib/ThemeProvider';
 import { fonts } from '@/lib/fonts';
 import { useT } from '@/lib/i18n';
 import { speakArabic } from '@/lib/speech';
 import { useGamificationStore } from '@/stores/useGamificationStore';
+import { useSettingsStore } from '@/stores/useSettingsStore';
 import type { Exercise } from '@/types';
 
 export default function Drill() {
   const theme = useTheme();
   const t = useT();
   const insets = useSafeAreaInsets();
+  const activeDialect = useSettingsStore((s) => s.activeDialect);
   const addXp = useGamificationStore((s) => s.addXp);
   const recordActivity = useGamificationStore((s) => s.recordActivity);
-  // Start on a random scene, and let the learner shuffle to another — so it isn't the same clip
-  // every time. (The "video" is a native-audio transcript; drop-in real clips can key off convIndex.)
-  const [convIndex, setConvIndex] = useState(() => Math.floor(Math.random() * ELOUED_CONVERSATIONS.length));
+  // Scenes come from the ACTIVE dialect (authored for El Oued, generated from that dialect's own
+  // vocab otherwise), so the drill is never the same Algerian clip for everyone.
+  const meta = DIALECTS[activeDialect] ?? DIALECTS.msa;
+  const conversations = useMemo(() => getConversationsForDialect(activeDialect), [activeDialect]);
+  // Start on a random scene, and let the learner shuffle to another.
+  const [convIndex, setConvIndex] = useState(() =>
+    conversations.length ? Math.floor(Math.random() * conversations.length) : 0,
+  );
   const [activeLine, setActiveLine] = useState(0);
   const [done, setDone] = useState(false);
 
-  const CONV = ELOUED_CONVERSATIONS[convIndex];
+  const CONV = conversations[Math.min(convIndex, Math.max(0, conversations.length - 1))];
   const nextScene = () => {
-    setConvIndex((i) => (ELOUED_CONVERSATIONS.length > 1 ? (i + 1) % ELOUED_CONVERSATIONS.length : i));
+    setConvIndex((i) => (conversations.length > 1 ? (i + 1) % conversations.length : i));
     setActiveLine(0);
     setDone(false);
   };
 
+  if (!CONV) {
+    return (
+      <View style={{ flex: 1, backgroundColor: theme.background, alignItems: 'center', justifyContent: 'center', padding: 32 }}>
+        <Stack.Screen options={{ headerShown: false }} />
+        <Icon name="freetalk" size={40} color={theme.textSecondary} />
+        <Text style={{ color: theme.textPrimary, fontWeight: '800', fontSize: 16, marginTop: 12, textAlign: 'center' }}>{t('drill.noScenes')}</Text>
+        <AnimatedPressable onPress={() => router.back()} style={{ marginTop: 20, backgroundColor: theme.primary, borderRadius: 14, paddingHorizontal: 20, paddingVertical: 12 }}>
+          <Text style={{ color: theme.primaryText, fontWeight: '800' }}>{t('common.back')}</Text>
+        </AnimatedPressable>
+      </View>
+    );
+  }
+
   const target = CONV.lines[activeLine] ?? CONV.lines[0];
   const drillExercise: Exercise = {
-    id: `drill_${activeLine}`,
+    id: `drill_${convIndex}_${activeLine}`,
     type: 'speaking',
-    dialectId: 'algerian_eloued',
+    dialectId: activeDialect,
     prompt: `Say: "${target.transliteration}"`,
     promptArabic: target.arabic,
     correctAnswer: target.transliteration,
@@ -81,9 +102,9 @@ export default function Drill() {
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
             <View style={{ flex: 1 }}>
               <Text style={{ color: theme.textPrimary, fontSize: 20, fontWeight: '900' }}>{CONV.title}</Text>
-              <Text style={{ color: theme.textSecondary, fontSize: 13, marginTop: 2 }}>{t('drill.withNative')}</Text>
+              <Text style={{ color: theme.textSecondary, fontSize: 13, marginTop: 2 }}>{t('drill.withNative', { dialect: meta.name })}</Text>
             </View>
-            {ELOUED_CONVERSATIONS.length > 1 && (
+            {conversations.length > 1 && (
               <AnimatedPressable
                 onPress={nextScene}
                 style={{ flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: theme.surfaceElevated, borderWidth: 1, borderColor: theme.border, borderRadius: 999, paddingHorizontal: 12, paddingVertical: 8 }}
