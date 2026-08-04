@@ -1,6 +1,7 @@
+import { ResizeMode, Video } from 'expo-av';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router, Stack } from 'expo-router';
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AnimatedPressable } from '@/components/ui/AnimatedPressable';
@@ -15,6 +16,12 @@ import { speakArabic } from '@/lib/speech';
 import { useGamificationStore } from '@/stores/useGamificationStore';
 import { useSettingsStore } from '@/stores/useSettingsStore';
 import type { Exercise } from '@/types';
+
+// Real filmed clips for hand-authored scenes. Anything not listed falls back to the
+// audio-only (text-to-speech) player below. `require` returns an asset module id.
+const SCENE_VIDEOS: Record<string, number> = {
+  eloued_conv_market: require('../assets/videos/algeria-date-market.mp4'),
+};
 
 export default function Drill() {
   const theme = useTheme();
@@ -33,8 +40,10 @@ export default function Drill() {
   );
   const [activeLine, setActiveLine] = useState(0);
   const [done, setDone] = useState(false);
+  const videoRef = useRef<Video>(null);
 
   const CONV = conversations[Math.min(convIndex, Math.max(0, conversations.length - 1))];
+  const sceneVideo = CONV ? SCENE_VIDEOS[CONV.id] : undefined;
   const nextScene = () => {
     setConvIndex((i) => (conversations.length > 1 ? (i + 1) % conversations.length : i));
     setActiveLine(0);
@@ -76,26 +85,47 @@ export default function Drill() {
       <Stack.Screen options={{ headerShown: false }} />
       <LinearGradient colors={theme.backdropGradient} style={StyleSheet.absoluteFill} />
       <ScrollView contentContainerStyle={{ paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
-        {/* Video placeholder */}
+        {/* Video header — a real filmed clip when the scene has one, otherwise an audio player. */}
         <View style={{ height: 230 + insets.top, backgroundColor: '#0a0c11', paddingTop: insets.top }}>
-          <View style={{ flexDirection: 'row', paddingHorizontal: 16, paddingTop: 8 }}>
-            <AnimatedPressable onPress={() => router.back()} withHaptic={false} style={{ width: 38, height: 38, borderRadius: 19, backgroundColor: 'rgba(255,255,255,0.14)', alignItems: 'center', justifyContent: 'center' }}>
-              <Icon name="chevronLeft" size={22} color="#fff" />
-            </AnimatedPressable>
-          </View>
-          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-            <AnimatedPressable
-              onPress={() => speakArabic(CONV.lines.map((l) => l.arabic).join('، '))}
-              style={{ width: 62, height: 62, borderRadius: 31, backgroundColor: 'rgba(255,255,255,0.92)', alignItems: 'center', justifyContent: 'center' }}
-            >
-              <Icon name="play" size={30} color="#0a0c11" />
-            </AnimatedPressable>
-          </View>
-          <View style={{ paddingHorizontal: 16, paddingBottom: 12 }}>
-            <View style={{ height: 4, borderRadius: 999, backgroundColor: 'rgba(255,255,255,0.2)', overflow: 'hidden' }}>
-              <View style={{ height: '100%', width: '32%', backgroundColor: theme.primary }} />
-            </View>
-          </View>
+          {sceneVideo ? (
+            <>
+              <Video
+                ref={videoRef}
+                source={sceneVideo}
+                style={StyleSheet.absoluteFill}
+                resizeMode={ResizeMode.COVER}
+                useNativeControls
+                isLooping={false}
+              />
+              {/* Back button floats over the video. */}
+              <View style={{ flexDirection: 'row', paddingHorizontal: 16, paddingTop: 8 }}>
+                <AnimatedPressable onPress={() => router.back()} withHaptic={false} style={{ width: 38, height: 38, borderRadius: 19, backgroundColor: 'rgba(0,0,0,0.4)', alignItems: 'center', justifyContent: 'center' }}>
+                  <Icon name="chevronLeft" size={22} color="#fff" />
+                </AnimatedPressable>
+              </View>
+            </>
+          ) : (
+            <>
+              <View style={{ flexDirection: 'row', paddingHorizontal: 16, paddingTop: 8 }}>
+                <AnimatedPressable onPress={() => router.back()} withHaptic={false} style={{ width: 38, height: 38, borderRadius: 19, backgroundColor: 'rgba(255,255,255,0.14)', alignItems: 'center', justifyContent: 'center' }}>
+                  <Icon name="chevronLeft" size={22} color="#fff" />
+                </AnimatedPressable>
+              </View>
+              <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                <AnimatedPressable
+                  onPress={() => speakArabic(CONV.lines.map((l) => l.arabic).join('، '))}
+                  style={{ width: 62, height: 62, borderRadius: 31, backgroundColor: 'rgba(255,255,255,0.92)', alignItems: 'center', justifyContent: 'center' }}
+                >
+                  <Icon name="play" size={30} color="#0a0c11" />
+                </AnimatedPressable>
+              </View>
+              <View style={{ paddingHorizontal: 16, paddingBottom: 12 }}>
+                <View style={{ height: 4, borderRadius: 999, backgroundColor: 'rgba(255,255,255,0.2)', overflow: 'hidden' }}>
+                  <View style={{ height: '100%', width: '32%', backgroundColor: theme.primary }} />
+                </View>
+              </View>
+            </>
+          )}
         </View>
 
         <View style={{ paddingHorizontal: 20, paddingTop: 18 }}>
