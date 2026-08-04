@@ -54,10 +54,10 @@ export const DIALECT_BACKDROPS: Record<DialectId, DialectBackdrop> = {
     pageWash: ['#e8fbf0', '#eef7ff', '#fdf6e9'],
   },
   algerian_eloued: {
-    landmark: 'El Oued — City of a Thousand Domes',
-    silhouette: 'domes',
-    heroGradient: ['#d99a2e', '#5c3410'], // desert gold
-    pageWash: ['#fdf3e2', '#fbeede', '#f7f1e4'],
+    landmark: "Maqam E'chahid — Martyrs' Memorial, Algiers",
+    silhouette: 'martyrs_memorial',
+    heroGradient: ['#118a52', '#063d24'], // Algerian emerald green
+    pageWash: ['#e8fbf0', '#eef7ff', '#fdf6e9'],
   },
   moroccan: {
     landmark: 'Koutoubia Minaret, Marrakech',

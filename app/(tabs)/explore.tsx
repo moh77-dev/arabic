@@ -58,7 +58,7 @@ export default function Explore() {
 
   // Chips: active dialect first, then everything the learner has started, then a few popular ones.
   const chipDialects = useMemo(() => {
-    const popular: DialectId[] = ['msa', 'egyptian', 'levantine', 'moroccan', 'algerian_algiers'];
+    const popular: DialectId[] = ['msa', 'egyptian', 'levantine', 'moroccan', 'algerian_eloued'];
     return Array.from(new Set<DialectId>([activeDialect, ...enrolledDialects, ...popular])).slice(0, 8);
   }, [activeDialect, enrolledDialects]);
 

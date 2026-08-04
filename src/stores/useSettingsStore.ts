@@ -89,12 +89,15 @@ export const useSettingsStore = create<SettingsState>()(
       // one enrolled from an older build gets it remapped to Algiers so nothing dangles.
       migrate: (persisted: any, _version) => {
         if (!persisted) return persisted;
+        // Every Algerian regional variety now collapses into the single "Algerian Arabic"
+        // (id algerian_eloued), including the former Algiers dialect.
         const RETIRED: Record<string, DialectId> = {
-          algerian_oran: 'algerian_algiers',
-          algerian_constantine: 'algerian_algiers',
-          algerian_annaba: 'algerian_algiers',
-          algerian_tlemcen: 'algerian_algiers',
-          algerian_kabyle: 'algerian_algiers',
+          algerian_algiers: 'algerian_eloued',
+          algerian_oran: 'algerian_eloued',
+          algerian_constantine: 'algerian_eloued',
+          algerian_annaba: 'algerian_eloued',
+          algerian_tlemcen: 'algerian_eloued',
+          algerian_kabyle: 'algerian_eloued',
         };
         const remap = (id: string): DialectId => RETIRED[id] ?? (id as DialectId);
         const enrolled: DialectId[] = Array.isArray(persisted.enrolledDialects)

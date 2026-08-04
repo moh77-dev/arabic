@@ -67,10 +67,10 @@ function buildLessonsForCategories(dialectId: DialectId, categories: VocabCatego
 
 // ---- El Oued: the flagship, most detailed track ----
 const ELOUED_UNIT_DEFS: { id: string; title: string; titleArabic: string; icon: string; categories: VocabCategory[]; colorFrom: string; colorTo: string }[] = [
-  { id: 'eloued_u1', title: 'Souf Greetings', titleArabic: 'تحايا السّوف', icon: '👋', categories: ['greetings'], colorFrom: '#1ab86a', colorTo: '#0f7a47' },
-  { id: 'eloued_u2', title: 'Everyday Souf', titleArabic: 'حياة يومية', icon: '💬', categories: ['daily_life', 'time'], colorFrom: '#38bdf8', colorTo: '#0ea5e9' },
+  { id: 'eloued_u1', title: 'Greetings', titleArabic: 'التّحايا', icon: '👋', categories: ['greetings'], colorFrom: '#1ab86a', colorTo: '#0f7a47' },
+  { id: 'eloued_u2', title: 'Everyday Speech', titleArabic: 'حياة يومية', icon: '💬', categories: ['daily_life', 'time'], colorFrom: '#38bdf8', colorTo: '#0ea5e9' },
   { id: 'eloued_u3', title: 'Family & Home', titleArabic: 'العائلة و الدّار', icon: '👪', categories: ['family'], colorFrom: '#f0a80e', colorTo: '#c17d00' },
-  { id: 'eloued_u4', title: 'The Souf Market', titleArabic: 'سوق الوادي', icon: '🧺', categories: ['market'], colorFrom: '#f5a524', colorTo: '#d97706' },
+  { id: 'eloued_u4', title: 'The Market', titleArabic: 'السّوق', icon: '🧺', categories: ['market'], colorFrom: '#f5a524', colorTo: '#d97706' },
   { id: 'eloued_u5', title: 'Faith & Ramadan', titleArabic: 'الدّين ورمضان', icon: '🕌', categories: ['religion', 'ramadan'], colorFrom: '#7ce7ab', colorTo: '#1ab86a' },
   { id: 'eloued_u6', title: 'Football & School', titleArabic: 'الكورة والمدرسة', icon: '⚽', categories: ['football', 'school'], colorFrom: '#38bdf8', colorTo: '#1ab86a' },
   { id: 'eloued_u7', title: 'Business & Marriage', titleArabic: 'العمل والعرس', icon: '💼', categories: ['business', 'marriage'], colorFrom: '#f0a80e', colorTo: '#f5a524' },
@@ -81,7 +81,7 @@ export const ELOUED_UNITS: Unit[] = ELOUED_UNIT_DEFS.map((def, i) => ({
   id: def.id,
   dialectId: 'algerian_eloued',
   title: def.title,
-  description: `Unit ${i + 1} of the El Oued (Souf) track.`,
+  description: `Unit ${i + 1} of the Algerian Arabic track.`,
   icon: def.icon,
   colorFrom: def.colorFrom,
   colorTo: def.colorTo,
@@ -96,7 +96,6 @@ export const ELOUED_LESSONS: Lesson[] = ELOUED_UNIT_DEFS.flatMap((def) =>
 // ---- Starter unit (1 unit, all available vocab) for every other dialect ----
 const OTHER_DIALECT_IDS: DialectId[] = [
   'msa',
-  'algerian_algiers',
   'moroccan',
   'tunisian',
   'libyan',

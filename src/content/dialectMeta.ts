@@ -31,12 +31,12 @@ export const DIALECTS: Record<DialectId, DialectMeta> = {
   },
   algerian_eloued: {
     id: 'algerian_eloued',
-    name: 'El Oued (Souf) Arabic',
-    nativeName: 'دارجة الوادي (سوف)',
-    flag: '🏜️',
-    region: 'El Oued, the Algerian Sahara',
+    name: 'Algerian Arabic',
+    nativeName: 'الدارجة الجزائرية',
+    flag: '🇩🇿',
+    region: 'Algeria',
     blurb:
-      'The Bedouin-Saharan dialect of the "city of a thousand domes." Distinct pronunciation, vocabulary, and rhythm shaped by desert life, oasis agriculture, and trans-Saharan trade — Lisan\'s flagship dialect.',
+      'Algerian Darja — the everyday spoken Arabic of Algeria, rich with Amazigh and French influence. Lisan\'s flagship dialect.',
     isAlgerianRegional: true,
   },
   moroccan: {
@@ -167,4 +167,7 @@ export const DIALECTS: Record<DialectId, DialectMeta> = {
   },
 };
 
-export const DIALECT_LIST = Object.values(DIALECTS);
+// `algerian_algiers` is retired as a separate dialect (merged into the single "Algerian Arabic").
+// Its meta entry stays so cross-dialect comparison data still resolves, but it's never offered.
+const HIDDEN_DIALECTS: DialectId[] = ['algerian_algiers'];
+export const DIALECT_LIST = Object.values(DIALECTS).filter((d) => !HIDDEN_DIALECTS.includes(d.id));
