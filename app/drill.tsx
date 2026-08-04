@@ -14,17 +14,24 @@ import { speakArabic } from '@/lib/speech';
 import { useGamificationStore } from '@/stores/useGamificationStore';
 import type { Exercise } from '@/types';
 
-// Uses the market conversation as the "video" transcript; the last user-facing line is the drill.
-const CONV = ELOUED_CONVERSATIONS[0];
-
 export default function Drill() {
   const theme = useTheme();
   const t = useT();
   const insets = useSafeAreaInsets();
   const addXp = useGamificationStore((s) => s.addXp);
   const recordActivity = useGamificationStore((s) => s.recordActivity);
+  // Start on a random scene, and let the learner shuffle to another — so it isn't the same clip
+  // every time. (The "video" is a native-audio transcript; drop-in real clips can key off convIndex.)
+  const [convIndex, setConvIndex] = useState(() => Math.floor(Math.random() * ELOUED_CONVERSATIONS.length));
   const [activeLine, setActiveLine] = useState(0);
   const [done, setDone] = useState(false);
+
+  const CONV = ELOUED_CONVERSATIONS[convIndex];
+  const nextScene = () => {
+    setConvIndex((i) => (ELOUED_CONVERSATIONS.length > 1 ? (i + 1) % ELOUED_CONVERSATIONS.length : i));
+    setActiveLine(0);
+    setDone(false);
+  };
 
   const target = CONV.lines[activeLine] ?? CONV.lines[0];
   const drillExercise: Exercise = {
@@ -71,8 +78,21 @@ export default function Drill() {
         </View>
 
         <View style={{ paddingHorizontal: 20, paddingTop: 18 }}>
-          <Text style={{ color: theme.textPrimary, fontSize: 20, fontWeight: '900' }}>{CONV.title}</Text>
-          <Text style={{ color: theme.textSecondary, fontSize: 13, marginTop: 2 }}>{t('drill.withNative')}</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+            <View style={{ flex: 1 }}>
+              <Text style={{ color: theme.textPrimary, fontSize: 20, fontWeight: '900' }}>{CONV.title}</Text>
+              <Text style={{ color: theme.textSecondary, fontSize: 13, marginTop: 2 }}>{t('drill.withNative')}</Text>
+            </View>
+            {ELOUED_CONVERSATIONS.length > 1 && (
+              <AnimatedPressable
+                onPress={nextScene}
+                style={{ flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: theme.surfaceElevated, borderWidth: 1, borderColor: theme.border, borderRadius: 999, paddingHorizontal: 12, paddingVertical: 8 }}
+              >
+                <Icon name="review" size={16} color={theme.primary} />
+                <Text style={{ color: theme.primary, fontWeight: '800', fontSize: 12 }}>{t('drill.newScene')}</Text>
+              </AnimatedPressable>
+            )}
+          </View>
 
           {/* Transcript */}
           <Text style={{ color: theme.textSecondary, fontSize: 11, fontWeight: '800', letterSpacing: 1.2, marginTop: 22 }}>{t('drill.transcript')}</Text>
