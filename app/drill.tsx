@@ -124,6 +124,7 @@ export default function Drill() {
           <View style={{ height: sceneH, backgroundColor: '#05070c' }}>
             <AnimatedScenePlayer
               key={CONV.id}
+              sceneId={CONV.id}
               lines={CONV.lines}
               dialectId={activeDialect}
               width={winW}
