@@ -4,6 +4,7 @@ import React, { useMemo, useState } from 'react';
 import { ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AnimatedPressable } from '@/components/ui/AnimatedPressable';
+import { AnimatedScenePlayer } from '@/components/ui/AnimatedScenePlayer';
 import { Icon } from '@/components/ui/Icon';
 import { SceneVideoPlayer } from '@/components/ui/SceneVideoPlayer';
 import { getConversationsForDialect } from '@/content/conversations';
@@ -53,6 +54,9 @@ export default function Drill() {
   // capped so a tall vertical clip doesn't eat the entire screen. Works on phone and wide desktop.
   const frameH = sceneVideo ? Math.min(winH * 0.56, (winW - 32) / sceneVideo.aspect, 520) : 0;
   const frameW = sceneVideo ? frameH * sceneVideo.aspect : 0;
+  // Height for the in-app animated scene (used when there's no filmed clip): a comfortable stage
+  // that includes the safe-area top so the back button and first line clear the status bar.
+  const sceneH = Math.min(winH * 0.5, 420) + insets.top;
   const nextScene = () => {
     setConvIndex((i) => (conversations.length > 1 ? (i + 1) % conversations.length : i));
     setActiveLine(0);
@@ -115,24 +119,21 @@ export default function Drill() {
             </View>
           </View>
         ) : (
-          <View style={{ height: 230 + insets.top, backgroundColor: '#0a0c11', paddingTop: insets.top }}>
-            <View style={{ flexDirection: 'row', paddingHorizontal: 16, paddingTop: 8 }}>
-              <AnimatedPressable onPress={() => router.back()} withHaptic={false} style={{ width: 38, height: 38, borderRadius: 19, backgroundColor: 'rgba(255,255,255,0.14)', alignItems: 'center', justifyContent: 'center' }}>
+          // No filmed clip for this scene — play it as an in-app animated "video" instead: each line
+          // animates in over the dialect's backdrop and is spoken aloud. Works for any scene/dialect.
+          <View style={{ height: sceneH, backgroundColor: '#05070c' }}>
+            <AnimatedScenePlayer
+              key={CONV.id}
+              lines={CONV.lines}
+              dialectId={activeDialect}
+              width={winW}
+              height={sceneH}
+              insetTop={insets.top}
+            />
+            <View style={{ position: 'absolute', top: insets.top + 8, left: 16, zIndex: 3 }}>
+              <AnimatedPressable onPress={() => router.back()} withHaptic={false} style={{ width: 38, height: 38, borderRadius: 19, backgroundColor: 'rgba(0,0,0,0.4)', alignItems: 'center', justifyContent: 'center' }}>
                 <Icon name="chevronLeft" size={22} color="#fff" />
               </AnimatedPressable>
-            </View>
-            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-              <AnimatedPressable
-                onPress={() => speakArabic(CONV.lines.map((l) => l.arabic).join('، '))}
-                style={{ width: 62, height: 62, borderRadius: 31, backgroundColor: 'rgba(255,255,255,0.92)', alignItems: 'center', justifyContent: 'center' }}
-              >
-                <Icon name="play" size={30} color="#0a0c11" />
-              </AnimatedPressable>
-            </View>
-            <View style={{ paddingHorizontal: 16, paddingBottom: 12 }}>
-              <View style={{ height: 4, borderRadius: 999, backgroundColor: 'rgba(255,255,255,0.2)', overflow: 'hidden' }}>
-                <View style={{ height: '100%', width: '32%', backgroundColor: theme.primary }} />
-              </View>
             </View>
           </View>
         )}
